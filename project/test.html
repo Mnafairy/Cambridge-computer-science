@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>40-Minute Test | Cambridge IGCSE Computer Science</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root { --accent: #e0a83a; }
+
+  /* While test is in progress, hide chapter links + locked tabs */
+  body.test-in-progress .site-nav a.chapter-link { display: none !important; }
+  .tab-nav button.locked { display: none !important; }
+
+  /* Timer */
+  .timer-bar {
+    position: sticky;
+    top: 48px;
+    z-index: 140;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0.65rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .timer-display {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .timer-display .lbl {
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .timer-display.warn { color: var(--clr-warn); }
+  .timer-display.danger { color: var(--clr-danger); }
+  .timer-controls { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .timer-controls .btn { padding: 0.45rem 0.9rem; font-size: 0.72rem; }
+  .progress-track {
+    flex: 1 1 200px;
+    height: 4px;
+    background: var(--bg-3);
+    border-radius: 99px;
+    overflow: hidden;
+    min-width: 140px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 100%;
+    transition: width 1s linear, background 0.3s;
+  }
+  .progress-fill.warn { background: var(--clr-warn); }
+  .progress-fill.danger { background: var(--clr-danger); }
+
+  /* Section heading */
+  .test-section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.6rem;
+    margin: 2.5rem 0 1.2rem;
+  }
+  .test-section-head h2 {
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .test-section-head .head-marks {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-3);
+    letter-spacing: 0.06em;
+  }
+
+  /* Mark scheme blocks (only seen after finish) */
+  .ms-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.4rem;
+    margin-bottom: 1px;
+  }
+  .ms-item + .ms-item { margin-top: 1px; }
+  .ms-item .ms-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+    gap: 0.8rem;
+  }
+  .ms-item .ms-q {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+  }
+  .ms-item .ms-marks {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-3);
+    letter-spacing: 0.06em;
+  }
+  .ms-item .ms-question {
+    font-size: 0.82rem;
+    color: var(--text-2);
+    margin-bottom: 0.7rem;
+    font-style: italic;
+    line-height: 1.6;
+  }
+  .ms-item .ms-answer {
+    font-size: 0.87rem;
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .ms-item .ms-answer ul {
+    margin: 0.3rem 0 0.3rem 1.2rem;
+    color: var(--text);
+  }
+  .ms-item .ms-answer li {
+    font-size: 0.87rem;
+    margin-bottom: 0.25rem;
+  }
+  .ms-mark-point {
+    background: var(--clr-ok-bg);
+    color: var(--clr-ok);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 0.05rem 0.35rem;
+    border-radius: 2px;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+    letter-spacing: 0.05em;
+  }
+
+  /* Final actions */
+  .test-actions {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    margin: 2rem 0 1rem;
+    padding: 1.2rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    align-items: center;
+    justify-content: space-between;
+  }
+  .test-actions .total {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-2);
+    letter-spacing: 0.04em;
+  }
+  .test-actions .total strong { color: var(--text); font-weight: 700; }
+
+  /* Locked overlay messaging on hidden tabs (in case URL accessed directly) */
+  .locked-msg {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-3);
+    font-size: 0.88rem;
+  }
+
+  /* Print */
+  @media print {
+    .site-nav, .tab-nav, .timer-bar, .test-actions, .chapter-footer { display: none !important; }
+    .tab-section { display: block !important; max-width: none; padding: 0; }
+    body { background: white; color: black; }
+    .quiz-card { break-inside: avoid; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body class="test-in-progress">
+
+<nav class="site-nav">
+  <div class="logo">Cambridge CS</div>
+  <a href="index.html" class="chapter-link"><span class="ch-num">—</span> Home</a>
+  <a href="chapter1.html" class="chapter-link"><span class="ch-num">01</span> Data Representation</a>
+  <a href="chapter2.html" class="chapter-link"><span class="ch-num">02</span> Data Transmission</a>
+  <a href="chapter3.html" class="chapter-link"><span class="ch-num">03</span> Hardware</a>
+  <a href="chapter4.html" class="chapter-link"><span class="ch-num">04</span> Software</a>
+  <a href="chapter5.html" class="chapter-link"><span class="ch-num">05</span> Cyber Threats</a>
+  <a href="chapter6.html" class="chapter-link"><span class="ch-num">06</span> Emerging Tech</a>
+  <a href="test.html" class="active"><span class="ch-num">★</span> Test</a>
+</nav>
+
+<header class="ch-header">
+  <span class="chapter-tag">Cambridge IGCSE · End-of-Unit Assessment</span>
+  <h1>40-Minute<br><em>Test</em></h1>
+  <p class="subtitle">A timed multiple-choice assessment covering data representation, software, the internet and its uses, and cyber security threats.</p>
+  <div class="pills">
+    <span class="pill" id="pill-marks">25 marks</span>
+    <span class="pill">40 minutes</span>
+    <span class="pill">25 questions</span>
+    <span class="pill">Multiple choice</span>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="active" onclick="showTab('test',this)">Test Paper</button>
+  <button class="locked" id="ms-tab" onclick="showTab('markscheme',this)">Mark Scheme</button>
+  <button class="locked" id="sum-tab" onclick="showTab('summary',this)">Topic Summary</button>
+</nav>
+
+<!-- ============ TEST ============ -->
+<div id="test" class="tab-section active">
+
+  <div class="timer-bar">
+    <div class="timer-display" id="timer">
+      <span class="lbl">Time</span>
+      <span id="timer-value">40:00</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="timer-controls">
+      <button class="btn" id="start-btn" onclick="startTimer()">Start</button>
+      <button class="btn secondary" onclick="pauseTimer()">Pause</button>
+      <button class="btn secondary" onclick="resetTest()">Reset</button>
+    </div>
+  </div>
+
+  <h1 class="section-title" style="margin-top:2rem;">Instructions</h1>
+  <p class="section-sub">Read carefully before you start.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Exam Instructions</h2>
+    <ul>
+      <li>Answer <strong>all 25</strong> multiple-choice questions.</li>
+      <li>Each question is worth <strong>1 mark</strong>. Total: <strong>25 marks</strong>.</li>
+      <li>Select <strong>one</strong> answer per question.</li>
+      <li>You have <strong>40 minutes</strong>.</li>
+      <li>You cannot view the mark scheme, chapter content, or summary until you click <strong>Finish Test</strong>.</li>
+    </ul>
+    <div class="callout info"><span class="ico">—</span><p>Click <strong>Start</strong> on the timer above when you are ready to begin. The timer will warn you at 10 minutes and 5 minutes remaining.</p></div>
+  </div>
+
+  <!-- SECTION A -->
+  <div class="test-section-head">
+    <h2>Section A — Data Representation</h2>
+    <span class="head-marks">[ 7 marks ]</span>
+  </div>
+  <div id="section-a"></div>
+
+  <!-- SECTION B -->
+  <div class="test-section-head">
+    <h2>Section B — Software</h2>
+    <span class="head-marks">[ 3 marks ]</span>
+  </div>
+  <div id="section-b"></div>
+
+  <!-- SECTION C -->
+  <div class="test-section-head">
+    <h2>Section C — The Internet and Its Uses</h2>
+    <span class="head-marks">[ 7 marks ]</span>
+  </div>
+  <div id="section-c"></div>
+
+  <!-- SECTION D -->
+  <div class="test-section-head">
+    <h2>Section D — Cyber Security</h2>
+    <span class="head-marks">[ 8 marks ]</span>
+  </div>
+  <div id="section-d"></div>
+
+  <div class="test-actions">
+    <div class="total" id="answered-count">Answered: <strong>0 / 25</strong></div>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+      <button class="btn" id="finish-btn" onclick="finishTest()" disabled>Finish Test</button>
+      <button class="btn secondary" onclick="resetTest()">Reset</button>
+    </div>
+  </div>
+
+  <div id="quiz-results" class="quiz-results"></div>
+
+</div>
+
+<!-- ============ MARK SCHEME ============ -->
+<div id="markscheme" class="tab-section">
+  <h1 class="section-title">Mark Scheme</h1>
+  <p class="section-sub">Correct answers and brief notes for every question.</p>
+  <div id="ms-container"></div>
+  <div class="test-actions">
+    <div class="total">Total: <strong>25 marks</strong></div>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+      <button class="btn" onclick="showTab('test',document.querySelectorAll('.tab-nav button')[0])">Back to Paper</button>
+      <button class="btn secondary" onclick="window.print()">Print Mark Scheme</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SUMMARY ============ -->
+<div id="summary" class="tab-section">
+  <h1 class="section-title">Topic Coverage Summary</h1>
+  <p class="section-sub">How the 25 marks are distributed across the syllabus.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Marks by Section</h2>
+    <table class="styled-table">
+      <thead><tr><th>Section</th><th>Topic</th><th>Questions</th><th>Marks</th><th>% of paper</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>Data Representation</td><td>Q1 – Q7</td><td>7</td><td>28%</td></tr>
+        <tr><td>B</td><td>Software</td><td>Q8 – Q10</td><td>3</td><td>12%</td></tr>
+        <tr><td>C</td><td>Internet &amp; Its Uses</td><td>Q11 – Q17</td><td>7</td><td>28%</td></tr>
+        <tr><td>D</td><td>Cyber Security</td><td>Q18 – Q25</td><td>8</td><td>32%</td></tr>
+        <tr style="font-weight:700;"><td colspan="3">TOTAL</td><td>25</td><td>100%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Topics Covered</h2>
+    <div class="summary-grid">
+      <div class="summary-tile"><h4>Binary &amp; Hex</h4><p>Conversions, why hex is used.</p></div>
+      <div class="summary-tile"><h4>Character Sets</h4><p>ASCII vs Unicode.</p></div>
+      <div class="summary-tile"><h4>Sound</h4><p>Sample rate and bit depth.</p></div>
+      <div class="summary-tile"><h4>Image</h4><p>File size from resolution and depth.</p></div>
+      <div class="summary-tile"><h4>Storage Units</h4><p>Bit, byte, KB, MB, GB.</p></div>
+      <div class="summary-tile"><h4>Software</h4><p>System vs application; OS tasks; booting.</p></div>
+      <div class="summary-tile"><h4>Internet vs WWW</h4><p>Network vs collection of pages.</p></div>
+      <div class="summary-tile"><h4>URLs &amp; Browsers</h4><p>Parts of a URL; browser role.</p></div>
+      <div class="summary-tile"><h4>Cookies</h4><p>Sessions, preferences, tracking.</p></div>
+      <div class="summary-tile"><h4>Cable Types</h4><p>Wired network media.</p></div>
+      <div class="summary-tile"><h4>Threats</h4><p>Phishing, pharming, DDoS, brute force.</p></div>
+      <div class="summary-tile"><h4>Social Engineering</h4><p>Manipulating humans.</p></div>
+      <div class="summary-tile"><h4>Data Interception</h4><p>Sniffing &amp; prevention.</p></div>
+      <div class="summary-tile"><h4>Malware</h4><p>Worms, Trojans, Spyware, Adware.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Grade Bands (suggested)</h2>
+    <table class="styled-table">
+      <thead><tr><th>Marks</th><th>Percentage</th><th>Grade band</th></tr></thead>
+      <tbody>
+        <tr><td>22 – 25</td><td>85 – 100%</td><td>A* / 9</td></tr>
+        <tr><td>18 – 21</td><td>70 – 84%</td><td>A / 7–8</td></tr>
+        <tr><td>14 – 17</td><td>55 – 69%</td><td>B – C / 5–6</td></tr>
+        <tr><td>10 – 13</td><td>40 – 54%</td><td>D / 4</td></tr>
+        <tr><td>0 – 9</td><td>0 – 39%</td><td>Below pass</td></tr>
+      </tbody>
+    </table>
+    <div class="callout info"><span class="ico">—</span><p>Grade bands are indicative only — actual Cambridge IGCSE boundaries are set per session.</p></div>
+  </div>
+</div>
+
+<footer class="chapter-footer" id="chapter-footer" style="display:none;">
+  <span class="brand">Cambridge IGCSE Computer Science · End-of-Unit Test</span>
+  <div class="nav-links">
+    <a href="chapter5.html">← Chapter 05</a>
+    <a href="index.html">Home</a>
+    <a href="chapter6.html">Chapter 06 →</a>
+  </div>
+</footer>
+
+<script>
+// ============ QUESTIONS ============
+const questions = [
+  // ----- SECTION A: DATA REPRESENTATION -----
+  { sec:'A', topic:'Binary → Denary',
+    q:"Convert the 8-bit binary number 1011 0101 to denary.",
+    opts:["173","181","175","165"], ans:1,
+    note:"128 + 32 + 16 + 4 + 1 = 181"
+  },
+  { sec:'A', topic:'Denary → Binary',
+    q:"Convert the denary number 214 to 8-bit binary.",
+    opts:["1100 1110","1101 0110","1011 0110","1101 1010"], ans:1,
+    note:"128 + 64 + 16 + 4 + 2 = 214 → 1101 0110"
+  },
+  { sec:'A', topic:'Denary → Hex',
+    q:"Convert the denary number 214 to hexadecimal.",
+    opts:["DA","E6","D6","6D"], ans:2,
+    note:"1101 0110 → D6"
+  },
+  { sec:'A', topic:'Hex → Denary',
+    q:"Convert the hexadecimal value 2F to denary.",
+    opts:["27","31","47","79"], ans:2,
+    note:"(2 × 16) + 15 = 47"
+  },
+  { sec:'A', topic:'Why hex?',
+    q:"Why do programmers often use hexadecimal rather than binary?",
+    opts:[
+      "Hexadecimal is easier for the CPU to process",
+      "Hexadecimal is more compact and easier for humans to read",
+      "Hexadecimal uses less memory in RAM",
+      "Hexadecimal can represent fractional numbers"
+    ], ans:1,
+    note:"Hex is a shorter, human-friendly representation; the CPU still works in binary."
+  },
+  { sec:'A', topic:'Character set',
+    q:"Which character set uses 7 bits to represent each character?",
+    opts:["Unicode","UTF-16","ASCII","EBCDIC"], ans:2,
+    note:"Standard ASCII uses 7 bits (128 characters)."
+  },
+  { sec:'A', topic:'Image file size',
+    q:"A bitmap image is 1024 × 768 pixels with a colour depth of 24 bits. What is the file size?",
+    opts:["1.5 MB","2.25 MB","3.0 MB","6.0 MB"], ans:1,
+    note:"1024 × 768 × 24 = 18,874,368 bits ÷ 8 ÷ 1024 ÷ 1024 = 2.25 MB"
+  },
+
+  // ----- SECTION B: SOFTWARE -----
+  { sec:'B', topic:'System vs application',
+    q:"Which statement best describes the difference between system software and application software?",
+    opts:[
+      "Application software manages the hardware; system software runs games",
+      "System software manages hardware and runs the computer; application software performs tasks for the user",
+      "System software is optional; application software is required",
+      "There is no difference between them"
+    ], ans:1,
+    note:"System software (e.g. OS, drivers) manages hardware; applications (e.g. browser) do user tasks."
+  },
+  { sec:'B', topic:'OS tasks',
+    q:"Which of the following is a task performed by the operating system?",
+    opts:[
+      "Compiling source code into HTML",
+      "Manufacturing the CPU",
+      "Managing memory, files and peripherals",
+      "Designing new web pages"
+    ], ans:2,
+    note:"Memory, file, process and device management are core OS responsibilities."
+  },
+  { sec:'B', topic:'Booting up',
+    q:"What happens during the booting up process of a computer?",
+    opts:[
+      "The user logs in before the BIOS starts",
+      "The application software loads before the operating system",
+      "The BIOS runs the POST, then the bootloader loads the OS from secondary storage into RAM",
+      "The CPU is physically initialised from the cloud"
+    ], ans:2,
+    note:"BIOS → POST → bootloader → OS loaded into RAM."
+  },
+
+  // ----- SECTION C: INTERNET -----
+  { sec:'C', topic:'Internet vs WWW',
+    q:"What is the difference between the Internet and the World Wide Web (WWW)?",
+    opts:[
+      "They are exactly the same thing",
+      "The Internet is the global network infrastructure; the WWW is the collection of websites accessed via HTTP/HTTPS",
+      "The WWW is the hardware; the Internet is the software",
+      "The WWW was invented before the Internet"
+    ], ans:1,
+    note:"Internet = network of networks (infrastructure); WWW = pages and resources on it."
+  },
+  { sec:'C', topic:'URL — protocol',
+    q:"In the URL https://www.cambridge.org/education/index.html, which part is the protocol?",
+    opts:["www","https","cambridge.org","index.html"], ans:1,
+    note:"The protocol comes before the colon."
+  },
+  { sec:'C', topic:'URL — domain',
+    q:"In the URL https://www.cambridge.org/education/index.html, which part is the domain name?",
+    opts:["https","www.cambridge.org","education","index.html"], ans:1,
+    note:"Domain identifies the host server."
+  },
+  { sec:'C', topic:'URL — file',
+    q:"In the URL https://www.cambridge.org/education/index.html, which part is the file name?",
+    opts:["https","www.cambridge.org","/education/","index.html"], ans:3,
+    note:"The file name is the last segment of the path."
+  },
+  { sec:'C', topic:'Web browser',
+    q:"What is the main role of a web browser?",
+    opts:[
+      "It hosts web pages so other computers can access them",
+      "It provides the internet connection to the device",
+      "It sends HTTP/HTTPS requests, receives HTML, and renders the page for the user",
+      "It writes new HTML code for websites"
+    ], ans:2,
+    note:"Browsers request, receive and render web pages."
+  },
+  { sec:'C', topic:'Cookies',
+    q:"Which of the following is a typical use of a cookie?",
+    opts:[
+      "Encrypting all data sent over the internet",
+      "Blocking all advertisements automatically",
+      "Remembering user preferences and login details on a website",
+      "Increasing the broadband speed"
+    ], ans:2,
+    note:"Cookies store small pieces of data (sessions, preferences, tracking)."
+  },
+  { sec:'C', topic:'Network cable',
+    q:"Which of the following is a cable type commonly used in a wired network?",
+    opts:["HDMI cable","Fibre-optic cable","Headphone jack","USB power cable"], ans:1,
+    note:"Twisted pair (Ethernet), coaxial and fibre-optic are common wired network cables."
+  },
+
+  // ----- SECTION D: CYBER SECURITY -----
+  { sec:'D', topic:'Phishing',
+    q:"Which description best matches phishing?",
+    opts:[
+      "Redirecting a user to a fake website by altering DNS settings",
+      "Sending fake emails pretending to be from a legitimate source",
+      "Flooding a server with traffic so legitimate users cannot connect",
+      "Trying every possible password combination"
+    ], ans:1,
+    note:"Phishing = fake emails as bait."
+  },
+  { sec:'D', topic:'Pharming',
+    q:"Which description best matches pharming?",
+    opts:[
+      "Redirecting a user to a fake website (often via DNS / malware)",
+      "Sending fake emails pretending to be from a legitimate source",
+      "Flooding a server with traffic",
+      "Eavesdropping on Wi-Fi packets"
+    ], ans:0,
+    note:"Pharming silently redirects URLs to fake sites."
+  },
+  { sec:'D', topic:'DDoS',
+    q:"Which description best matches a Distributed Denial of Service (DDoS) attack?",
+    opts:[
+      "Stealing login details through a fake email",
+      "Flooding a server with so many requests that legitimate users cannot access it",
+      "Guessing a password by trying every combination",
+      "Recording every keystroke a user types"
+    ], ans:1,
+    note:"DDoS = many distributed sources overwhelming a server."
+  },
+  { sec:'D', topic:'Brute force',
+    q:"Which description best matches a brute force attack?",
+    opts:[
+      "Pretending to be IT support on the phone",
+      "Sending fake emails with malicious links",
+      "Systematically trying every possible password combination",
+      "Encrypting the user's files and demanding a ransom"
+    ], ans:2,
+    note:"Brute force = exhaustive password guessing."
+  },
+  { sec:'D', topic:'Social engineering',
+    q:"What is social engineering?",
+    opts:[
+      "A technique to improve code performance",
+      "Manipulating people psychologically to reveal confidential information",
+      "Exploiting only firewall vulnerabilities",
+      "Sending automated spam emails to random addresses"
+    ], ans:1,
+    note:"Social engineering targets human trust, not technical flaws."
+  },
+  { sec:'D', topic:'Data interception',
+    q:"Which is the most effective way to prevent data interception on a public wireless network?",
+    opts:[
+      "Closing and reopening the browser frequently",
+      "Using WPA2/WPA3 encryption and only visiting HTTPS sites (ideally via a VPN)",
+      "Buying a faster Wi-Fi router",
+      "Disabling cookies in the browser"
+    ], ans:1,
+    note:"Encryption (WPA2/3, HTTPS, VPN) protects packets from sniffing."
+  },
+  { sec:'D', topic:'Worm',
+    q:"Which malware self-replicates across a network without needing a host file?",
+    opts:["Trojan horse","Worm","Spyware","Adware"], ans:1,
+    note:"Worms spread autonomously across networks."
+  },
+  { sec:'D', topic:'Trojan / Spyware / Adware',
+    q:"Which statement correctly pairs malware with its behaviour?",
+    opts:[
+      "A Trojan horse disguises itself as legitimate software to trick the user into installing it",
+      "Spyware mainly displays unwanted advertisements",
+      "Adware silently records the user's keystrokes",
+      "A worm hides inside a legitimate-looking file and never spreads"
+    ], ans:0,
+    note:"Trojan = disguised installer. Spyware = monitors activity. Adware = unwanted ads."
+  }
+];
+
+const TOTAL_QS = questions.length;
+const answers = Array(TOTAL_QS).fill(null);
+let finished = false;
+
+// ============ RENDER ============
+function buildQuestions() {
+  const bySec = { A:[], B:[], C:[], D:[] };
+  questions.forEach((q, i) => bySec[q.sec].push({ ...q, i }));
+  ['a','b','c','d'].forEach(s => {
+    const container = document.getElementById('section-' + s);
+    container.innerHTML = bySec[s.toUpperCase()].map(q => `
+      <div class="quiz-card">
+        <div class="q-num">Q${String(q.i + 1).padStart(2,'0')} / ${TOTAL_QS}  ·  ${q.topic}</div>
+        <div class="q-text">${q.q}</div>
+        <div class="quiz-options">
+          ${q.opts.map((o, j) => `
+            <button class="quiz-opt" data-qi="${q.i}" data-oi="${j}" onclick="selectAnswer(${q.i}, ${j}, this)">${escapeHtml(o)}</button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+  });
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+function selectAnswer(qi, oi, el) {
+  if (finished) return;
+  answers[qi] = oi;
+  el.closest('.quiz-options').querySelectorAll('.quiz-opt').forEach((b, j) => {
+    b.classList.toggle('selected', j === oi);
+  });
+  updateAnsweredCount();
+}
+
+function updateAnsweredCount() {
+  const n = answers.filter(a => a !== null).length;
+  document.getElementById('answered-count').innerHTML = `Answered: <strong>${n} / ${TOTAL_QS}</strong>`;
+  document.getElementById('finish-btn').disabled = (n === 0);
+}
+
+// ============ TIMER ============
+const TOTAL = 40 * 60;
+let remaining = TOTAL;
+let interval = null;
+const display = document.getElementById('timer-value');
+const wrap = document.getElementById('timer');
+const fill = document.getElementById('progress-fill');
+const startBtn = document.getElementById('start-btn');
+
+function format(s) {
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return String(m).padStart(2,'0') + ':' + String(r).padStart(2,'0');
+}
+
+function tick() {
+  if (remaining <= 0) {
+    clearInterval(interval);
+    interval = null;
+    display.textContent = '00:00';
+    wrap.classList.add('danger');
+    fill.classList.add('danger');
+    fill.style.width = '0%';
+    startBtn.textContent = 'Time up';
+    startBtn.disabled = true;
+    alert('Time is up! Your test will now be submitted.');
+    finishTest(true);
+    return;
+  }
+  remaining--;
+  display.textContent = format(remaining);
+  fill.style.width = ((remaining / TOTAL) * 100) + '%';
+  if (remaining <= 5 * 60) {
+    wrap.classList.add('danger');
+    wrap.classList.remove('warn');
+    fill.classList.add('danger');
+    fill.classList.remove('warn');
+  } else if (remaining <= 10 * 60) {
+    wrap.classList.add('warn');
+    fill.classList.add('warn');
+  }
+}
+
+function startTimer() {
+  if (interval || finished) return;
+  interval = setInterval(tick, 1000);
+  startBtn.textContent = 'Running';
+  startBtn.disabled = true;
+}
+
+function pauseTimer() {
+  if (!interval) return;
+  clearInterval(interval);
+  interval = null;
+  startBtn.textContent = 'Resume';
+  startBtn.disabled = false;
+}
+
+function resetTest() {
+  if (!confirm('Reset the entire test? All your answers and timer will be cleared.')) return;
+  if (interval) clearInterval(interval);
+  interval = null;
+  remaining = TOTAL;
+  display.textContent = format(remaining);
+  fill.style.width = '100%';
+  wrap.classList.remove('warn','danger');
+  fill.classList.remove('warn','danger');
+  startBtn.textContent = 'Start';
+  startBtn.disabled = false;
+
+  for (let i = 0; i < TOTAL_QS; i++) answers[i] = null;
+  finished = false;
+  document.body.classList.add('test-in-progress');
+  document.getElementById('ms-tab').classList.add('locked');
+  document.getElementById('sum-tab').classList.add('locked');
+  document.getElementById('chapter-footer').style.display = 'none';
+  document.getElementById('quiz-results').classList.remove('show');
+  document.getElementById('quiz-results').innerHTML = '';
+  document.getElementById('finish-btn').disabled = true;
+  document.getElementById('finish-btn').textContent = 'Finish Test';
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    b.classList.remove('selected','correct','wrong');
+    b.disabled = false;
+  });
+  showTab('test', document.querySelectorAll('.tab-nav button')[0]);
+  updateAnsweredCount();
+}
+
+// ============ FINISH ============
+function finishTest(forced) {
+  if (finished) return;
+  const answered = answers.filter(a => a !== null).length;
+  if (!forced && answered < TOTAL_QS) {
+    if (!confirm(`You have answered ${answered} of ${TOTAL_QS} questions. Finish anyway?`)) return;
+  }
+  finished = true;
+  if (interval) { clearInterval(interval); interval = null; }
+  startBtn.disabled = true;
+
+  // Reveal locked content
+  document.body.classList.remove('test-in-progress');
+  document.getElementById('ms-tab').classList.remove('locked');
+  document.getElementById('sum-tab').classList.remove('locked');
+  document.getElementById('chapter-footer').style.display = '';
+
+  // Mark answers + build mark scheme + result block
+  let score = 0;
+  document.querySelectorAll('.quiz-opt').forEach(b => {
+    const qi = +b.dataset.qi;
+    const oi = +b.dataset.oi;
+    const correct = questions[qi].ans === oi;
+    if (correct) b.classList.add('correct');
+    if (answers[qi] === oi && !correct) b.classList.add('wrong');
+    b.disabled = true;
+  });
+  answers.forEach((a, i) => { if (a === questions[i].ans) score++; });
+  const pct = Math.round((score / TOTAL_QS) * 100);
+  const grade = pct >= 85 ? 'A* / 9'
+              : pct >= 70 ? 'A / 7–8'
+              : pct >= 55 ? 'B–C / 5–6'
+              : pct >= 40 ? 'D / 4'
+              : 'Below pass';
+
+  // Results block
+  let html = `<h3>Score: <span class="score-badge">${score} / ${TOTAL_QS} — ${pct}% — ${grade}</span></h3>
+              <p style="margin:.5rem 0 1.2rem;font-size:.82rem;color:var(--text-3);">Review each question below. The Mark Scheme and Topic Summary tabs are now unlocked.</p>`;
+  questions.forEach((q, i) => {
+    const ok = answers[i] === q.ans;
+    html += `<div class="result-item ${ok ? 'correct-res' : 'wrong-res'}">
+      <div class="result-item-header">${ok ? '✓' : '✗'} Q${i+1}. ${q.q}</div>
+      ${(!ok && answers[i] !== null) ? `<p class="your-ans">Your answer: ${escapeHtml(q.opts[answers[i]])}</p>` : ''}
+      ${(answers[i] === null) ? `<p class="your-ans">No answer given</p>` : ''}
+      <p class="correct-ans">Correct: ${escapeHtml(q.opts[q.ans])}</p>
+      <p style="font-size:.75rem;color:var(--text-3);margin-top:.2rem;">${escapeHtml(q.note)}</p>
+    </div>`;
+  });
+  const res = document.getElementById('quiz-results');
+  res.innerHTML = html;
+  res.classList.add('show');
+
+  // Build mark scheme tab content
+  document.getElementById('ms-container').innerHTML = questions.map((q, i) => `
+    <div class="ms-item">
+      <div class="ms-head"><span class="ms-q">Q${String(i+1).padStart(2,'0')}</span><span class="ms-marks">[1 mark]</span></div>
+      <p class="ms-question">${escapeHtml(q.q)}</p>
+      <div class="ms-answer">
+        Correct answer: <strong>${escapeHtml(q.opts[q.ans])}</strong> <span class="ms-mark-point">1 mark</span>
+        <p style="font-size:.8rem;color:var(--text-3);margin-top:.3rem;">${escapeHtml(q.note)}</p>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('finish-btn').disabled = true;
+  document.getElementById('finish-btn').textContent = 'Submitted';
+
+  window.scrollTo({ top: res.offsetTop - 100, behavior: 'smooth' });
+}
+
+// ============ TAB SWITCH ============
+function showTab(id, btn) {
+  // Block access to locked tabs while in progress
+  if (!finished && (id === 'markscheme' || id === 'summary')) return;
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: document.querySelector('.tab-nav').offsetTop - 48, behavior: 'smooth' });
+}
+
+// ============ INIT ============
+buildQuestions();
+updateAnsweredCount();
+</script>
+
+</body>
+</html>
