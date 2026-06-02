@@ -1,0 +1,1270 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chapter 3 — Hardware | Cambridge IGCSE Computer Science</title>
+    <link rel="stylesheet" href="shared.css" />
+    <style>
+      :root {
+        --accent: #4ade80;
+      }
+      .fde-step {
+        border-left: 2px solid var(--border-2);
+        padding: 0.65rem 1rem;
+        margin: 0.3rem 0;
+        font-size: 0.85rem;
+        color: var(--text-2);
+      }
+      .fde-step strong {
+        color: var(--text);
+        display: block;
+        margin-bottom: 0.1rem;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      .bus-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.5rem 0.9rem;
+        margin: 0.3rem 0;
+        font-family: "IBM Plex Mono", monospace;
+        font-size: 0.78rem;
+        color: var(--text-2);
+      }
+      .bus-arrow {
+        color: var(--text-3);
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="site-nav">
+      <div class="logo">Cambridge CS</div>
+      <a href="index.html"><span class="ch-num">—</span> Home</a>
+      <a href="chapter1.html"
+        ><span class="ch-num">01</span> Data Representation</a
+      >
+      <a href="chapter2.html"
+        ><span class="ch-num">02</span> Data Transmission</a
+      >
+      <a href="chapter3.html" class="active"
+        ><span class="ch-num">03</span> Hardware</a
+      >
+      <a href="chapter4.html"><span class="ch-num">04</span> Software</a>
+      <a href="chapter5.html"><span class="ch-num">05</span> Cyber Threats</a>
+      <a href="chapter6.html"><span class="ch-num">06</span> Emerging Tech</a>
+    </nav>
+
+    <header class="ch-header">
+      <span class="chapter-tag"
+        >Cambridge IGCSE Computer Science · Chapter 03</span
+      >
+      <h1>Hardware</h1>
+      <p class="subtitle">
+        The physical components that make a computer work — CPU, memory, I/O
+        devices, storage and network hardware.
+      </p>
+      <div class="pills">
+        <span class="pill">CPU Architecture</span>
+        <span class="pill">FDE Cycle</span>
+        <span class="pill">I/O Devices</span>
+        <span class="pill">Storage</span>
+        <span class="pill">Network Hardware</span>
+      </div>
+    </header>
+
+    <nav class="tab-nav">
+      <button class="active" onclick="showTab('arch', this)">
+        Architecture
+      </button>
+      <button onclick="showTab('fde', this)">FDE Cycle</button>
+      <button onclick="showTab('io', this)">I/O Devices</button>
+      <button onclick="showTab('sensors', this)">Sensors</button>
+      <button onclick="showTab('storage', this)">Storage</button>
+      <button onclick="showTab('network', this)">Network HW</button>
+      <button onclick="showTab('summary', this)">Summary</button>
+      <button onclick="showTab('glossary', this)">Glossary</button>
+      <button onclick="showTab('quiz', this)">Quiz</button>
+    </nav>
+
+    <!-- ARCHITECTURE -->
+    <div id="arch" class="tab-section active">
+      <h1 class="section-title">3.1 Computer Architecture</h1>
+      <p class="section-sub">
+        The CPU, Von Neumann architecture, registers, buses and performance
+        factors.
+      </p>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>The CPU</h2>
+        <p>
+          The <span class="kw">Central Processing Unit</span> executes all
+          program instructions. Three main components:
+        </p>
+        <ul>
+          <li>
+            <strong>Control Unit (CU)</strong> — manages and coordinates all
+            activity
+          </li>
+          <li>
+            <strong>Arithmetic &amp; Logic Unit (ALU)</strong> — performs
+            calculations and logic operations
+          </li>
+          <li>
+            <strong>Registers and buses</strong> — tiny storage locations and
+            the wires connecting them
+          </li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>Von Neumann Architecture</h2>
+        <p>
+          Developed in the 1940s — still the basis of all modern computers. Key
+          concepts:
+        </p>
+        <ul>
+          <li>CPU can access memory directly</li>
+          <li>Memory stores <strong>both programs and data</strong></li>
+          <li>Programs are sequences of instructions executed in order</li>
+        </ul>
+        <div class="cpu-diagram" style="margin-top: 1rem">
+          <div class="cpu-block full alt">CONTROL UNIT (CU)</div>
+          <div class="cpu-block">PC<small>Program Counter</small></div>
+          <div class="cpu-block">CIR<small>Current Instr. Reg.</small></div>
+          <div class="cpu-block">MAR<small>Memory Addr. Reg.</small></div>
+          <div class="cpu-block">MDR<small>Memory Data Reg.</small></div>
+          <div class="cpu-block full alt">
+            ARITHMETIC &amp; LOGIC UNIT (ALU)
+          </div>
+          <div class="cpu-block full">ACC — Accumulator</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>Registers</h2>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Register</th>
+              <th>Abbr.</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Memory Address Register</td>
+              <td>MAR</td>
+              <td>Stores address of memory location being read or written</td>
+            </tr>
+            <tr>
+              <td>Memory Data Register</td>
+              <td>MDR</td>
+              <td>Stores data fetched from or about to be written to memory</td>
+            </tr>
+            <tr>
+              <td>Program Counter</td>
+              <td>PC</td>
+              <td>
+                Stores address of the <em>next</em> instruction to be fetched
+              </td>
+            </tr>
+            <tr>
+              <td>Current Instruction Register</td>
+              <td>CIR</td>
+              <td>Stores the instruction currently being decoded/executed</td>
+            </tr>
+            <tr>
+              <td>Accumulator</td>
+              <td>ACC</td>
+              <td>Holds results of ALU calculations temporarily</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>System Buses</h2>
+        <div class="bus-row">
+          <span>Address Bus</span><span class="bus-arrow">→ unidirectional</span
+          ><span>CPU → memory</span>
+        </div>
+        <div class="bus-row">
+          <span>Data Bus</span><span class="bus-arrow">⇆ bidirectional</span
+          ><span>CPU ↔ memory ↔ I/O</span>
+        </div>
+        <div class="bus-row">
+          <span>Control Bus</span><span class="bus-arrow">⇆ bidirectional</span
+          ><span>CU → components</span>
+        </div>
+        <div class="callout info">
+          <span class="ico">—</span>
+          <p>
+            A 16-bit address bus can address 2¹⁶ = 65 536 memory locations. A
+            32-bit bus can address over 4 billion. Wider buses = more
+            addressable memory.
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>CPU Performance Factors</h2>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Factor</th>
+              <th>Effect</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Clock speed</strong></td>
+              <td>
+                More cycles per second → faster processing. Modern CPUs ~3.5
+                GHz. Overclocking risks crashes and overheating.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Cache size</strong></td>
+              <td>
+                More frequently used instructions stored near CPU → fewer slow
+                RAM accesses.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Core count</strong></td>
+              <td>
+                More tasks simultaneously. Doubling cores ≠ double performance
+                (communication overhead).
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Bus width</strong></td>
+              <td>Wider buses transfer more data per cycle.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>Embedded Systems</h2>
+        <p>
+          An <span class="kw">embedded system</span> is hardware + software
+          designed for <strong>one specific set of tasks</strong>. Found in
+          cars, washing machines, traffic lights, microwaves.
+        </p>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>What it contains</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Microcontroller</td>
+              <td>CPU + RAM + ROM + peripherals on one chip</td>
+            </tr>
+            <tr>
+              <td>Microprocessor</td>
+              <td>CPU only — RAM/ROM added separately</td>
+            </tr>
+            <tr>
+              <td>System on Chip (SoC)</td>
+              <td>CPU + memory + I/O + storage on one chip</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout danger">
+          <span class="ico">—</span>
+          <p>
+            A <strong>computer is NOT an embedded system</strong>. Computers are
+            multi-functional; embedded systems perform one specific set of
+            tasks.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FDE CYCLE -->
+    <div id="fde" class="tab-section">
+      <h1 class="section-title">Fetch–Decode–Execute Cycle</h1>
+      <p class="section-sub">
+        The repeating sequence the CPU follows to process every instruction.
+      </p>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>FDE Cycle Steps</h2>
+        <div class="fde-step">
+          <strong>1. PC holds address</strong>Program Counter contains the
+          address of the next instruction.
+        </div>
+        <div class="fde-step">
+          <strong>2. Address → MAR</strong>PC contents copied to MAR via the
+          address bus.
+        </div>
+        <div class="fde-step">
+          <strong>3. Fetch</strong>Instruction at that memory address copied
+          into MDR via data bus.
+        </div>
+        <div class="fde-step">
+          <strong>4. MDR → CIR</strong>Contents of MDR copied into Current
+          Instruction Register.
+        </div>
+        <div class="fde-step">
+          <strong>5. PC incremented</strong>PC increased by 1, pointing to the
+          next instruction.
+        </div>
+        <div class="fde-step">
+          <strong>6. Decode</strong>CU decodes the instruction in CIR.
+        </div>
+        <div class="fde-step">
+          <strong>7. Execute</strong>Control signals sent via control bus to
+          carry out the instruction.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>Instruction Format</h2>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Part</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Opcode</strong></td>
+              <td>The operation to perform (e.g. ADD, LDA, JMP)</td>
+            </tr>
+            <tr>
+              <td><strong>Operand</strong></td>
+              <td>The data to act on, or a register/memory reference</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          The full set of operations a CPU understands is its
+          <span class="kw">instruction set</span>. A common standard is
+          <strong>X86</strong> (Intel and AMD).
+        </p>
+      </div>
+    </div>
+
+    <!-- I/O DEVICES -->
+    <div id="io" class="tab-section">
+      <h1 class="section-title">3.2 Input &amp; Output Devices</h1>
+      <p class="section-sub">How data enters and exits the computer.</p>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>Input Devices</h2>
+        <div class="device-grid">
+          <div class="device-card">
+            <span class="device-emoji">🛒</span>
+            <div class="device-name">Barcode Scanner</div>
+            <div class="device-desc">
+              Red laser reads dark/light bars. Reflected light converted to
+              digital data. Used in supermarkets, libraries.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">📱</span>
+            <div class="device-name">QR Code Scanner</div>
+            <div class="device-desc">
+              Matrix of dark/light squares. Holds up to 4,296 characters. Read
+              by smartphone cameras.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">📷</span>
+            <div class="device-name">Digital Camera</div>
+            <div class="device-desc">
+              CCD converts light into electrical charges. ADC converts to 24-bit
+              RGB digital images.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">⌨️</span>
+            <div class="device-name">Keyboard</div>
+            <div class="device-desc">
+              Keypress completes a circuit. CPU looks up key and converts to
+              ASCII value.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">🎤</span>
+            <div class="device-name">Microphone</div>
+            <div class="device-desc">
+              Diaphragm vibrates; coil in magnetic field induces current. ADC
+              converts to digital.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">🖱️</span>
+            <div class="device-name">Optical Mouse</div>
+            <div class="device-desc">
+              LED bounces off surface; CMOS takes 1500 images/sec. DSP computes
+              movement coordinates.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">📄</span>
+            <div class="device-name">2D Scanner</div>
+            <div class="device-desc">
+              Light sweeps document; CCD converts reflected light to digital.
+              OCR turns scanned text editable.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">👆</span>
+            <div class="device-name">Touch Screen</div>
+            <div class="device-desc">
+              Capacitive (electrostatic field), infrared (IR beams), or
+              resistive (pressure contact).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>Output Devices</h2>
+        <div class="device-grid">
+          <div class="device-card">
+            <span class="device-emoji">💧</span>
+            <div class="device-name">Inkjet Printer</div>
+            <div class="device-desc">
+              Thermal bubble or piezoelectric nozzles spray ink droplets. Good
+              for photo printing.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">⚡</span>
+            <div class="device-name">Laser Printer</div>
+            <div class="device-desc">
+              Laser charges drum; toner sticks to charged areas; fuser heat
+              bonds toner to paper.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">🧱</span>
+            <div class="device-name">3D Printer</div>
+            <div class="device-desc">
+              Builds objects layer by layer (~0.1 mm). Used in prosthetics,
+              medical models, prototyping.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">📺</span>
+            <div class="device-name">LCD Screen</div>
+            <div class="device-desc">
+              Liquid crystals controlled by voltage. Modern backlighting uses
+              LED — brighter, thinner.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">✨</span>
+            <div class="device-name">OLED Screen</div>
+            <div class="device-desc">
+              Each pixel emits its own light — no backlight. Thinner, flexible,
+              lower power.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">🔊</span>
+            <div class="device-name">Speakers</div>
+            <div class="device-desc">
+              DAC converts digital audio to current. Current through coil
+              vibrates cone to produce sound.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">⚙️</span>
+            <div class="device-name">Actuators</div>
+            <div class="device-desc">
+              Motors, solenoids, valves and relays that convert electrical
+              signals into physical motion.
+            </div>
+          </div>
+          <div class="device-card">
+            <span class="device-emoji">📽️</span>
+            <div class="device-name">DLP Projector</div>
+            <div class="device-desc">
+              Millions of micro-mirrors on a DMD chip tilt to direct light
+              through colour filters.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>Touch Screen Technologies</h2>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>How it works</th>
+              <th>Strengths</th>
+              <th>Limitations</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Capacitive</td>
+              <td>Finger disrupts electrostatic field</td>
+              <td>Excellent clarity, durable, multi-touch</td>
+              <td>Bare fingers/stylus only</td>
+            </tr>
+            <tr>
+              <td>Infrared</td>
+              <td>Finger breaks IR beam matrix</td>
+              <td>Multi-touch, very durable</td>
+              <td>Sensitive to water, accidental activation</td>
+            </tr>
+            <tr>
+              <td>Resistive</td>
+              <td>Pressure makes two layers contact</td>
+              <td>Works with gloves/stylus, dust/water resistant</td>
+              <td>No multi-touch, scratches easily</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SENSORS -->
+    <div id="sensors" class="tab-section">
+      <h1 class="section-title">3.2 Sensors &amp; Control</h1>
+      <p class="section-sub">Reading the physical world and acting on it.</p>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>Sensors</h2>
+        <p>
+          Sensors read analogue physical properties. An
+          <span class="kw">ADC</span> converts the analogue signal to digital
+          for the microprocessor. A <span class="kw">DAC</span> converts back to
+          analogue to drive actuators.
+        </p>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Sensor</th>
+              <th>Measures</th>
+              <th>Example uses</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Temperature</td>
+              <td>Heat</td>
+              <td>Central heating, greenhouses</td>
+            </tr>
+            <tr>
+              <td>Moisture</td>
+              <td>Water in soil</td>
+              <td>Irrigation, food processing</td>
+            </tr>
+            <tr>
+              <td>Light</td>
+              <td>Brightness</td>
+              <td>Auto street lights, car headlights</td>
+            </tr>
+            <tr>
+              <td>Passive IR</td>
+              <td>Body heat radiation</td>
+              <td>Burglar alarms, freezers</td>
+            </tr>
+            <tr>
+              <td>Pressure</td>
+              <td>Force on sensor</td>
+              <td>Weighing lorries, gas monitoring</td>
+            </tr>
+            <tr>
+              <td>Sound / Acoustic</td>
+              <td>Sound waves</td>
+              <td>Footstep detection, leak detection</td>
+            </tr>
+            <tr>
+              <td>Accelerometer</td>
+              <td>Change in velocity</td>
+              <td>Airbags, screen rotation</td>
+            </tr>
+            <tr>
+              <td>Proximity</td>
+              <td>Nearby objects</td>
+              <td>Phone screen off near ear</td>
+            </tr>
+            <tr>
+              <td>Gas</td>
+              <td>CO₂, O₂ etc.</td>
+              <td>Pollution monitoring</td>
+            </tr>
+            <tr>
+              <td>pH</td>
+              <td>Acidity</td>
+              <td>Soil analysis, chemical processes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>Monitoring vs Control</h2>
+        <div class="compare-grid">
+          <div class="compare-col neutral">
+            <h4>Monitoring</h4>
+            <p style="font-size: 0.83rem; color: var(--text-2)">
+              Microprocessor <strong>watches</strong> only. Compares readings to
+              stored values; triggers alarms if out of range. Does not change
+              the environment.
+            </p>
+            <p style="font-size: 0.83rem; color: var(--text-3)">
+              e.g. patient vital signs, burglar alarms, pollution levels
+            </p>
+          </div>
+          <div class="compare-col pro">
+            <h4>Control</h4>
+            <p style="font-size: 0.83rem; color: var(--text-2)">
+              Microprocessor <strong>acts</strong>. Sends signals to actuators
+              to change the environment. Output feeds back into the next sensor
+              reading: a <span class="kw">feedback loop</span>.
+            </p>
+            <p style="font-size: 0.83rem; color: var(--text-3)">
+              e.g. central heating, ABS brakes, traffic lights, greenhouses
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STORAGE -->
+    <div id="storage" class="tab-section">
+      <h1 class="section-title">3.3 Data Storage</h1>
+      <p class="section-sub">Primary, secondary and cloud storage.</p>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>RAM vs ROM</h2>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>RAM</th>
+              <th>ROM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Volatile?</td>
+              <td>Yes — data lost when power off</td>
+              <td>No — retains data without power</td>
+            </tr>
+            <tr>
+              <td>Access</td>
+              <td>Read and write</td>
+              <td>Read only</td>
+            </tr>
+            <tr>
+              <td>Contains</td>
+              <td>Running programs, open files, OS parts</td>
+              <td>BIOS / bootstrap loader</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3>DRAM vs SRAM</h3>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>DRAM (Dynamic)</th>
+              <th>SRAM (Static)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Needs refresh?</td>
+              <td>Yes (~every 15 ms)</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td>Speed</td>
+              <td>~60 ns</td>
+              <td>~25 ns</td>
+            </tr>
+            <tr>
+              <td>Cost</td>
+              <td>Cheaper</td>
+              <td>More expensive</td>
+            </tr>
+            <tr>
+              <td>Used in</td>
+              <td>Main RAM</td>
+              <td>CPU cache</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>Secondary Storage</h2>
+        <h3>Magnetic — HDD</h3>
+        <ul>
+          <li>Data on magnetic platters spinning ~7,000 rpm</li>
+          <li>Read-write heads read/write surfaces</li>
+          <li>Suffers from fragmentation and latency</li>
+        </ul>
+        <h3>Solid State — SSD, USB Flash, SD cards</h3>
+        <ul>
+          <li>No moving parts — NAND flash memory</li>
+          <li>Faster, quieter, more durable, lower power</li>
+          <li>Limited write cycles (very high in practice)</li>
+        </ul>
+        <h3>Optical — CD, DVD, Blu-ray</h3>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Disc</th>
+              <th>Laser</th>
+              <th>Wavelength</th>
+              <th>Capacity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CD</td>
+              <td>Red</td>
+              <td>780 nm</td>
+              <td>700 MB</td>
+            </tr>
+            <tr>
+              <td>DVD (single)</td>
+              <td>Red</td>
+              <td>650 nm</td>
+              <td>4.7 GB</td>
+            </tr>
+            <tr>
+              <td>Blu-ray (single)</td>
+              <td>Blue</td>
+              <td>405 nm</td>
+              <td>25 GB</td>
+            </tr>
+            <tr>
+              <td>Blu-ray (dual)</td>
+              <td>Blue</td>
+              <td>405 nm</td>
+              <td>50 GB</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>Virtual Memory &amp; Cloud</h2>
+        <p>
+          <span class="kw">Virtual memory</span> uses part of HDD/SSD as extra
+          RAM when physical RAM fills up. Managed using
+          <span class="kw">paging</span>.
+        </p>
+        <div class="callout danger">
+          <span class="ico">—</span>
+          <p>
+            <strong>Disk thrashing</strong> — when the system spends more time
+            swapping data than processing. Fixed by adding RAM, running fewer
+            programs, or using an SSD.
+          </p>
+        </div>
+        <p style="margin-top: 1rem">
+          <span class="kw">Cloud storage</span> stores data on remote servers
+          with redundancy. Access from anywhere — but requires reliable internet
+          and raises security concerns.
+        </p>
+      </div>
+    </div>
+
+    <!-- NETWORK HARDWARE -->
+    <div id="network" class="tab-section">
+      <h1 class="section-title">3.4 Network Hardware</h1>
+      <p class="section-sub">
+        Components that enable devices to connect to networks.
+      </p>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>NIC &amp; MAC Address</h2>
+        <p>
+          A <span class="kw">NIC (Network Interface Card)</span> allows a device
+          to connect to a network. Each NIC has a unique
+          <span class="kw">MAC address</span> — a 48-bit identifier written as 6
+          hex pairs.
+        </p>
+        <div class="mono-block">
+          00 – 1C – B3 – 4F – 25 – FF ↑ manufacturer (3 pairs) ↑ device serial
+          (3 pairs)
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>IP Addresses</h2>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Version</th>
+              <th>Bits</th>
+              <th>Format</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>IPv4</td>
+              <td>32</td>
+              <td>Four denary groups (0–255)</td>
+              <td>109.108.158.1</td>
+            </tr>
+            <tr>
+              <td>IPv6</td>
+              <td>128</td>
+              <td>Eight hex groups, colon-separated</td>
+              <td>a8fb:7a88:fff0:…</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="compare-grid">
+          <div class="compare-col neutral">
+            <h4>Static IP</h4>
+            <ul>
+              <li>Permanently assigned by ISP</li>
+              <li>Doesn't change on reconnect</li>
+              <li>More expensive</li>
+              <li>Used by web/FTP servers</li>
+            </ul>
+          </div>
+          <div class="compare-col pro">
+            <h4>Dynamic IP (DHCP)</h4>
+            <ul>
+              <li>Assigned each session</li>
+              <li>Greater privacy</li>
+              <li>Cheaper</li>
+              <li>Can cause VoIP issues</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-accent"></div>
+        <h2>MAC vs IP Address</h2>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>MAC Address</th>
+              <th>IP Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Identifies physical device</td>
+              <td>Identifies network address</td>
+            </tr>
+            <tr>
+              <td>48-bit, written in hex</td>
+              <td>32-bit (v4) or 128-bit (v6)</td>
+            </tr>
+            <tr>
+              <td>Set at manufacture</td>
+              <td>Assigned by ISP / DHCP</td>
+            </tr>
+            <tr>
+              <td>Used within local network</td>
+              <td>Used globally on the internet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div id="summary" class="tab-section">
+      <h1 class="section-title">Chapter 3 — Summary</h1>
+      <p class="section-sub">All key hardware concepts at a glance.</p>
+      <div class="summary-grid">
+        <div class="summary-tile">
+          <h4>CPU</h4>
+          <p>
+            CU + ALU + Registers + Buses. Von Neumann: programs and data share
+            memory.
+          </p>
+        </div>
+        <div class="summary-tile">
+          <h4>Registers</h4>
+          <p>
+            MAR, MDR, PC, CIR, ACC. Each has a specific role in the FDE cycle.
+          </p>
+        </div>
+        <div class="summary-tile">
+          <h4>Buses</h4>
+          <p>
+            Address (uni) · Data (bi) · Control (bi). Width affects addressable
+            memory and performance.
+          </p>
+        </div>
+        <div class="summary-tile">
+          <h4>FDE Cycle</h4>
+          <p>
+            Fetch (PC→MAR→MDR→CIR) · Increment PC · Decode · Execute. Repeats
+            endlessly.
+          </p>
+        </div>
+        <div class="summary-tile">
+          <h4>Performance</h4>
+          <p>
+            Clock speed · cache · core count · bus width all affect CPU speed.
+          </p>
+        </div>
+        <div class="summary-tile">
+          <h4>Embedded systems</h4>
+          <p>
+            One specific task. Microcontroller / microprocessor / SoC. Not a
+            general computer.
+          </p>
+        </div>
+        <div class="summary-tile">
+          <h4>Input devices</h4>
+          <p>
+            Barcode, QR, camera, keyboard, microphone, mouse, scanner, touch
+            screen.
+          </p>
+        </div>
+        <div class="summary-tile">
+          <h4>Output devices</h4>
+          <p>
+            Inkjet, laser, 3D printer, LCD, OLED, speakers, actuators,
+            projectors.
+          </p>
+        </div>
+        <div class="summary-tile">
+          <h4>Sensors &amp; control</h4>
+          <p>
+            ADC converts analogue → digital. Monitoring = watch only. Control =
+            feedback loop.
+          </p>
+        </div>
+        <div class="summary-tile">
+          <h4>Storage</h4>
+          <p>
+            RAM (volatile) · ROM (non-volatile) · HDD · SSD · Optical · Cloud
+          </p>
+        </div>
+        <div class="summary-tile">
+          <h4>Virtual memory</h4>
+          <p>HDD/SSD as extra RAM. Paging. Thrashing = too much swapping.</p>
+        </div>
+        <div class="summary-tile">
+          <h4>Network hardware</h4>
+          <p>
+            NIC + MAC address. IP address (static / dynamic). IPv4 32-bit; IPv6
+            128-bit.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- GLOSSARY -->
+    <div id="glossary" class="tab-section">
+      <h1 class="section-title">Glossary</h1>
+      <p class="section-sub">Key terms from Chapter 3.</p>
+      <div class="card">
+        <div class="glossary-item">
+          <span class="glossary-term">CPU</span
+          ><span class="glossary-def"
+            >Central Processing Unit — executes program instructions. Contains
+            the CU, ALU, and registers.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">Von Neumann</span
+          ><span class="glossary-def"
+            >Architecture where CPU accesses memory directly and memory stores
+            both programs and data.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">Register</span
+          ><span class="glossary-def"
+            >A tiny, extremely fast memory location inside the CPU used during
+            the FDE cycle.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">FDE Cycle</span
+          ><span class="glossary-def"
+            >Fetch–Decode–Execute — the repeating sequence a CPU follows to
+            process every instruction.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">Cache</span
+          ><span class="glossary-def"
+            >Small, fast memory inside the CPU storing frequently used
+            instructions/data to reduce RAM accesses.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">Embedded system</span
+          ><span class="glossary-def"
+            >Hardware and software designed to perform one specific set of
+            tasks.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">ADC</span
+          ><span class="glossary-def"
+            >Analogue-to-Digital Converter — converts continuous sensor signals
+            into discrete digital values.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">DAC</span
+          ><span class="glossary-def"
+            >Digital-to-Analogue Converter — converts digital values back to
+            analogue signals for output devices.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">RAM</span
+          ><span class="glossary-def"
+            >Random Access Memory — volatile, fast read/write memory for running
+            programs.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">ROM</span
+          ><span class="glossary-def"
+            >Read-Only Memory — non-volatile, permanent storage for the
+            BIOS/bootstrap loader.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">Virtual memory</span
+          ><span class="glossary-def"
+            >A portion of HDD/SSD used as extra RAM when physical RAM is full,
+            managed by paging.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">MAC address</span
+          ><span class="glossary-def"
+            >A unique 48-bit hardware identifier for a NIC, written as 6 hex
+            pairs.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">IP address</span
+          ><span class="glossary-def"
+            >A numerical network label. IPv4 = 32-bit; IPv6 = 128-bit.</span
+          >
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">NIC</span
+          ><span class="glossary-def"
+            >Network Interface Card — hardware that connects a device to a
+            network.</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div id="quiz" class="tab-section">
+      <h1 class="section-title">Quiz</h1>
+      <p class="section-sub">Ten questions on Chapter 3.</p>
+      <div id="q-container"></div>
+      <div class="quiz-actions">
+        <button class="btn" id="submit-btn" onclick="submitQuiz()" disabled>
+          Submit Answers
+        </button>
+        <button class="btn secondary" onclick="resetQuiz()">Reset</button>
+      </div>
+      <div id="quiz-results" class="quiz-results"></div>
+    </div>
+
+    <footer class="chapter-footer">
+      <span class="brand">Cambridge IGCSE Computer Science · Chapter 03</span>
+      <div class="nav-links">
+        <a href="chapter2.html">← Chapter 02</a>
+        <a href="index.html">Home</a>
+        <a href="chapter4.html">Chapter 04 →</a>
+      </div>
+    </footer>
+
+    <script>
+      function showTab(id, btn) {
+        document
+          .querySelectorAll(".tab-section")
+          .forEach((s) => s.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-nav button")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        if (btn) btn.classList.add("active");
+        window.scrollTo({
+          top: document.querySelector(".tab-nav").offsetTop - 48,
+          behavior: "smooth",
+        });
+      }
+      const questions = [
+        {
+          q: "Which register stores the address of the NEXT instruction to be fetched?",
+          opts: ["MAR", "MDR", "CIR", "PC"],
+          ans: 3,
+        },
+        {
+          q: "What does the ALU do?",
+          opts: [
+            "Manages CPU activity",
+            "Performs calculations and logic",
+            "Stores current instruction",
+            "Transfers data to memory",
+          ],
+          ans: 1,
+        },
+        {
+          q: "After copying PC to MAR, what happens next in the FDE cycle?",
+          opts: [
+            "PC is incremented",
+            "Instruction is decoded",
+            "Instruction is fetched from memory into MDR",
+            "ACC is cleared",
+          ],
+          ans: 2,
+        },
+        {
+          q: "Which RAM type is used for CPU cache because of its speed?",
+          opts: ["DRAM", "VRAM", "SRAM", "Flash"],
+          ans: 2,
+        },
+        {
+          q: "ROM is non-volatile. This means:",
+          opts: [
+            "It reads very quickly",
+            "It retains data without power",
+            "It can be written by the user",
+            "It is inside the CPU",
+          ],
+          ans: 1,
+        },
+        {
+          q: "What causes disk thrashing?",
+          opts: [
+            "Too many browser tabs",
+            "System constantly swapping between RAM and virtual memory",
+            "A virus overwriting the drive",
+            "CPU clock speed too low",
+          ],
+          ans: 1,
+        },
+        {
+          q: "A MAC address is how many bits?",
+          opts: ["16", "32", "48", "64"],
+          ans: 2,
+        },
+        {
+          q: "An embedded system is best described as:",
+          opts: [
+            "Any computer running a GUI",
+            "Hardware and software designed for one specific set of tasks",
+            "A computer without an OS",
+            "A system that only uses ROM",
+          ],
+          ans: 1,
+        },
+        {
+          q: "Which storage technology has no moving parts?",
+          opts: ["HDD", "DVD", "Blu-ray", "SSD"],
+          ans: 3,
+        },
+        {
+          q: "Which sensor detects a person entering a room by their body heat?",
+          opts: [
+            "Temperature sensor",
+            "Passive infrared sensor",
+            "Pressure sensor",
+            "Flow rate sensor",
+          ],
+          ans: 1,
+        },
+      ];
+      let answers = Array(questions.length).fill(null);
+      function renderQuiz() {
+        const c = document.getElementById("q-container");
+        c.innerHTML = "";
+        questions.forEach((q, i) => {
+          const d = document.createElement("div");
+          d.className = "quiz-card";
+          d.innerHTML = `<div class="q-num">Q${String(i + 1).padStart(2, "0")} / ${questions.length}</div><div class="q-text">${q.q}</div><div class="quiz-options">${q.opts.map((o, j) => `<button class="quiz-opt${answers[i] === j ? " selected" : ""}" onclick="selAns(${i},${j},this)">${o}</button>`).join("")}</div>`;
+          c.appendChild(d);
+        });
+        updateBtn();
+      }
+      function selAns(qi, oi, el) {
+        answers[qi] = oi;
+        el.closest(".quiz-options")
+          .querySelectorAll(".quiz-opt")
+          .forEach((b, j) => b.classList.toggle("selected", j === oi));
+        updateBtn();
+      }
+      function updateBtn() {
+        const n = answers.filter((a) => a !== null).length;
+        const btn = document.getElementById("submit-btn");
+        btn.disabled = n < questions.length;
+        btn.textContent =
+          n < questions.length
+            ? `Submit (${n}/${questions.length})`
+            : "Submit Answers";
+      }
+      function submitQuiz() {
+        let score = 0;
+        answers.forEach((a, i) => {
+          if (a === questions[i].ans) score++;
+        });
+        const pct = Math.round((score / questions.length) * 100);
+        const res = document.getElementById("quiz-results");
+        let html = `<h3>Score: <span class="score-badge">${score} / ${questions.length} — ${pct}%</span></h3><p style="margin:.5rem 0 1.2rem;font-size:.82rem;color:var(--text-3);">Review below.</p>`;
+        questions.forEach((q, i) => {
+          const ok = answers[i] === q.ans;
+          html += `<div class="result-item ${ok ? "correct-res" : "wrong-res"}"><div class="result-item-header">${ok ? "✓" : "✗"} Q${i + 1}. ${q.q}</div>${!ok ? `<p class="your-ans">Your answer: ${q.opts[answers[i]]}</p>` : ""}<p class="correct-ans">Correct: ${q.opts[q.ans]}</p></div>`;
+        });
+        html += `<button class="btn secondary" style="margin-top:1.2rem;" onclick="resetQuiz()">Try Again</button>`;
+        res.innerHTML = html;
+        res.classList.add("show");
+      }
+      function resetQuiz() {
+        answers = Array(questions.length).fill(null);
+        document.getElementById("quiz-results").classList.remove("show");
+        renderQuiz();
+      }
+      renderQuiz();
+    </script>
+  </body>
+</html>

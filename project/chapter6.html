@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 6 — Automated &amp; Emerging Technologies | Cambridge IGCSE Computer Science</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root { --accent: #2dd4bf; }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="logo">Cambridge CS</div>
+  <a href="index.html"><span class="ch-num">—</span> Home</a>
+  <a href="chapter1.html"><span class="ch-num">01</span> Data Representation</a>
+  <a href="chapter2.html"><span class="ch-num">02</span> Data Transmission</a>
+  <a href="chapter3.html"><span class="ch-num">03</span> Hardware</a>
+  <a href="chapter4.html"><span class="ch-num">04</span> Software</a>
+  <a href="chapter5.html"><span class="ch-num">05</span> Cyber Threats</a>
+  <a href="chapter6.html" class="active"><span class="ch-num">06</span> Emerging Tech</a>
+</nav>
+
+<header class="ch-header">
+  <span class="chapter-tag">Cambridge IGCSE Computer Science · Chapter 06</span>
+  <h1>Automated &amp;<br><em>Emerging Technologies</em></h1>
+  <p class="subtitle">Sensors, microprocessors and actuators in automated systems, robotics, AI, expert systems and machine learning.</p>
+  <div class="pills">
+    <span class="pill">Automated Systems</span>
+    <span class="pill">Robotics</span>
+    <span class="pill">AI</span>
+    <span class="pill">Expert Systems</span>
+    <span class="pill">Machine Learning</span>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="active" onclick="showTab('automated',this)">Automated Systems</button>
+  <button onclick="showTab('examples',this)">System Examples</button>
+  <button onclick="showTab('robotics',this)">Robotics</button>
+  <button onclick="showTab('robot-uses',this)">Robot Uses</button>
+  <button onclick="showTab('ai',this)">AI</button>
+  <button onclick="showTab('expert',this)">Expert Systems</button>
+  <button onclick="showTab('ml',this)">Machine Learning</button>
+  <button onclick="showTab('summary',this)">Summary</button>
+  <button onclick="showTab('glossary',this)">Glossary</button>
+  <button onclick="showTab('quiz',this)">Quiz</button>
+</nav>
+
+<!-- AUTOMATED SYSTEMS -->
+<div id="automated" class="tab-section active">
+  <h1 class="section-title">6.1 Automated Systems</h1>
+  <p class="section-sub">How sensors, microprocessors and actuators work together automatically.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>What is an Automated System?</h2>
+    <p>An <span class="kw">automated system</span> combines software and hardware to operate <strong>without human intervention</strong>. Most include a human supervisor for monitoring and override.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Three Key Components</h2>
+    <div class="role-table">
+      <div class="role-row"><div class="role-label">Sensors</div><div class="role-content">Read physical properties (temperature, pressure, light…). Analogue data converted via ADC before reaching the microprocessor.</div></div>
+      <div class="role-row"><div class="role-label">Microprocessor</div><div class="role-content">Receives sensor data, compares against stored values, decides what action to take.</div></div>
+      <div class="role-row"><div class="role-label">Actuators</div><div class="role-content">Motors, valves, pumps and pistons that carry out the physical action on receipt of microprocessor signals.</div></div>
+    </div>
+    <h3>The Loop</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p><strong>Sense:</strong> sensors detect changes and send data (ADC converts if analogue).</p></div>
+      <div class="step"><div class="step-num">2</div><p><strong>Process:</strong> microprocessor compares to stored values and decides action.</p></div>
+      <div class="step"><div class="step-num">3</div><p><strong>Act:</strong> signals sent to actuators.</p></div>
+      <div class="step"><div class="step-num">4</div><p><strong>Repeat:</strong> continuously without human intervention.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Generic Advantages &amp; Disadvantages</h2>
+    <div class="compare-grid">
+      <div class="compare-col pro"><h4>Advantages</h4><ul><li>Faster response than humans</li><li>Safer in hazardous environments</li><li>Runs at optimum conditions</li><li>Cheaper long-term</li><li>Higher productivity</li><li>Operates 24/7</li></ul></div>
+      <div class="compare-col con"><h4>Disadvantages</h4><ul><li>Expensive to set up</li><li>Needs considerable testing</li><li>Unforeseen situations can be dangerous</li><li>Vulnerable to cyberattacks</li><li>Expensive maintenance</li><li>May cause unemployment</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- EXAMPLES -->
+<div id="examples" class="tab-section">
+  <h1 class="section-title">Automated System Examples</h1>
+  <p class="section-sub">Real-world applications from the syllabus.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Industrial</h2>
+    <div class="example-block"><h4>Nuclear Power Station</h4><p>A Distributed Control System (DCS) monitors sensors for temperature, pressure, flow and radiation. If readings fall outside safe limits, actuators operate pumps, valves or trigger emergency shutdown. Human supervisor can override at any time.</p></div>
+    <div class="example-block"><h4>Paracetamol Manufacture</h4><p>Two simultaneous processes — synthesis and tablet pressing. Sensors feed data to central computer; actuators control pumps, heaters, stirrers and pistons.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Transport</h2>
+    <div class="example-block"><h4>Self-Parking Cars</h4><p>Sensors and cameras measure parking space as the driver passes. Computer alerts driver when suitable space found. Actuators then control steering, brakes and throttle.</p></div>
+    <div class="example-block"><h4>Adaptive Cruise Control</h4><p>Lasers measure distance to vehicle ahead. Too close → actuators brake/reduce throttle. Safe distance and slow → increase throttle. Driver sets target speed.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Agriculture &amp; Science</h2>
+    <div class="example-block"><h4>Irrigation System</h4><p>Ultrasonic level sensors send data every 10 minutes. Controller cross-references weather station data; activates water pumps via actuators. Remote supervisor can override.</p></div>
+    <div class="example-block"><h4>Automated Weather Station</h4><p>Thermometer, anemometer (wind), hygrometer (humidity), barometer (pressure), level sensor (rainfall), light sensor (daylight). Data stored automatically to a central database.</p></div>
+    <div class="example-block"><h4>Pharmaceutical Lab</h4><p>Level sensors and colorimeter monitor experiment. Microprocessor controls a tap via actuator — multiple experiments run simultaneously with one supervisor.</p></div>
+  </div>
+</div>
+
+<!-- ROBOTICS -->
+<div id="robotics" class="tab-section">
+  <h1 class="section-title">6.2 Robotics</h1>
+  <p class="section-sub">Design, construction and operation of robots.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Three Characteristics of a Robot</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p><strong>Sense surroundings</strong> — sensors detect the environment; data sent to microprocessor.</p></div>
+      <div class="step"><div class="step-num">2</div><p><strong>Degree of movement</strong> — wheels, cogs, pistons, gears, motors. Interchangeable <span class="kw">end effectors</span> (welding torch, gripper, spray gun).</p></div>
+      <div class="step"><div class="step-num">3</div><p><strong>Programmable controller</strong> — determines actions. Can be reprogrammed for different tasks.</p></div>
+    </div>
+    <div class="callout warn"><span class="ico">—</span><p>Many robots <strong>do not have AI</strong> — they perform fixed repetitive tasks. Chatbots and web crawlers are software programs, not robots — they don't meet all three characteristics.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Independent vs Dependent</h2>
+    <div class="compare-grid">
+      <div class="compare-col pro"><h4>Independent (Autonomous)</h4><ul><li>No direct human control</li><li>Fully replace human activity</li><li>Examples: autonomous cars, drones, floor sweepers</li></ul></div>
+      <div class="compare-col neutral"><h4>Dependent</h4><ul><li>Human interfaces directly</li><li>Supplements human activity</li><li>Examples: car assembly where robots and humans work together</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- ROBOT USES -->
+<div id="robot-uses" class="tab-section">
+  <h1 class="section-title">Uses of Robots</h1>
+  <p class="section-sub">Industry, transport, agriculture, medicine, domestic, entertainment.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Industry</h2>
+    <p>Programmed by: (1) pre-written instruction sequences, or (2) human demonstrating the task — movements recorded and replayed.</p>
+    <div class="compare-grid">
+      <div class="compare-col pro"><h4>Advantages</h4><ul><li>Work in hazardous conditions</li><li>Operate 24/7</li><li>More consistent output</li><li>Better at repetitive tasks</li><li>Lower operating costs long-term</li></ul></div>
+      <div class="compare-col con"><h4>Disadvantages</h4><ul><li>Struggle with non-standard tasks</li><li>Causes unemployment</li><li>Risk of deskilling workforce</li><li>High initial cost</li></ul></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Autonomous Vehicles</h2>
+    <p>Cameras, radar, ultrasonic sensors, microprocessors and actuators. Radar/ultrasonic build a 3D image in poor visibility.</p>
+    <div class="compare-grid">
+      <div class="compare-col pro"><h4>Advantages</h4><ul><li>Safer — removes human error</li><li>Better for environment</li><li>Reduced congestion</li><li>~100% lane capacity increase</li></ul></div>
+      <div class="compare-col con"><h4>Disadvantages</h4><ul><li>Very expensive</li><li>Risk of hacking</li><li>Sensors fail in blizzards</li><li>Driver reluctance</li><li>Taxi-driver unemployment</li></ul></div>
+    </div>
+    <div class="callout info"><span class="ico">—</span><p><strong>Autonomous trains</strong> use LiDAR (laser-based 3D imaging), proximity sensors on doors, infrared cameras and GPS positioning.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Agriculture, Medicine &amp; Domestic</h2>
+    <ul>
+      <li><strong>Agriculture:</strong> harvesting (vegebot), weed control, phenotyping (spectral/thermal sensors), seed-planting drones, autonomous tractors</li>
+      <li><strong>Medicine:</strong> robotic surgery (high precision), prosthetic limbs, automated drug dispensing</li>
+      <li><strong>Domestic:</strong> floor sweepers, lawn mowers, window cleaners, pool cleaners</li>
+      <li><strong>Entertainment:</strong> friend robots, theme park animatronics, filming drones</li>
+    </ul>
+  </div>
+</div>
+
+<!-- AI -->
+<div id="ai" class="tab-section">
+  <h1 class="section-title">6.3 Artificial Intelligence</h1>
+  <p class="section-sub">Simulating intelligent human behaviour in computers.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>What is AI?</h2>
+    <p><span class="kw">Artificial Intelligence</span> is the simulation of <strong>intelligent human behaviour</strong> by a computer — replicating cognitive functions: reasoning, learning, adapting, pattern recognition.</p>
+    <div class="callout key"><span class="ico">—</span><p>AI is a collection of rules and data + the ability to reason, learn and adapt to external stimuli.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Three Categories</h2>
+    <div class="role-table">
+      <div class="role-row"><div class="role-label">Narrow AI</div><div class="role-content">Superior to humans at <strong>one specific task</strong>. e.g. chess engine beating world champions.</div></div>
+      <div class="role-row"><div class="role-label">General AI</div><div class="role-content">Performs <strong>similarly</strong> to humans at a specific task.</div></div>
+      <div class="role-row"><div class="role-label">Strong AI</div><div class="role-content">Superior to humans across <strong>many tasks</strong>.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Examples in Use</h2>
+    <ul>
+      <li><strong>Smart assistants</strong> — Alexa, Siri, Google Now: recognise voice commands, learn over time</li>
+      <li><strong>Chatbots</strong> — replicate human conversation patterns</li>
+      <li><strong>Autonomous cars</strong> — real-time decision making</li>
+      <li><strong>Facial expression recognition</strong> — identifies emotional states from landmark positions</li>
+      <li><strong>News generation</strong> — automated articles from live data feeds</li>
+    </ul>
+    <div class="callout info"><span class="ico">—</span><p>The <strong>Turing Test</strong> measures whether a machine's responses are indistinguishable from a human's.</p></div>
+  </div>
+</div>
+
+<!-- EXPERT SYSTEMS -->
+<div id="expert" class="tab-section">
+  <h1 class="section-title">6.4 Expert Systems</h1>
+  <p class="section-sub">AI that mimics the knowledge and reasoning of human experts.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Components</h2>
+    <div class="role-table">
+      <div class="role-row"><div class="role-label">User Interface</div><div class="role-content">Dialogue-based interaction; typically Yes/No questions based on previous answers.</div></div>
+      <div class="role-row"><div class="role-label">Inference Engine</div><div class="role-content">Main processing element. Searches knowledge base, applies inference rules, draws conclusions. The "problem-solving" core.</div></div>
+      <div class="role-row"><div class="role-label">Knowledge Base</div><div class="role-content">Repository of facts about the domain — objects and their attributes.</div></div>
+      <div class="role-row"><div class="role-label">Rules Base</div><div class="role-content">IF-THEN inference rules used by the engine to draw conclusions.</div></div>
+      <div class="role-row"><div class="role-label">Explanation System</div><div class="role-content">Tells users the reasoning behind conclusions so they can judge validity.</div></div>
+    </div>
+    <div class="example-block"><h4>Example Inference Rule</h4><p style="font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--text);">IF continent = "South America" AND language = "Portuguese"<br>THEN country = "Brazil"</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Applications &amp; Trade-offs</h2>
+    <p>Used in: oil/mineral prospecting, medical diagnosis, equipment fault diagnostics, tax calculations, chess strategy, logistics routing.</p>
+    <div class="compare-grid">
+      <div class="compare-col pro"><h4>Advantages</h4><ul><li>High expertise and accuracy</li><li>Stores vast amounts of facts</li><li>Very fast responses</li><li>Unbiased analysis</li><li>Indicates probability of correctness</li></ul></div>
+      <div class="compare-col con"><h4>Disadvantages</h4><ul><li>Requires considerable user training</li><li>High setup and maintenance costs</li><li>"Cold" responses (problematic in medicine)</li><li>Only as good as data entered</li><li>Users may assume infallibility</li></ul></div>
+    </div>
+  </div>
+</div>
+
+<!-- MACHINE LEARNING -->
+<div id="ml" class="tab-section">
+  <h1 class="section-title">6.5 Machine Learning</h1>
+  <p class="section-sub">Algorithms that train on data to make predictions without being explicitly programmed.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>What is Machine Learning?</h2>
+    <p><span class="kw">Machine learning</span> is a sub-set of AI where algorithms are <strong>trained</strong> on data and can make predictions or decisions on new data — without being specifically programmed for each new scenario.</p>
+    <div class="compare-grid">
+      <div class="compare-col neutral"><h4>AI (broader)</h4><ul><li>Simulates human intelligence</li><li>Aims to think like humans</li><li>Includes machine learning</li></ul></div>
+      <div class="compare-col neutral"><h4>Machine Learning (sub-set)</h4><ul><li>Trains algorithms on data</li><li>Makes decisions without explicit programming</li><li>Learns through data acquisition</li></ul></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Model Development Process</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p><strong>Data collection</strong> — surveys, web scraping, transaction records.</p></div>
+      <div class="step"><div class="step-num">2</div><p><strong>Data cleaning</strong> — remove redundant or irrelevant data.</p></div>
+      <div class="step"><div class="step-num">3</div><p><strong>Exploration</strong> — examine cleaned data for patterns.</p></div>
+      <div class="step"><div class="step-num">4</div><p><strong>Build model</strong> — train algorithm on real example data.</p></div>
+      <div class="step"><div class="step-num">5</div><p><strong>Evaluate</strong> — test with known outcomes; adjust as needed.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Examples</h2>
+    <div class="example-block"><h4>Spam Email Detection</h4><p>Algorithm trained on known spam. Learns patterns: certain phrases, sender behaviour, header anomalies. Applied to new incoming emails to classify as spam or not.</p></div>
+    <div class="example-block"><h4>Recommendation Systems</h4><p><strong>Collaboration filtering</strong>: if Customer A bought X, Y, Z and Customer B bought X and Y — recommend Z to Customer B. Powers Amazon, Netflix, Spotify.</p></div>
+    <div class="example-block"><h4>Fraud Detection</h4><p>Trained on normal purchasing behaviour. Unusual activity (large purchase in foreign country) → fraud flagged or blocked.</p></div>
+    <div class="example-block"><h4>Search Engines</h4><p>Learn from user behaviour. Answer found on page 1 → success. User goes to page 3 → failure. Rankings improve over time.</p></div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div id="summary" class="tab-section">
+  <h1 class="section-title">Chapter 6 — Summary</h1>
+  <p class="section-sub">All key emerging technology concepts at a glance.</p>
+  <div class="summary-grid">
+    <div class="summary-tile"><h4>Automated system</h4><p>Sensor → ADC → Microprocessor → Actuator. Runs without human intervention.</p></div>
+    <div class="summary-tile"><h4>Control loop</h4><p>Sense → process → act → repeat. Actuator output feeds back into next sensor reading.</p></div>
+    <div class="summary-tile"><h4>Robot characteristics</h4><p>Must: (1) sense surroundings, (2) have degree of movement, (3) be programmable.</p></div>
+    <div class="summary-tile"><h4>Robot types</h4><p>Independent (autonomous, replace humans) vs Dependent (supplement, human oversight).</p></div>
+    <div class="summary-tile"><h4>Autonomous vehicles</h4><p>Cameras + radar + ultrasonic + GPS + microprocessors + actuators. Safer but expensive; sensors fail in extreme conditions.</p></div>
+    <div class="summary-tile"><h4>Agricultural robots</h4><p>Harvesting, weed control, phenotyping, seed-planting drones, autonomous tractors.</p></div>
+    <div class="summary-tile"><h4>AI</h4><p>Simulates cognitive functions — reasoning, learning, adapting, pattern recognition. Narrow / General / Strong.</p></div>
+    <div class="summary-tile"><h4>Expert systems</h4><p>Knowledge base + rules base + inference engine + user interface + explanation system.</p></div>
+    <div class="summary-tile"><h4>Machine learning</h4><p>Sub-set of AI. Trains on data → predicts on new data. Spam, recommendations, fraud, search.</p></div>
+  </div>
+</div>
+
+<!-- GLOSSARY -->
+<div id="glossary" class="tab-section">
+  <h1 class="section-title">Glossary</h1>
+  <p class="section-sub">Key terms from Chapter 6.</p>
+  <div class="card">
+    <div class="glossary-item"><span class="glossary-term">Automated system</span><span class="glossary-def">Hardware and software (sensors, microprocessors, actuators) operating automatically without human intervention.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Actuator</span><span class="glossary-def">An output device (motor, valve, pump) converting microprocessor signals into physical actions.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Feedback loop</span><span class="glossary-def">In a control system, actuator output affects the next sensor reading, enabling continuous automatic adjustment.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Robotics</span><span class="glossary-def">The branch of computer science dealing with the design, construction and operation of robots.</span></div>
+    <div class="glossary-item"><span class="glossary-term">End effector</span><span class="glossary-def">The interchangeable tool at the end of a robot arm (welding torch, spray gun, gripper).</span></div>
+    <div class="glossary-item"><span class="glossary-term">LiDAR</span><span class="glossary-def">Light Detection and Ranging — laser pulses building a 3D image of surroundings. Used in autonomous trains and vehicles.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Artificial Intelligence</span><span class="glossary-def">Simulation of intelligent human behaviour — reasoning, learning, adapting — by a computer system.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Turing Test</span><span class="glossary-def">A test of whether a machine's responses are indistinguishable from a human's.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Expert system</span><span class="glossary-def">AI that mimics human expert knowledge to solve problems in a specific domain.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Inference engine</span><span class="glossary-def">The processing component of an expert system that applies rules to the knowledge base to draw conclusions.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Knowledge base</span><span class="glossary-def">Repository of domain facts used by an expert system's inference engine.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Rules base</span><span class="glossary-def">A set of IF-THEN inference rules used to draw conclusions in an expert system.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Machine learning</span><span class="glossary-def">A sub-set of AI where algorithms trained on data make predictions on new data without explicit programming.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Collaboration filtering</span><span class="glossary-def">ML technique recommending items based on behaviour of users with similar profiles.</span></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="tab-section">
+  <h1 class="section-title">Quiz</h1>
+  <p class="section-sub">Ten questions on Chapter 6.</p>
+  <div id="q-container"></div>
+  <div class="quiz-actions">
+    <button class="btn" id="submit-btn" onclick="submitQuiz()" disabled>Submit Answers</button>
+    <button class="btn secondary" onclick="resetQuiz()">Reset</button>
+  </div>
+  <div id="quiz-results" class="quiz-results"></div>
+</div>
+
+<footer class="chapter-footer">
+  <span class="brand">Cambridge IGCSE Computer Science · Chapter 06</span>
+  <div class="nav-links">
+    <a href="chapter5.html">← Chapter 05</a>
+    <a href="index.html">Home</a>
+  </div>
+</footer>
+
+<script>
+function showTab(id,btn){document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.tab-nav button').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');if(btn)btn.classList.add('active');window.scrollTo({top:document.querySelector('.tab-nav').offsetTop-48,behavior:'smooth'});}
+const questions=[
+  {q:"Three key components of every automated system:",opts:["CPU, RAM, hard drive","Sensors, microprocessors, actuators","Input, process, output devices","ADC, DAC, controller"],ans:1},
+  {q:"What converts analogue sensor data to digital?",opts:["DAC","Bus","ADC","Firmware"],ans:2},
+  {q:"To be classified as a robot, a machine must:",opts:["Have Wi-Fi, camera and GPS","Sense surroundings, have movement and be programmable","Have battery, wheels and AI","Have keyboard, screen and speaker"],ans:1},
+  {q:"Autonomous trains use which technology to build 3D images?",opts:["Radar","Ultrasonic","LiDAR","Infrared cameras"],ans:2},
+  {q:"AI superior to humans at ONE specific task is called:",opts:["Strong AI","General AI","Narrow AI","Deep learning"],ans:2},
+  {q:"Role of the INFERENCE ENGINE in an expert system:",opts:["Stores domain facts","Provides user interface","Searches knowledge base and applies rules to draw conclusions","Displays reasoning to user"],ans:2},
+  {q:"Machine learning is best described as:",opts:["A programming language for robots","Sub-set of AI where algorithms train on data to make decisions without explicit programming","Software controlling factory machines","Hardware enabling robot movement"],ans:1},
+  {q:"Which ML technique recommends based on similar users' behaviour?",opts:["Neural network","Brute-force","Collaboration filtering","Decision tree"],ans:2},
+  {q:"A greenhouse heating system adjusting temperature from sensor readings is an example of:",opts:["Monitoring","Manual control","Control with a feedback loop","Data logging"],ans:2},
+  {q:"Why does doubling CPU cores NOT double performance?",opts:["Cores run at half speed","Extra cores use more memory","Cores must communicate, adding overhead","Cores share one bus"],ans:2}
+];
+let answers=Array(questions.length).fill(null);
+function renderQuiz(){const c=document.getElementById('q-container');c.innerHTML='';questions.forEach((q,i)=>{const d=document.createElement('div');d.className='quiz-card';d.innerHTML=`<div class="q-num">Q${String(i+1).padStart(2,'0')} / ${questions.length}</div><div class="q-text">${q.q}</div><div class="quiz-options">${q.opts.map((o,j)=>`<button class="quiz-opt${answers[i]===j?' selected':''}" onclick="selAns(${i},${j},this)">${o}</button>`).join('')}</div>`;c.appendChild(d);});updateBtn();}
+function selAns(qi,oi,el){answers[qi]=oi;el.closest('.quiz-options').querySelectorAll('.quiz-opt').forEach((b,j)=>b.classList.toggle('selected',j===oi));updateBtn();}
+function updateBtn(){const n=answers.filter(a=>a!==null).length;const btn=document.getElementById('submit-btn');btn.disabled=n<questions.length;btn.textContent=n<questions.length?`Submit (${n}/${questions.length})`:'Submit Answers';}
+function submitQuiz(){let score=0;answers.forEach((a,i)=>{if(a===questions[i].ans)score++;});const pct=Math.round(score/questions.length*100);const res=document.getElementById('quiz-results');let html=`<h3>Score: <span class="score-badge">${score} / ${questions.length} — ${pct}%</span></h3><p style="margin:.5rem 0 1.2rem;font-size:.82rem;color:var(--text-3);">Review below.</p>`;questions.forEach((q,i)=>{const ok=answers[i]===q.ans;html+=`<div class="result-item ${ok?'correct-res':'wrong-res'}"><div class="result-item-header">${ok?'✓':'✗'} Q${i+1}. ${q.q}</div>${!ok?`<p class="your-ans">Your answer: ${q.opts[answers[i]]}</p>`:''}<p class="correct-ans">Correct: ${q.opts[q.ans]}</p></div>`;});html+=`<button class="btn secondary" style="margin-top:1.2rem;" onclick="resetQuiz()">Try Again</button>`;res.innerHTML=html;res.classList.add('show');}
+function resetQuiz(){answers=Array(questions.length).fill(null);document.getElementById('quiz-results').classList.remove('show');renderQuiz();}
+renderQuiz();
+</script>
+</body>
+</html>

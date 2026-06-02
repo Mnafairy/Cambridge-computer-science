@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 2 — Data Transmission | Cambridge IGCSE Computer Science</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root { --accent: #60a5fa; }
+  .crypto-flow { display:flex; align-items:center; justify-content:center; gap:.5rem; margin:1rem 0; flex-wrap:wrap; font-family:'IBM Plex Mono',monospace; }
+  .crypto-box { background:var(--surface-2); border:1px solid var(--border); padding:.5rem .85rem; border-radius:var(--radius); font-size:.75rem; font-weight:500; color:var(--text-2); }
+  .crypto-box.cipher { background:var(--bg-3); color:var(--text); }
+  .crypto-box.pub  { border-color:var(--clr-ok); color:#7dcca0; }
+  .crypto-box.priv { border-color:var(--clr-danger); color:#cc7d7d; }
+  .crypto-arrow { font-size:1rem; color:var(--text-3); }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="logo">Cambridge CS</div>
+  <a href="index.html"><span class="ch-num">—</span> Home</a>
+  <a href="chapter1.html"><span class="ch-num">01</span> Data Representation</a>
+  <a href="chapter2.html" class="active"><span class="ch-num">02</span> Data Transmission</a>
+  <a href="chapter3.html"><span class="ch-num">03</span> Hardware</a>
+  <a href="chapter4.html"><span class="ch-num">04</span> Software</a>
+  <a href="chapter5.html"><span class="ch-num">05</span> Cyber Threats</a>
+  <a href="chapter6.html"><span class="ch-num">06</span> Emerging Tech</a>
+</nav>
+
+<header class="ch-header">
+  <span class="chapter-tag">Cambridge IGCSE Computer Science · Chapter 02</span>
+  <h1>Data<br><em>Transmission</em></h1>
+  <p class="subtitle">How data moves between devices — packets, switching, transmission modes, error detection and encryption.</p>
+  <div class="pills">
+    <span class="pill">Packets &amp; Switching</span>
+    <span class="pill">Serial / Parallel</span>
+    <span class="pill">USB</span>
+    <span class="pill">Error Detection</span>
+    <span class="pill">Encryption</span>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="active" onclick="showTab('packets',this)">Packets</button>
+  <button onclick="showTab('transmission',this)">Transmission Types</button>
+  <button onclick="showTab('usb',this)">USB</button>
+  <button onclick="showTab('errors',this)">Error Detection</button>
+  <button onclick="showTab('encryption',this)">Encryption</button>
+  <button onclick="showTab('summary',this)">Summary</button>
+  <button onclick="showTab('glossary',this)">Glossary</button>
+  <button onclick="showTab('quiz',this)">Quiz</button>
+</nav>
+
+<!-- PACKETS -->
+<div id="packets" class="tab-section active">
+  <h1 class="section-title">2.1 Data Packets &amp; Packet Switching</h1>
+  <p class="section-sub">How large messages are broken into small independent chunks and routed across networks.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Data Packets</h2>
+    <p>When data travels long distances it is broken into <span class="kw">data packets</span> — typically ~64 KiB each. Each packet can take a different route and is reassembled at the destination.</p>
+    <div class="packet-diagram">
+      <div class="pkt-header">HEADER<small>IPs + sequence + size</small></div>
+      <div class="pkt-payload">PAYLOAD<small>actual data (~64 KiB)</small></div>
+      <div class="pkt-trailer">TRAILER<small>end marker + CRC</small></div>
+    </div>
+    <h3>Header contains</h3>
+    <ul>
+      <li>IP address of sender and receiver</li>
+      <li>Sequence number — for correct reassembly</li>
+      <li>Packet size in bytes</li>
+    </ul>
+    <h3>Trailer contains</h3>
+    <ul>
+      <li>End-of-packet marker</li>
+      <li><span class="kw">CRC (Cyclic Redundancy Check)</span> — error-checking value</li>
+    </ul>
+    <div class="compare-grid">
+      <div class="compare-col pro">
+        <h4>Benefits</h4>
+        <ul><li>Each packet takes a different route</li><li>Only failed packet re-sent</li><li>No line permanently tied up</li><li>High transmission rates</li></ul>
+      </div>
+      <div class="compare-col con">
+        <h4>Drawbacks</h4>
+        <ul><li>Packets may arrive out of order</li><li>Packets can be lost</li><li>Delay during reassembly</li><li>Issues with real-time streams</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Packet Switching</h2>
+    <p>Each packet travels independently through a network of <span class="kw">routers</span>. Each router reads the destination IP and decides the best next hop based on current queue lengths.</p>
+    <div class="callout warn"><span class="ico">—</span><p><strong>Hop count:</strong> To prevent packets looping forever, each packet has a hop counter decremented at every router. When it reaches zero the packet is discarded and re-requested.</p></div>
+  </div>
+</div>
+
+<!-- TRANSMISSION TYPES -->
+<div id="transmission" class="tab-section">
+  <h1 class="section-title">2.1 Transmission Types</h1>
+  <p class="section-sub">Direction of data flow and method of sending bits.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Simplex, Half-duplex &amp; Full-duplex</h2>
+    <div class="modes">
+      <div class="mode"><h5>Simplex</h5><div class="arrows">A → B</div><p>One direction only.</p><small>e.g. computer → printer</small></div>
+      <div class="mode"><h5>Half-duplex</h5><div class="arrows">A ⇄ B</div><p>Both directions, not simultaneously.</p><small>e.g. walkie-talkie</small></div>
+      <div class="mode"><h5>Full-duplex</h5><div class="arrows">A ⇌ B</div><p>Both directions at once.</p><small>e.g. phone call, broadband</small></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Serial vs Parallel</h2>
+    <h3>Serial — one bit at a time, one wire</h3>
+    <div class="bits" style="margin:.5rem 0;">
+      <div class="bit">1</div><div class="bit">0</div><div class="bit">0</div><div class="bit">1</div>
+      <div class="bit">1</div><div class="bit">0</div><div class="bit">1</div><div class="bit">1</div>
+    </div>
+    <h3>Parallel — multiple bits, multiple wires simultaneously</h3>
+    <table class="styled-table" style="margin-top:.8rem;">
+      <thead><tr><th>Serial</th><th>Parallel</th></tr></thead>
+      <tbody>
+        <tr><td>Less interference (fewer wires)</td><td>Faster rate</td></tr>
+        <tr><td>Reliable over long distances</td><td>Best over short distances</td></tr>
+        <tr><td>No skewing risk</td><td>Risk of <strong>skewing</strong> (bits arrive out of sync)</td></tr>
+        <tr><td>Used in USB, telephone lines</td><td>Used inside circuit boards</td></tr>
+        <tr><td>Cheaper</td><td>More expensive</td></tr>
+      </tbody>
+    </table>
+    <div class="callout key"><span class="ico">—</span><p><strong>Skewing:</strong> Over long distances, bits on separate wires arrive at slightly different times — out of sync — corrupting the data.</p></div>
+  </div>
+</div>
+
+<!-- USB -->
+<div id="usb" class="tab-section">
+  <h1 class="section-title">2.1 USB</h1>
+  <p class="section-sub">The universal standard for connecting devices to computers.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Universal Serial Bus</h2>
+    <p>USB is a <span class="kw">serial</span> standard supporting half-duplex and full-duplex. A cable has 4 wires: 2 for power (+5V, ground), 2 for data.</p>
+    <h3>Plug-in sequence</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p>Computer detects voltage change on data wires.</p></div>
+      <div class="step"><div class="step-num">2</div><p>Device recognised; appropriate <strong>device driver</strong> loaded.</p></div>
+      <div class="step"><div class="step-num">3</div><p>If no driver found, user prompted to download one.</p></div>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-col pro">
+        <h4>Benefits</h4>
+        <ul><li>Auto-detected; driver auto-loaded</li><li>Connector fits one way only</li><li>Industry standard</li><li>1.5 Mbps – 5 Gbps supported</li><li>No external power needed</li><li>Built-in error detection</li><li>Backward compatible</li></ul>
+      </div>
+      <div class="compare-col con">
+        <h4>Drawbacks</h4>
+        <ul><li>Max cable length: <strong>5 metres</strong></li><li>Very early USB not supported</li><li>USB V2 capped at 480 Mbps</li></ul>
+      </div>
+    </div>
+    <div class="callout info"><span class="ico">—</span><p><strong>USB-C:</strong> 24-pin symmetrical connector — fits either way. Supports 100 W power, 10 Gbps data, 4K video. Backward compatible via adaptor.</p></div>
+  </div>
+</div>
+
+<!-- ERROR DETECTION -->
+<div id="errors" class="tab-section">
+  <h1 class="section-title">2.2 Error Detection</h1>
+  <p class="section-sub">Five methods for detecting data corruption during transmission.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Why Error Detection?</h2>
+    <p>Data can be corrupted, lost or gained due to electrical interference, skewing, or packet switching problems. Five methods:</p>
+    <div class="callout key"><span class="ico">—</span><p>Parity check · Checksum · Echo check · Check digits · ARQ</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Parity Check</h2>
+    <p>A <span class="kw">parity bit</span> is set to make the total count of 1-bits in a byte either <strong>even</strong> (even parity) or <strong>odd</strong> (odd parity). The receiver recounts and checks for a mismatch.</p>
+    <h3>Even parity — 1101100 → parity bit = 0</h3>
+    <div class="bits"><div class="bit parity">0</div><div class="bit">1</div><div class="bit">1</div><div class="bit">0</div><div class="bit">1</div><div class="bit">1</div><div class="bit">0</div><div class="bit">0</div></div>
+    <h3>Odd parity — same data → parity bit = 1</h3>
+    <div class="bits"><div class="bit parity">1</div><div class="bit">1</div><div class="bit">1</div><div class="bit">0</div><div class="bit">1</div><div class="bit">1</div><div class="bit">0</div><div class="bit">0</div></div>
+    <div class="callout danger"><span class="ico">—</span><p>Limitation: if <strong>two bits flip</strong>, parity may still appear correct. Parity cannot detect even-numbered errors and cannot identify which bit is wrong.</p></div>
+    <div class="callout info"><span class="ico">—</span><p><strong>Parity blocks</strong> add a parity byte at the end of a block. Checking both horizontally (per byte) and vertically (per column) pinpoints the exact corrupted bit.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Checksum</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p>Sender calculates a checksum from the data block using an agreed algorithm.</p></div>
+      <div class="step"><div class="step-num">2</div><p>Checksum is sent <em>with</em> the data.</p></div>
+      <div class="step"><div class="step-num">3</div><p>Receiver recalculates the checksum from received data.</p></div>
+      <div class="step"><div class="step-num">4</div><p>If checksums match → no error. If different → re-send.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Echo Check</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p>Sender transmits data to receiver.</p></div>
+      <div class="step"><div class="step-num">2</div><p>Receiver sends the data straight back.</p></div>
+      <div class="step"><div class="step-num">3</div><p>Sender compares. Mismatch → error → re-send.</p></div>
+    </div>
+    <div class="callout warn"><span class="ico">—</span><p>Flaw: if copies don't match you can't tell whether the error occurred on the way out or back. The simplest but least reliable method.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Check Digits</h2>
+    <p>The <span class="kw">check digit</span> is the final digit of a code, calculated from all others. Used on barcodes, ISBNs and VINs to catch data entry errors.</p>
+    <p>Catches: incorrect digits, transposition (5037 ↔ 5307), omitted/extra digits.</p>
+    <h3>ISBN-13</h3>
+    <p>Sum of odd-position digits + (sum of even-position digits × 3). Divide by 10. If remainder = 0, check digit = 0; otherwise <strong>10 − remainder</strong>.</p>
+    <h3>Modulo-11</h3>
+    <p>Assign weightings (8,7,6,5,4,3,2), multiply, sum, divide by 11. Check digit = 11 − remainder. (Remainder 10 → 'X')</p>
+    <div class="callout tip"><span class="ico">—</span><p>The algorithm will be given in the exam. You need to understand how to <em>apply</em> it to calculate or verify a check digit.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>ARQ — Automatic Repeat Request</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p>Receiver checks data using an error-detection code (CRC).</p></div>
+      <div class="step"><div class="step-num">2</div><p>No error → <strong>positive acknowledgement</strong> sent.</p></div>
+      <div class="step"><div class="step-num">3</div><p>Error detected → <strong>negative acknowledgement</strong>; re-transmission requested.</p></div>
+      <div class="step"><div class="step-num">4</div><p>Sender waits for a <strong>timeout</strong> period. No acknowledgement → auto re-send.</p></div>
+      <div class="step"><div class="step-num">5</div><p>Repeats until positive acknowledgement or maximum retries reached.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ENCRYPTION -->
+<div id="encryption" class="tab-section">
+  <h1 class="section-title">2.3 Encryption</h1>
+  <p class="section-sub">Symmetric and asymmetric encryption — protecting data in transit.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Purpose of Encryption</h2>
+    <p><span class="kw">Encryption</span> converts data into an unreadable form. It does <strong>not prevent</strong> interception — it prevents eavesdroppers from making sense of what they capture.</p>
+    <div class="crypto-flow">
+      <div class="crypto-box">PLAINTEXT</div>
+      <div class="crypto-arrow">→</div>
+      <div class="crypto-box">Encryption + key</div>
+      <div class="crypto-arrow">→</div>
+      <div class="crypto-box cipher">CIPHERTEXT</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Symmetric Encryption</h2>
+    <p>One key encrypts and decrypts. Fast. Modern systems use 256-bit keys — 2²⁵⁶ ≈ 10⁷⁷ combinations.</p>
+    <div class="callout danger"><span class="ico">—</span><p><strong>Key distribution problem:</strong> the shared key must travel to the receiver and could be intercepted in transit.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Asymmetric Encryption</h2>
+    <p>Uses two mathematically linked keys: a <span class="kw">public key</span> (shared openly) and a <span class="kw">private key</span> (kept secret). You cannot derive one from the other.</p>
+    <h3>Example: Tom → Jane</h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p>Jane generates a key pair on her computer.</p></div>
+      <div class="step"><div class="step-num">2</div><p>Jane shares her <strong>public key</strong> with Tom. Safe to intercept — it can only encrypt.</p></div>
+      <div class="step"><div class="step-num">3</div><p>Tom encrypts using <strong>Jane's public key</strong> and sends ciphertext.</p></div>
+      <div class="step"><div class="step-num">4</div><p>Jane decrypts with her <strong>private key</strong>. Only it can unlock messages encrypted with her public key.</p></div>
+    </div>
+    <div class="crypto-flow">
+      <div class="crypto-box">Plaintext</div>
+      <div class="crypto-arrow">→</div>
+      <div class="crypto-box pub">Jane's PUBLIC key</div>
+      <div class="crypto-arrow">→</div>
+      <div class="crypto-box cipher">Ciphertext</div>
+      <div class="crypto-arrow">→</div>
+      <div class="crypto-box priv">Jane's PRIVATE key</div>
+      <div class="crypto-arrow">→</div>
+      <div class="crypto-box">Plaintext</div>
+    </div>
+    <div class="callout ok"><span class="ico">—</span><p>The private key never travels. Even if the public key is intercepted, it cannot decrypt — only encrypt.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Symmetric vs Asymmetric</h2>
+    <table class="styled-table">
+      <thead><tr><th>Feature</th><th>Symmetric</th><th>Asymmetric</th></tr></thead>
+      <tbody>
+        <tr><td>Keys</td><td>1 shared key</td><td>Public + private pair</td></tr>
+        <tr><td>Same key for encrypt &amp; decrypt?</td><td>Yes</td><td>No</td></tr>
+        <tr><td>Speed</td><td>Faster</td><td>Slower (complex maths)</td></tr>
+        <tr><td>Main weakness</td><td>Key distribution</td><td>Computationally heavy</td></tr>
+        <tr><td>Main strength</td><td>Simple and fast</td><td>Private key never travels</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div id="summary" class="tab-section">
+  <h1 class="section-title">Chapter 2 — Summary</h1>
+  <p class="section-sub">Key concepts at a glance.</p>
+  <div class="summary-grid">
+    <div class="summary-tile"><h4>Data packets</h4><p>Header (IPs + sequence) · Payload (~64 KiB) · Trailer (end marker + CRC)</p></div>
+    <div class="summary-tile"><h4>Packet switching</h4><p>Routers choose paths; packets arrive out of order and are reassembled.</p></div>
+    <div class="summary-tile"><h4>Direction modes</h4><p>Simplex (one way) · Half-duplex (alternating) · Full-duplex (simultaneous)</p></div>
+    <div class="summary-tile"><h4>Serial vs Parallel</h4><p>Serial: 1 bit, 1 wire, long distance. Parallel: multi-bit, short distance, skewing risk.</p></div>
+    <div class="summary-tile"><h4>USB</h4><p>Serial · Half/full-duplex · 5 m max · Auto-detect · Backward compatible</p></div>
+    <div class="summary-tile"><h4>Parity check</h4><p>Counts 1-bits. Misses 2-bit errors. Parity blocks pinpoint exact bit.</p></div>
+    <div class="summary-tile"><h4>Checksum</h4><p>Calculated value sent with data. Receiver recalculates. Mismatch = error.</p></div>
+    <div class="summary-tile"><h4>Echo check</h4><p>Receiver returns data. Sender compares. Cannot tell where error occurred.</p></div>
+    <div class="summary-tile"><h4>Check digits</h4><p>Final digit derived from others. Catches ISBN, barcode scanning errors.</p></div>
+    <div class="summary-tile"><h4>ARQ</h4><p>Ack + timeout + re-send. Used in mobile networks.</p></div>
+    <div class="summary-tile"><h4>Symmetric encryption</h4><p>One key. Fast. Key distribution is the weakness.</p></div>
+    <div class="summary-tile"><h4>Asymmetric encryption</h4><p>Public key encrypts. Private key decrypts. Private key never travels.</p></div>
+  </div>
+</div>
+
+<!-- GLOSSARY -->
+<div id="glossary" class="tab-section">
+  <h1 class="section-title">Glossary</h1>
+  <p class="section-sub">Key terms from Chapter 2.</p>
+  <div class="card">
+    <div class="glossary-item"><span class="glossary-term">Data packet</span><span class="glossary-def">A small unit of data transmitted over a network, containing a header, payload and trailer. Packets can take different routes to the destination.</span></div>
+    <div class="glossary-item"><span class="glossary-term">CRC</span><span class="glossary-def">Cyclic Redundancy Check — an error-checking value stored in a packet's trailer, derived from the payload bits.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Router</span><span class="glossary-def">A network device that receives packets and decides the best next hop based on the destination IP address.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Simplex</span><span class="glossary-def">Transmission in one direction only.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Half-duplex</span><span class="glossary-def">Transmission in both directions, but not at the same time.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Full-duplex</span><span class="glossary-def">Transmission in both directions simultaneously.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Skewing</span><span class="glossary-def">In parallel transmission, bits on separate wires arriving at slightly different times, causing data corruption.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Parity bit</span><span class="glossary-def">An extra bit added to a byte to make the count of 1-bits even or odd, enabling simple error detection.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Checksum</span><span class="glossary-def">A calculated value sent with a data block. Recalculated at the destination to verify integrity.</span></div>
+    <div class="glossary-item"><span class="glossary-term">ARQ</span><span class="glossary-def">Automatic Repeat Request — error control using acknowledgements and timeouts to trigger re-transmission.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Plaintext</span><span class="glossary-def">The original readable message before encryption.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Ciphertext</span><span class="glossary-def">The scrambled, unreadable output after encryption.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Symmetric encryption</span><span class="glossary-def">Encryption using one key for both encrypting and decrypting.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Asymmetric encryption</span><span class="glossary-def">Encryption using a matched public/private key pair. Public key encrypts; private key decrypts.</span></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="tab-section">
+  <h1 class="section-title">Quiz</h1>
+  <p class="section-sub">Eight questions on Chapter 2.</p>
+  <div id="q-container"></div>
+  <div class="quiz-actions">
+    <button class="btn" id="submit-btn" onclick="submitQuiz()" disabled>Submit Answers</button>
+    <button class="btn secondary" onclick="resetQuiz()">Reset</button>
+  </div>
+  <div id="quiz-results" class="quiz-results"></div>
+</div>
+
+<footer class="chapter-footer">
+  <span class="brand">Cambridge IGCSE Computer Science · Chapter 02</span>
+  <div class="nav-links">
+    <a href="chapter1.html">← Chapter 01</a>
+    <a href="index.html">Home</a>
+    <a href="chapter3.html">Chapter 03 →</a>
+  </div>
+</footer>
+
+<script>
+function showTab(id,btn){document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.tab-nav button').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');if(btn)btn.classList.add('active');window.scrollTo({top:document.querySelector('.tab-nav').offsetTop-48,behavior:'smooth'});}
+const questions=[
+  {q:"What three parts make up a data packet?",opts:["Header, body, footer","Header, payload, trailer","IP, data, checksum","Sender, message, receiver"],ans:1},
+  {q:"Which mode allows data flow in BOTH directions but NOT simultaneously?",opts:["Simplex","Half-duplex","Full-duplex","Parallel"],ans:1},
+  {q:"Why can parallel transmission cause errors over long distances?",opts:["Voltage drops","Bits arrive out of sync (skewing)","Wires overheat","Bits collide"],ans:1},
+  {q:"Maximum USB cable length without a hub:",opts:["1 m","3 m","5 m","10 m"],ans:2},
+  {q:"Which error-detection method may miss an error if two bits flip?",opts:["Parity check","Checksum","CRC","ARQ"],ans:0},
+  {q:"ARQ uses acknowledgements together with a:",opts:["Parity bit","Check digit","Timeout","Public key"],ans:2},
+  {q:"In asymmetric encryption, which key decrypts a message sent to you?",opts:["Sender's public key","Your public key","Your private key","Sender's private key"],ans:2},
+  {q:"The original readable message before encryption is called:",opts:["Ciphertext","Plaintext","Cleartext","Hashtext"],ans:1}
+];
+let answers=Array(questions.length).fill(null);
+function renderQuiz(){const c=document.getElementById('q-container');c.innerHTML='';questions.forEach((q,i)=>{const d=document.createElement('div');d.className='quiz-card';d.innerHTML=`<div class="q-num">Q${String(i+1).padStart(2,'0')} / ${questions.length}</div><div class="q-text">${q.q}</div><div class="quiz-options">${q.opts.map((o,j)=>`<button class="quiz-opt${answers[i]===j?' selected':''}" onclick="selAns(${i},${j},this)">${o}</button>`).join('')}</div>`;c.appendChild(d);});updateBtn();}
+function selAns(qi,oi,el){answers[qi]=oi;el.closest('.quiz-options').querySelectorAll('.quiz-opt').forEach((b,j)=>b.classList.toggle('selected',j===oi));updateBtn();}
+function updateBtn(){const n=answers.filter(a=>a!==null).length;const btn=document.getElementById('submit-btn');btn.disabled=n<questions.length;btn.textContent=n<questions.length?`Submit (${n}/${questions.length})`:'Submit Answers';}
+function submitQuiz(){let score=0;answers.forEach((a,i)=>{if(a===questions[i].ans)score++;});const pct=Math.round(score/questions.length*100);const res=document.getElementById('quiz-results');let html=`<h3>Score: <span class="score-badge">${score} / ${questions.length} — ${pct}%</span></h3><p style="margin:.5rem 0 1.2rem;font-size:.82rem;color:var(--text-3);">Review below.</p>`;questions.forEach((q,i)=>{const ok=answers[i]===q.ans;html+=`<div class="result-item ${ok?'correct-res':'wrong-res'}"><div class="result-item-header">${ok?'✓':'✗'} Q${i+1}. ${q.q}</div>${!ok?`<p class="your-ans">Your answer: ${q.opts[answers[i]]}</p>`:''}<p class="correct-ans">Correct: ${q.opts[q.ans]}</p></div>`;});html+=`<button class="btn secondary" style="margin-top:1.2rem;" onclick="resetQuiz()">Try Again</button>`;res.innerHTML=html;res.classList.add('show');}
+function resetQuiz(){answers=Array(questions.length).fill(null);document.getElementById('quiz-results').classList.remove('show');renderQuiz();}
+renderQuiz();
+</script>
+</body>
+</html>

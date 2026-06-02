@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 1 — Data Representation | Cambridge IGCSE Computer Science</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root { --accent: #818cf8; }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="logo">Cambridge CS</div>
+  <a href="index.html"><span class="ch-num">—</span> Home</a>
+  <a href="chapter1.html" class="active"><span class="ch-num">01</span> Data Representation</a>
+  <a href="chapter2.html"><span class="ch-num">02</span> Data Transmission</a>
+  <a href="chapter3.html"><span class="ch-num">03</span> Hardware</a>
+  <a href="chapter4.html"><span class="ch-num">04</span> Software</a>
+  <a href="chapter5.html"><span class="ch-num">05</span> Cyber Threats</a>
+  <a href="chapter6.html"><span class="ch-num">06</span> Emerging Tech</a>
+</nav>
+
+<header class="ch-header">
+  <span class="chapter-tag">Cambridge IGCSE Computer Science · Chapter 01</span>
+  <h1>Data<br><em>Representation</em></h1>
+  <p class="subtitle">How computers encode numbers, text, sound and images as binary. Number systems, arithmetic, character sets, and compression.</p>
+  <div class="pills">
+    <span class="pill">Number Systems</span>
+    <span class="pill">Binary Arithmetic</span>
+    <span class="pill">Text &amp; Sound</span>
+    <span class="pill">Images</span>
+    <span class="pill">Compression</span>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="active" onclick="showTab('numbers',this)">Number Systems</button>
+  <button onclick="showTab('addshift',this)">Addition &amp; Shifts</button>
+  <button onclick="showTab('twoscomp',this)">Two's Complement</button>
+  <button onclick="showTab('text',this)">Text &amp; Char Sets</button>
+  <button onclick="showTab('sound',this)">Sound</button>
+  <button onclick="showTab('images',this)">Images</button>
+  <button onclick="showTab('storage',this)">Data Storage</button>
+  <button onclick="showTab('compression',this)">Compression</button>
+  <button onclick="showTab('summary',this)">Summary</button>
+  <button onclick="showTab('glossary',this)">Glossary</button>
+  <button onclick="showTab('quiz',this)" id="quiz-tab">Quiz</button>
+</nav>
+
+<!-- NUMBER SYSTEMS -->
+<div id="numbers" class="tab-section active">
+  <h1 class="section-title">1.1 Number Systems</h1>
+  <p class="section-sub">Why computers use binary, and how binary, denary and hexadecimal relate.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Why Binary?</h2>
+    <p>Computers contain millions of tiny <span class="kw">switches</span> — each either ON or OFF. This maps perfectly onto the <span class="kw">binary number system</span>, which uses only two values: <strong>1</strong> (ON) and <strong>0</strong> (OFF). Every piece of data must be converted to binary before a computer can process it.</p>
+    <div class="callout info"><span class="ico">—</span><p>No matter how complex a system seems, the basic building block is the binary digit: a <em>bit</em>.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Denary (Base 10)</h2>
+    <p>The number system we use every day. Ten digits (0–9). Each column is a power of 10.</p>
+    <div class="bits-row">
+      <div class="bit-cell"><div class="head">10⁴ / 10000</div><div class="val">2</div></div>
+      <div class="bit-cell"><div class="head">10³ / 1000</div><div class="val">5</div></div>
+      <div class="bit-cell"><div class="head">10² / 100</div><div class="val">1</div></div>
+      <div class="bit-cell"><div class="head">10¹ / 10</div><div class="val">7</div></div>
+      <div class="bit-cell"><div class="head">10⁰ / 1</div><div class="val">7</div></div>
+    </div>
+    <p style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--text);">= 25 177</p>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Binary (Base 2)</h2>
+    <p>Only uses 0 and 1. Each column is a power of 2. An <span class="kw">8-bit</span> number uses these column headings:</p>
+    <div class="bits-row">
+      <div class="bit-cell on"><div class="head">2⁷ / 128</div><div class="val">1</div></div>
+      <div class="bit-cell on"><div class="head">2⁶ / 64</div><div class="val">1</div></div>
+      <div class="bit-cell on"><div class="head">2⁵ / 32</div><div class="val">1</div></div>
+      <div class="bit-cell"><div class="head">2⁴ / 16</div><div class="val">0</div></div>
+      <div class="bit-cell on"><div class="head">2³ / 8</div><div class="val">1</div></div>
+      <div class="bit-cell on"><div class="head">2² / 4</div><div class="val">1</div></div>
+      <div class="bit-cell on"><div class="head">2¹ / 2</div><div class="val">1</div></div>
+      <div class="bit-cell"><div class="head">2⁰ / 1</div><div class="val">0</div></div>
+    </div>
+    <h3>Binary → Denary</h3>
+    <p>Add the column headings wherever a <strong>1</strong> appears.</p>
+    <div class="conv-demo">
+      <div class="conv-step"><span class="conv-tag">Binary</span><span class="conv-val">1110 1110</span></div>
+      <div class="conv-step"><span class="conv-tag">Add</span><span class="conv-val">128 + 64 + 32 + 8 + 4 + 2</span></div>
+      <div class="conv-step"><span class="conv-tag">Denary</span><span class="conv-val">= 238</span></div>
+    </div>
+    <h3>Denary → Binary</h3>
+    <p>Subtract the largest possible powers of 2 in turn, or use repeated division by 2.</p>
+    <div class="conv-demo">
+      <div class="conv-step"><span class="conv-tag">Denary</span><span class="conv-val">107</span></div>
+      <div class="conv-step"><span class="conv-tag">107 − 64</span><span class="conv-val">= 43 → 1 in col 64</span></div>
+      <div class="conv-step"><span class="conv-tag">43 − 32</span><span class="conv-val">= 11 → 1 in col 32</span></div>
+      <div class="conv-step"><span class="conv-tag">11 − 8</span><span class="conv-val">= 3 → 1 in col 8</span></div>
+      <div class="conv-step"><span class="conv-tag">3 − 2</span><span class="conv-val">= 1 → 1 in col 2</span></div>
+      <div class="conv-step"><span class="conv-tag">Binary</span><span class="conv-val">0110 1011</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Hexadecimal (Base 16)</h2>
+    <p>Uses 16 digits: 0–9 and <strong>A–F</strong> (for 10–15). Because 16 = 2⁴, one hex digit maps exactly onto <strong>4 binary digits</strong> (a nibble).</p>
+    <table class="styled-table">
+      <thead><tr><th>Binary</th><th>Hex</th><th>Denary</th><th>Binary</th><th>Hex</th><th>Denary</th></tr></thead>
+      <tbody>
+        <tr><td>0000</td><td>0</td><td>0</td><td>1000</td><td>8</td><td>8</td></tr>
+        <tr><td>0001</td><td>1</td><td>1</td><td>1001</td><td>9</td><td>9</td></tr>
+        <tr><td>0010</td><td>2</td><td>2</td><td>1010</td><td>A</td><td>10</td></tr>
+        <tr><td>0011</td><td>3</td><td>3</td><td>1011</td><td>B</td><td>11</td></tr>
+        <tr><td>0100</td><td>4</td><td>4</td><td>1100</td><td>C</td><td>12</td></tr>
+        <tr><td>0101</td><td>5</td><td>5</td><td>1101</td><td>D</td><td>13</td></tr>
+        <tr><td>0110</td><td>6</td><td>6</td><td>1110</td><td>E</td><td>14</td></tr>
+        <tr><td>0111</td><td>7</td><td>7</td><td>1111</td><td>F</td><td>15</td></tr>
+      </tbody>
+    </table>
+    <h3>Binary ↔ Hex</h3>
+    <p>Split binary into groups of 4 from the right. Replace each group with its hex digit.</p>
+    <div class="conv-demo">
+      <div class="conv-step"><span class="conv-tag">Binary</span><span class="conv-val">1011 1110 0001</span></div>
+      <div class="conv-step"><span class="conv-tag">Hex</span><span class="conv-val">B E 1</span></div>
+    </div>
+    <h3>Why hex is used</h3>
+    <p>One hex digit replaces four binary digits — far easier for humans to read, write and remember. Common uses: error codes, MAC addresses, IPv6, HTML colour codes.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Interactive: Number Converter</h2>
+    <div class="converter">
+      <label>Denary (0–65535)</label>
+      <input id="conv-dec" type="text" placeholder="e.g. 238" oninput="convFromDec()">
+      <label>Binary</label>
+      <input id="conv-bin" type="text" placeholder="e.g. 11101110" oninput="convFromBin()">
+      <label>Hexadecimal</label>
+      <input id="conv-hex" type="text" placeholder="e.g. EE" oninput="convFromHex()">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Interactive: HTML Colour Codes</h2>
+    <p>Web colours are 6 hex digits — 2 each for Red, Green, Blue. 256³ = 16 777 216 possible colours.</p>
+    <div class="rgb-demo">
+      <div class="rgb-controls">
+        <label>Red: <span id="r-val">255</span></label>
+        <input id="r-slider" type="range" min="0" max="255" value="255" oninput="updateRGB()">
+        <label>Green: <span id="g-val">153</span></label>
+        <input id="g-slider" type="range" min="0" max="255" value="153" oninput="updateRGB()">
+        <label>Blue: <span id="b-val">102</span></label>
+        <input id="b-slider" type="range" min="0" max="255" value="102" oninput="updateRGB()">
+      </div>
+      <div id="rgb-preview" class="rgb-preview" style="background:#FF9966;"><span id="rgb-hex">#FF9966</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADDITION & SHIFTS -->
+<div id="addshift" class="tab-section">
+  <h1 class="section-title">Binary Addition &amp; Logical Shifts</h1>
+  <p class="section-sub">Adding 8-bit numbers, recognising overflow, and shifting bits left or right.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Addition Rules</h2>
+    <table class="styled-table">
+      <thead><tr><th>Sum</th><th>Result</th><th>Carry</th></tr></thead>
+      <tbody>
+        <tr><td>0 + 0</td><td>0</td><td>0</td></tr>
+        <tr><td>0 + 1</td><td>1</td><td>0</td></tr>
+        <tr><td>1 + 1</td><td>0</td><td>1</td></tr>
+        <tr><td>1 + 1 + carry</td><td>1</td><td>1</td></tr>
+      </tbody>
+    </table>
+    <h3>Worked Example: 00100111 + 01001010</h3>
+    <div class="mono-block">    <span class="zero">00100111</span>   <span class="lbl">( 39)</span>
+  + <span class="zero">01001010</span>   <span class="lbl">( 74)</span>
+  ─────────
+       <span class="hl">111</span>     <span class="lbl">← carries</span>
+    <span class="one">01110001</span>   <span class="lbl">= 113 ✓</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Overflow Errors</h2>
+    <p>An <span class="kw">overflow error</span> occurs when a result is too large for the register — a 9th bit appears in an 8-bit register.</p>
+    <div class="mono-block">    <span class="zero">01101110</span>   <span class="lbl">(110)</span>
+  + <span class="one">11011110</span>   <span class="lbl">(222)</span>
+  ─────────
+   <span class="hl">1</span><span class="zero">01001100</span>   <span class="lbl">← 9 bits → overflow!</span></div>
+    <div class="callout danger"><span class="ico">—</span><p>Max value in 8-bit register = 2⁸ − 1 = <strong>255</strong>. 16-bit = 65 535. 32-bit ≈ 4.29 billion.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Logical Shifts</h2>
+    <p>A <span class="kw">logical shift</span> moves all bits left or right. Empty positions fill with <strong>0</strong>.</p>
+    <ul>
+      <li>Each <strong>left shift</strong> = multiply by 2</li>
+      <li>Each <strong>right shift</strong> = divide by 2</li>
+    </ul>
+    <div class="callout key"><span class="ico">—</span><p><strong>MSB</strong> = most significant bit (leftmost). <strong>LSB</strong> = least significant bit (rightmost). Bits shifted off either end are lost — losing a 1-bit corrupts the result.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Interactive: Shift Simulator</h2>
+    <div class="converter">
+      <label>8-bit binary</label>
+      <input id="shift-input" type="text" value="00010101" maxlength="8">
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin:0.6rem 0;">
+        <button class="btn" onclick="doShift(-1)">← Left</button>
+        <button class="btn secondary" onclick="doShift(1)">Right →</button>
+        <button class="btn secondary" onclick="resetShift()">Reset</button>
+      </div>
+      <label>Result</label>
+      <div id="shift-result" class="conv-result">00010101 — denary: 21</div>
+    </div>
+  </div>
+</div>
+
+<!-- TWO'S COMPLEMENT -->
+<div id="twoscomp" class="tab-section">
+  <h1 class="section-title">Two's Complement</h1>
+  <p class="section-sub">How computers store negative integers in binary.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>The Idea</h2>
+    <p><span class="kw">Two's complement</span> represents negative integers by making the MSB <strong>negative</strong>. For 8-bit numbers the 128 column becomes −128.</p>
+    <div class="bits-row">
+      <div class="bit-cell neg"><div class="head">−128</div><div class="val">?</div></div>
+      <div class="bit-cell"><div class="head">64</div><div class="val">?</div></div>
+      <div class="bit-cell"><div class="head">32</div><div class="val">?</div></div>
+      <div class="bit-cell"><div class="head">16</div><div class="val">?</div></div>
+      <div class="bit-cell"><div class="head">8</div><div class="val">?</div></div>
+      <div class="bit-cell"><div class="head">4</div><div class="val">?</div></div>
+      <div class="bit-cell"><div class="head">2</div><div class="val">?</div></div>
+      <div class="bit-cell"><div class="head">1</div><div class="val">?</div></div>
+    </div>
+    <div class="callout key"><span class="ico">—</span><p>MSB = 0 → positive. MSB = 1 → negative. 8-bit range: <strong>−128 to +127</strong>.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Reading a Two's Complement Number</h2>
+    <h3>Example: 11001111</h3>
+    <div class="bits-row">
+      <div class="bit-cell neg on"><div class="head">−128</div><div class="val">1</div></div>
+      <div class="bit-cell on"><div class="head">64</div><div class="val">1</div></div>
+      <div class="bit-cell"><div class="head">32</div><div class="val">0</div></div>
+      <div class="bit-cell"><div class="head">16</div><div class="val">0</div></div>
+      <div class="bit-cell on"><div class="head">8</div><div class="val">1</div></div>
+      <div class="bit-cell on"><div class="head">4</div><div class="val">1</div></div>
+      <div class="bit-cell on"><div class="head">2</div><div class="val">1</div></div>
+      <div class="bit-cell on"><div class="head">1</div><div class="val">1</div></div>
+    </div>
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--text);margin-top:.8rem;">−128 + 64 + 8 + 4 + 2 + 1 = <strong>−49</strong></p>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Converting: Flip &amp; Add 1</h2>
+    <div class="conv-demo">
+      <div class="conv-step"><span class="conv-tag">Step 1</span><span class="conv-val">Write +67 in binary: 01000011</span></div>
+      <div class="conv-step"><span class="conv-tag">Step 2</span><span class="conv-val">Invert all bits:  10111100</span></div>
+      <div class="conv-step"><span class="conv-tag">Step 3</span><span class="conv-val">Add 1:  10111100 + 1 = 10111101</span></div>
+      <div class="conv-step"><span class="conv-tag">Result</span><span class="conv-val">−67 = 10111101 ✓</span></div>
+    </div>
+    <div class="callout tip"><span class="ico">—</span><p>Exam tip: both methods (direct placement and flip-and-add) are accepted. State which you are using.</p></div>
+  </div>
+</div>
+
+<!-- TEXT -->
+<div id="text" class="tab-section">
+  <h1 class="section-title">1.2 Text &amp; Character Sets</h1>
+  <p class="section-sub">How computers encode text — ASCII and Unicode.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>ASCII</h2>
+    <p><span class="kw">ASCII</span> — American Standard Code for Information Interchange (1963). Standard ASCII: 7-bit → 128 characters. Extended: 8-bit → 256 characters.</p>
+    <table class="styled-table">
+      <thead><tr><th>Character</th><th>Decimal</th><th>Hex</th><th>Binary</th></tr></thead>
+      <tbody>
+        <tr><td>SPACE</td><td>32</td><td>20</td><td>00100000</td></tr>
+        <tr><td>0</td><td>48</td><td>30</td><td>00110000</td></tr>
+        <tr><td>A</td><td>65</td><td>41</td><td>01000001</td></tr>
+        <tr><td>a</td><td>97</td><td>61</td><td>01100001</td></tr>
+        <tr><td>Z</td><td>90</td><td>5A</td><td>01011010</td></tr>
+      </tbody>
+    </table>
+    <div class="callout info"><span class="ico">—</span><p>Compare 'A' (01000001) and 'a' (01100001) — only bit 6 differs. Upper↔lower case conversion flips a single bit.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Unicode</h2>
+    <p>Created 1991 to represent all world languages and symbols. Uses <strong>up to 4 bytes per character</strong>. First 128 codes are identical to ASCII — fully backwards-compatible.</p>
+    <div class="compare-grid">
+      <div class="compare-col neutral">
+        <h4>ASCII</h4>
+        <ul><li>1 byte per character</li><li>128 / 256 characters</li><li>English-focused</li><li>Smaller files</li></ul>
+      </div>
+      <div class="compare-col pro">
+        <h4>Unicode</h4>
+        <ul><li>Up to 4 bytes</li><li>100,000+ characters</li><li>All world languages + emoji</li><li>Larger files</li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOUND -->
+<div id="sound" class="tab-section">
+  <h1 class="section-title">Sound Representation</h1>
+  <p class="section-sub">How analogue sound waves are converted to digital binary.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Sampling</h2>
+    <p>Sound is <span class="kw">analogue</span> — continuous. An <span class="kw">ADC (Analogue-to-Digital Converter)</span> measures the amplitude at regular intervals and encodes each value as binary.</p>
+    <h3>Sampling Rate</h3>
+    <p>Samples per second, measured in Hz. CDs use <strong>44 100 Hz</strong> (44.1 kHz).</p>
+    <h3>Sampling Resolution (Bit Depth)</h3>
+    <p>Bits per sample. CDs use <strong>16 bits</strong> → 65 536 possible amplitude levels.</p>
+    <div class="compare-grid">
+      <div class="compare-col pro">
+        <h4>Higher resolution — benefits</h4>
+        <ul><li>Larger dynamic range</li><li>Better quality</li><li>Less distortion</li></ul>
+      </div>
+      <div class="compare-col con">
+        <h4>Higher resolution — costs</h4>
+        <ul><li>Larger file size</li><li>Slower transmission</li><li>More processing power</li></ul>
+      </div>
+    </div>
+    <div class="callout tip"><span class="ico">—</span><p>Don't confuse sampling <em>rate</em> (how often you measure) with sampling <em>resolution</em> (how precise each measurement is). Both affect quality and file size.</p></div>
+  </div>
+</div>
+
+<!-- IMAGES -->
+<div id="images" class="tab-section">
+  <h1 class="section-title">Image Representation</h1>
+  <p class="section-sub">Bitmap images, pixels, colour depth and resolution.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Bitmap Images</h2>
+    <p>A <span class="kw">bitmap</span> is a grid of <span class="kw">pixels</span>. Each pixel stores a binary number representing its colour.</p>
+    <h3>Colour Depth</h3>
+    <table class="styled-table">
+      <thead><tr><th>Bits/pixel</th><th>Colours possible</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>2</td><td>Black and white</td></tr>
+        <tr><td>8</td><td>256</td><td>Indexed colour</td></tr>
+        <tr><td>16</td><td>65 536</td><td>High colour</td></tr>
+        <tr><td>24</td><td>16 777 216</td><td>True colour</td></tr>
+      </tbody>
+    </table>
+    <h3>File Size</h3>
+    <p style="font-family:'IBM Plex Mono',monospace;font-size:.83rem;color:var(--text);">File size (bits) = width × height × colour depth</p>
+    <h3>Resolution</h3>
+    <p>More pixels → sharper image → larger file. Fewer pixels → pixelated when enlarged → smaller file.</p>
+    <div class="callout key"><span class="ico">—</span><p>Key trade-off: a small drop in resolution often goes unnoticed by the viewer but saves significant storage space.</p></div>
+  </div>
+</div>
+
+<!-- STORAGE -->
+<div id="storage" class="tab-section">
+  <h1 class="section-title">1.3 Data Storage Measurement</h1>
+  <p class="section-sub">Bits, bytes, and IEC binary units.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Units of Storage</h2>
+    <ul>
+      <li><strong>Bit</strong> — a single 0 or 1</li>
+      <li><strong>Nibble</strong> — 4 bits (one hex digit)</li>
+      <li><strong>Byte</strong> — 8 bits</li>
+    </ul>
+    <table class="styled-table" style="margin-top:1rem;">
+      <thead><tr><th>Name</th><th>Symbol</th><th>Value</th></tr></thead>
+      <tbody>
+        <tr><td>kibibyte</td><td>KiB</td><td>2¹⁰ = 1 024 bytes</td></tr>
+        <tr><td>mebibyte</td><td>MiB</td><td>2²⁰ = 1 048 576 bytes</td></tr>
+        <tr><td>gibibyte</td><td>GiB</td><td>2³⁰ ≈ 1.07 billion bytes</td></tr>
+        <tr><td>tebibyte</td><td>TiB</td><td>2⁴⁰ ≈ 1.1 trillion bytes</td></tr>
+        <tr><td>pebibyte</td><td>PiB</td><td>2⁵⁰</td></tr>
+        <tr><td>exbibyte</td><td>EiB</td><td>2⁶⁰</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn"><span class="ico">—</span><p>The Cambridge syllabus uses the <strong>IEC binary system</strong> (powers of 2). Do not confuse with SI (where kilo = 1000).</p></div>
+  </div>
+</div>
+
+<!-- COMPRESSION -->
+<div id="compression" class="tab-section">
+  <h1 class="section-title">1.4 Compression</h1>
+  <p class="section-sub">Reducing file sizes — lossy and lossless methods.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Why Compress?</h2>
+    <p>Smaller files transmit faster, use less storage and stream more smoothly. Two types:</p>
+    <div class="compare-grid">
+      <div class="compare-col con">
+        <h4>Lossy</h4>
+        <ul><li>Permanently removes data</li><li>Cannot be reversed</li><li>Smaller file</li><li>Quality reduced (often imperceptibly)</li><li>MP3, JPEG, MP4</li></ul>
+      </div>
+      <div class="compare-col pro">
+        <h4>Lossless</h4>
+        <ul><li>No data permanently lost</li><li>Original fully recoverable</li><li>Less size reduction</li><li>PNG, ZIP, FLAC</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Run-Length Encoding (RLE)</h2>
+    <p>A lossless method that replaces consecutive identical values with a count and the value.</p>
+    <div class="mono-block">Original:  WWWWWBBBWWWWWWBB
+RLE:       5W 3B 6W 2B
+Saved:     16 tokens → 8 tokens</div>
+    <div class="callout info"><span class="ico">—</span><p>RLE works best on images with large uniform regions (logos, diagrams). It is poor for photographs where adjacent pixels differ constantly.</p></div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div id="summary" class="tab-section">
+  <h1 class="section-title">Chapter 1 — Summary</h1>
+  <p class="section-sub">All key concepts at a glance.</p>
+  <div class="summary-grid">
+    <div class="summary-tile"><h4>Binary</h4><p>Base-2. Each column is a power of 2. 8 bits = 1 byte = values 0–255.</p></div>
+    <div class="summary-tile"><h4>Hexadecimal</h4><p>Base-16 (0–9, A–F). 1 hex digit = 4 binary digits. Used for error codes, MAC addresses, colours, IPv6.</p></div>
+    <div class="summary-tile"><h4>Binary Addition</h4><p>Column by column with carries. Overflow if result exceeds available bits.</p></div>
+    <div class="summary-tile"><h4>Logical Shifts</h4><p>Left = ×2. Right = ÷2. Bits lost off either end cause errors.</p></div>
+    <div class="summary-tile"><h4>Two's Complement</h4><p>MSB is negative. Range −128 to +127 for 8 bits. Flip-and-add-1 to convert.</p></div>
+    <div class="summary-tile"><h4>ASCII / Unicode</h4><p>ASCII: 7-bit, 128 chars. Unicode: up to 4 bytes, all world languages.</p></div>
+    <div class="summary-tile"><h4>Sound</h4><p>Sampling rate (Hz) × bit depth determines quality and file size.</p></div>
+    <div class="summary-tile"><h4>Images</h4><p>File size = width × height × colour depth. More detail = bigger file.</p></div>
+    <div class="summary-tile"><h4>Compression</h4><p>Lossy = permanent data loss. Lossless = fully reversible. RLE is a lossless method.</p></div>
+  </div>
+</div>
+
+<!-- GLOSSARY -->
+<div id="glossary" class="tab-section">
+  <h1 class="section-title">Glossary</h1>
+  <p class="section-sub">Key terms from Chapter 1.</p>
+  <div class="card">
+    <div class="glossary-item"><span class="glossary-term">Bit</span><span class="glossary-def">A single binary digit — 0 or 1. The smallest unit of data in a computer.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Byte</span><span class="glossary-def">A group of 8 bits. The standard unit for measuring data storage.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Nibble</span><span class="glossary-def">4 bits — half a byte, and exactly one hexadecimal digit.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Binary</span><span class="glossary-def">Base-2 number system using only digits 0 and 1.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Hexadecimal</span><span class="glossary-def">Base-16 number system using digits 0–9 and letters A–F.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Overflow</span><span class="glossary-def">An error when a result requires more bits than are available in the register.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Two's complement</span><span class="glossary-def">A method for representing negative integers by making the MSB carry a negative value.</span></div>
+    <div class="glossary-item"><span class="glossary-term">ASCII</span><span class="glossary-def">American Standard Code for Information Interchange — 7-bit encoding for 128 characters.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Unicode</span><span class="glossary-def">Universal character encoding for all world languages — up to 4 bytes per character.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Sampling rate</span><span class="glossary-def">Number of sound samples captured per second, measured in Hz.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Bit depth</span><span class="glossary-def">Number of bits used per audio sample, determining the range of amplitude values.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Pixel</span><span class="glossary-def">The smallest addressable element of a bitmap image, storing a colour value in binary.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Colour depth</span><span class="glossary-def">Number of bits per pixel. 24-bit = 16.7 million colours (true colour).</span></div>
+    <div class="glossary-item"><span class="glossary-term">Lossy compression</span><span class="glossary-def">Compression that permanently discards data. Cannot be reversed. Used in MP3, JPEG.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Lossless compression</span><span class="glossary-def">Compression that allows full restoration of the original. Used in PNG, ZIP.</span></div>
+    <div class="glossary-item"><span class="glossary-term">RLE</span><span class="glossary-def">Run-Length Encoding — lossless compression storing consecutive identical values as count + value pairs.</span></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="tab-section">
+  <h1 class="section-title">Quiz</h1>
+  <p class="section-sub">Ten questions on Chapter 1. Answer all before submitting.</p>
+  <div id="q-container"></div>
+  <div class="quiz-actions">
+    <button class="btn" id="submit-btn" onclick="submitQuiz()" disabled>Submit Answers</button>
+    <button class="btn secondary" onclick="resetQuiz()">Reset</button>
+  </div>
+  <div id="quiz-results" class="quiz-results"></div>
+</div>
+
+<footer class="chapter-footer">
+  <span class="brand">Cambridge IGCSE Computer Science · Chapter 01</span>
+  <div class="nav-links">
+    <a href="index.html">← Home</a>
+    <a href="chapter2.html">Chapter 02 →</a>
+  </div>
+</footer>
+
+<script>
+function showTab(id,btn){
+  document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  window.scrollTo({top:document.querySelector('.tab-nav').offsetTop-48,behavior:'smooth'});
+}
+
+let lock=false;
+function convFromDec(){if(lock)return;lock=true;const v=parseInt(document.getElementById('conv-dec').value);if(!isNaN(v)&&v>=0&&v<=65535){document.getElementById('conv-bin').value=v.toString(2).padStart(16,'0');document.getElementById('conv-hex').value=v.toString(16).toUpperCase();}lock=false;}
+function convFromBin(){if(lock)return;lock=true;const v=parseInt(document.getElementById('conv-bin').value,2);if(!isNaN(v)){document.getElementById('conv-dec').value=v;document.getElementById('conv-hex').value=v.toString(16).toUpperCase();}lock=false;}
+function convFromHex(){if(lock)return;lock=true;const v=parseInt(document.getElementById('conv-hex').value,16);if(!isNaN(v)){document.getElementById('conv-dec').value=v;document.getElementById('conv-bin').value=v.toString(2).padStart(16,'0');}lock=false;}
+
+function updateRGB(){
+  const r=document.getElementById('r-slider').value,g=document.getElementById('g-slider').value,b=document.getElementById('b-slider').value;
+  document.getElementById('r-val').textContent=r;document.getElementById('g-val').textContent=g;document.getElementById('b-val').textContent=b;
+  const hex='#'+[r,g,b].map(v=>parseInt(v).toString(16).padStart(2,'0').toUpperCase()).join('');
+  document.getElementById('rgb-preview').style.background=hex;document.getElementById('rgb-hex').textContent=hex;
+}
+
+function doShift(dir){
+  const inp=document.getElementById('shift-input');
+  let bits=inp.value.replace(/[^01]/g,'').padStart(8,'0').slice(-8);
+  bits=dir===-1?bits.slice(1)+'0':'0'+bits.slice(0,7);
+  inp.value=bits;document.getElementById('shift-result').textContent=bits+' — denary: '+parseInt(bits,2);
+}
+function resetShift(){document.getElementById('shift-input').value='00010101';document.getElementById('shift-result').textContent='00010101 — denary: 21';}
+
+const questions=[
+  {q:"What is the denary value of binary 11001010?",opts:["192","202","210","212"],ans:1},
+  {q:"What is 107 in hexadecimal?",opts:["6A","6B","7A","AB"],ans:1},
+  {q:"The maximum value an 8-bit register can store is:",opts:["128","255","256","512"],ans:1},
+  {q:"Which compression type permanently removes data?",opts:["Lossless","Run-Length Encoding","Lossy","Huffman coding"],ans:2},
+  {q:"Sampling resolution (bit depth) controls:",opts:["How often samples are taken","The number of possible amplitude levels","The file format","Playback speed"],ans:1},
+  {q:"A 24-bit colour image can show how many colours?",opts:["256","65 536","16 777 216","4 294 967 296"],ans:2},
+  {q:"What is the two's complement of −5 in 8 bits?",opts:["11111010","11111011","10000101","11111100"],ans:1},
+  {q:"A left logical shift by 1 position:",opts:["Divides by 2","Multiplies by 2","Adds 1","Subtracts 1"],ans:1},
+  {q:"Standard ASCII uses how many bits per character?",opts:["4","6","7","8"],ans:2},
+  {q:"Which IEC unit equals 2³⁰ bytes?",opts:["MiB","GiB","TiB","KiB"],ans:1}
+];
+
+let answers=Array(questions.length).fill(null);
+function renderQuiz(){
+  const c=document.getElementById('q-container');c.innerHTML='';
+  questions.forEach((q,i)=>{
+    const d=document.createElement('div');d.className='quiz-card';
+    d.innerHTML=`<div class="q-num">Q${String(i+1).padStart(2,'0')} / ${questions.length}</div><div class="q-text">${q.q}</div><div class="quiz-options">${q.opts.map((o,j)=>`<button class="quiz-opt${answers[i]===j?' selected':''}" onclick="selAns(${i},${j},this)">${o}</button>`).join('')}</div>`;
+    c.appendChild(d);
+  });updateBtn();
+}
+function selAns(qi,oi,el){answers[qi]=oi;el.closest('.quiz-options').querySelectorAll('.quiz-opt').forEach((b,j)=>b.classList.toggle('selected',j===oi));updateBtn();}
+function updateBtn(){const n=answers.filter(a=>a!==null).length;const btn=document.getElementById('submit-btn');btn.disabled=n<questions.length;btn.textContent=n<questions.length?`Submit (${n}/${questions.length})`:'Submit Answers';}
+function submitQuiz(){
+  let score=0;answers.forEach((a,i)=>{if(a===questions[i].ans)score++;});
+  const pct=Math.round(score/questions.length*100);const res=document.getElementById('quiz-results');
+  let html=`<h3>Score: <span class="score-badge">${score} / ${questions.length} — ${pct}%</span></h3><p style="margin:.5rem 0 1.2rem;font-size:.82rem;color:var(--text-3);">Review below.</p>`;
+  questions.forEach((q,i)=>{const ok=answers[i]===q.ans;html+=`<div class="result-item ${ok?'correct-res':'wrong-res'}"><div class="result-item-header">${ok?'✓':'✗'} Q${i+1}. ${q.q}</div>${!ok?`<p class="your-ans">Your answer: ${q.opts[answers[i]]}</p>`:''}<p class="correct-ans">Correct: ${q.opts[q.ans]}</p></div>`;});
+  html+=`<button class="btn secondary" style="margin-top:1.2rem;" onclick="resetQuiz()">Try Again</button>`;
+  res.innerHTML=html;res.classList.add('show');
+}
+function resetQuiz(){answers=Array(questions.length).fill(null);document.getElementById('quiz-results').classList.remove('show');renderQuiz();}
+renderQuiz();
+</script>
+</body>
+</html>

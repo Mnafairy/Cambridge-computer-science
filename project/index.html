@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cambridge IGCSE Computer Science</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root { --accent: #ffffff; }
+
+  .hero {
+    padding: 6rem 2.5rem 5rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 50%; height: 100%;
+    background: radial-gradient(ellipse at 80% 30%, rgba(255,255,255,0.03) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .hero-kicker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .hero-kicker::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--border-2);
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 300;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 span { color: var(--text-3); }
+  .hero p {
+    font-size: 0.95rem;
+    color: var(--text-2);
+    max-width: 480px;
+    line-height: 1.8;
+    font-weight: 300;
+    margin-bottom: 2.5rem;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    width: fit-content;
+  }
+  .hero-stat {
+    padding: 0.7rem 1.4rem;
+    border-right: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .hero-stat:last-child { border-right: none; }
+  .hero-stat .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+    line-height: 1.2;
+  }
+  .hero-stat .lbl {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    display: block;
+    margin-top: 0.1rem;
+  }
+
+  /* CHAPTERS */
+  .chapters-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 3rem 2.5rem 6rem;
+  }
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .chapters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .ch-card {
+    background: var(--surface);
+    text-decoration: none;
+    color: inherit;
+    padding: 1.6rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    transition: background 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .ch-card:hover { background: var(--surface-2); }
+  .ch-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--ch-color, transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .ch-card:hover::before { opacity: 1; }
+
+  .ch-card-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    margin-bottom: 0.7rem;
+  }
+  .ch-card-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+  .ch-card-desc {
+    font-size: 0.8rem;
+    color: var(--text-3);
+    line-height: 1.65;
+    flex: 1;
+    margin-bottom: 1.2rem;
+  }
+  .ch-card-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: 1.2rem;
+  }
+  .ch-topic {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    border: 1px solid var(--border);
+    padding: 0.18rem 0.5rem;
+    border-radius: var(--radius);
+  }
+  .ch-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+  .ch-card-meta {
+    font-size: 0.72rem;
+    color: var(--text-3);
+  }
+  .ch-card-cta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    transition: color 0.15s;
+  }
+  .ch-card:hover .ch-card-cta { color: var(--text); }
+
+  /* quick links */
+  .quick-bar {
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .quick-bar-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0.8rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .quick-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+  .quick-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+    color: var(--text-3);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 0.28rem 0.7rem;
+    border-radius: var(--radius);
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  .quick-link:hover { color: var(--text); border-color: var(--border-2); }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="logo">Cambridge CS</div>
+  <a href="index.html" class="active"><span class="ch-num">—</span> Home</a>
+  <a href="chapter1.html"><span class="ch-num">01</span> Data Representation</a>
+  <a href="chapter2.html"><span class="ch-num">02</span> Data Transmission</a>
+  <a href="chapter3.html"><span class="ch-num">03</span> Hardware</a>
+  <a href="chapter4.html"><span class="ch-num">04</span> Software</a>
+  <a href="chapter5.html"><span class="ch-num">05</span> Cyber Threats</a>
+  <a href="chapter6.html"><span class="ch-num">06</span> Emerging Tech</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-kicker">Cambridge IGCSE · 0478 / O Level 2210</div>
+  <h1>Computer<br><span>Science</span></h1>
+  <p>Six chapters covering the full Cambridge IGCSE Computer Science syllabus. Interactive content, worked examples and quizzes.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="num">6</span><span class="lbl">Chapters</span></div>
+    <div class="hero-stat"><span class="num">40+</span><span class="lbl">Topics</span></div>
+    <div class="hero-stat"><span class="num">60+</span><span class="lbl">Quiz Qs</span></div>
+    <div class="hero-stat"><span class="num">∞</span><span class="lbl">Revisions</span></div>
+  </div>
+</div>
+
+<div class="quick-bar">
+  <div class="quick-bar-inner">
+    <span class="quick-label">Jump to quiz</span>
+    <a href="chapter1.html#quiz" class="quick-link">Ch 01</a>
+    <a href="chapter2.html#quiz" class="quick-link">Ch 02</a>
+    <a href="chapter3.html#quiz" class="quick-link">Ch 03</a>
+    <a href="chapter4.html#quiz" class="quick-link">Ch 04</a>
+    <a href="chapter5.html#quiz" class="quick-link">Ch 05</a>
+    <a href="chapter6.html#quiz" class="quick-link">Ch 06</a>
+  </div>
+</div>
+
+<div class="chapters-wrap">
+  <div class="section-label">All Chapters</div>
+  <div class="chapters-grid">
+
+    <a href="chapter1.html" class="ch-card" style="--ch-color:#818cf8;">
+      <div class="ch-card-num">Chapter 01</div>
+      <div class="ch-card-title">Data Representation</div>
+      <div class="ch-card-desc">How computers encode numbers, text, sound and images as binary. Number systems, compression and storage units.</div>
+      <div class="ch-card-topics">
+        <span class="ch-topic">Binary</span>
+        <span class="ch-topic">Hex</span>
+        <span class="ch-topic">Two's complement</span>
+        <span class="ch-topic">ASCII / Unicode</span>
+        <span class="ch-topic">Compression</span>
+      </div>
+      <div class="ch-card-footer">
+        <span class="ch-card-meta">11 sections · converter tool</span>
+        <span class="ch-card-cta">Open →</span>
+      </div>
+    </a>
+
+    <a href="chapter2.html" class="ch-card" style="--ch-color:#60a5fa;">
+      <div class="ch-card-num">Chapter 02</div>
+      <div class="ch-card-title">Data Transmission</div>
+      <div class="ch-card-desc">How data moves between devices. Packets, switching, serial/parallel modes, error detection and encryption.</div>
+      <div class="ch-card-topics">
+        <span class="ch-topic">Packets</span>
+        <span class="ch-topic">Serial / Parallel</span>
+        <span class="ch-topic">Parity</span>
+        <span class="ch-topic">ARQ</span>
+        <span class="ch-topic">Encryption</span>
+      </div>
+      <div class="ch-card-footer">
+        <span class="ch-card-meta">8 sections · 8 quiz questions</span>
+        <span class="ch-card-cta">Open →</span>
+      </div>
+    </a>
+
+    <a href="chapter3.html" class="ch-card" style="--ch-color:#4ade80;">
+      <div class="ch-card-num">Chapter 03</div>
+      <div class="ch-card-title">Hardware</div>
+      <div class="ch-card-desc">Physical components — CPU architecture, FDE cycle, I/O devices, sensors, storage and network hardware.</div>
+      <div class="ch-card-topics">
+        <span class="ch-topic">CPU / Von Neumann</span>
+        <span class="ch-topic">FDE Cycle</span>
+        <span class="ch-topic">I/O Devices</span>
+        <span class="ch-topic">Storage</span>
+        <span class="ch-topic">Network</span>
+      </div>
+      <div class="ch-card-footer">
+        <span class="ch-card-meta">9 sections · 10 quiz questions</span>
+        <span class="ch-card-cta">Open →</span>
+      </div>
+    </a>
+
+    <a href="chapter4.html" class="ch-card" style="--ch-color:#c084fc;">
+      <div class="ch-card-num">Chapter 04</div>
+      <div class="ch-card-title">Software</div>
+      <div class="ch-card-desc">Operating systems, interrupts, programming languages, translators and integrated development environments.</div>
+      <div class="ch-card-topics">
+        <span class="ch-topic">OS Functions</span>
+        <span class="ch-topic">Interrupts</span>
+        <span class="ch-topic">Languages</span>
+        <span class="ch-topic">Compiler / Interpreter</span>
+        <span class="ch-topic">IDEs</span>
+      </div>
+      <div class="ch-card-footer">
+        <span class="ch-card-meta">10 sections · 10 quiz questions</span>
+        <span class="ch-card-cta">Open →</span>
+      </div>
+    </a>
+
+    <a href="chapter5.html" class="ch-card" style="--ch-color:#f87171;">
+      <div class="ch-card-num">Chapter 05</div>
+      <div class="ch-card-title">Cyber Threats</div>
+      <div class="ch-card-desc">Pharming, phishing and social engineering — how attacks work and how to stay protected.</div>
+      <div class="ch-card-topics">
+        <span class="ch-topic">Pharming</span>
+        <span class="ch-topic">Phishing</span>
+        <span class="ch-topic">Social Engineering</span>
+        <span class="ch-topic">Malware</span>
+      </div>
+      <div class="ch-card-footer">
+        <span class="ch-card-meta">7 sections · 10 quiz questions</span>
+        <span class="ch-card-cta">Open →</span>
+      </div>
+    </a>
+
+    <a href="chapter6.html" class="ch-card" style="--ch-color:#2dd4bf;">
+      <div class="ch-card-num">Chapter 06</div>
+      <div class="ch-card-title">Automated &amp; Emerging Tech</div>
+      <div class="ch-card-desc">Automated systems, robotics, artificial intelligence, expert systems and machine learning.</div>
+      <div class="ch-card-topics">
+        <span class="ch-topic">Automated Systems</span>
+        <span class="ch-topic">Robotics</span>
+        <span class="ch-topic">AI</span>
+        <span class="ch-topic">Expert Systems</span>
+        <span class="ch-topic">ML</span>
+      </div>
+      <div class="ch-card-footer">
+        <span class="ch-card-meta">10 sections · 10 quiz questions</span>
+        <span class="ch-card-cta">Open →</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<footer class="chapter-footer" style="max-width:960px;margin-left:auto;margin-right:auto;">
+  <span class="brand">Cambridge IGCSE Computer Science · 0478 / 2210</span>
+  <div class="nav-links">
+    <a href="chapter1.html">Ch 01</a>
+    <a href="chapter2.html">Ch 02</a>
+    <a href="chapter3.html">Ch 03</a>
+    <a href="chapter4.html">Ch 04</a>
+    <a href="chapter5.html">Ch 05</a>
+    <a href="chapter6.html">Ch 06</a>
+  </div>
+</footer>
+
+</body>
+</html>

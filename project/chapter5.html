@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 5 — Cyber Threats | Cambridge IGCSE Computer Science</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root { --accent: #f87171; }
+  .checklist { list-style:none; margin:.5rem 0; }
+  .checklist li { padding:.35rem 0 .35rem 1.6rem; position:relative; font-size:.85rem; color:var(--text-2); line-height:1.6; }
+  .checklist li::before { content:'✓'; position:absolute; left:0; color:var(--clr-ok); font-weight:700; }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="logo">Cambridge CS</div>
+  <a href="index.html"><span class="ch-num">—</span> Home</a>
+  <a href="chapter1.html"><span class="ch-num">01</span> Data Representation</a>
+  <a href="chapter2.html"><span class="ch-num">02</span> Data Transmission</a>
+  <a href="chapter3.html"><span class="ch-num">03</span> Hardware</a>
+  <a href="chapter4.html"><span class="ch-num">04</span> Software</a>
+  <a href="chapter5.html" class="active"><span class="ch-num">05</span> Cyber Threats</a>
+  <a href="chapter6.html"><span class="ch-num">06</span> Emerging Tech</a>
+</nav>
+
+<header class="ch-header">
+  <span class="chapter-tag">Cambridge IGCSE Computer Science · Chapter 05</span>
+  <h1>Cyber<br><em>Threats</em></h1>
+  <p class="subtitle">Pharming, phishing and social engineering — understand how attacks work and how to stay protected.</p>
+  <div class="pills">
+    <span class="pill">Pharming</span>
+    <span class="pill">Phishing</span>
+    <span class="pill">Social Engineering</span>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="active" onclick="showTab('pharming',this)">Pharming</button>
+  <button onclick="showTab('phishing',this)">Phishing</button>
+  <button onclick="showTab('social',this)">Social Engineering</button>
+  <button onclick="showTab('compare',this)">Comparison</button>
+  <button onclick="showTab('summary',this)">Summary</button>
+  <button onclick="showTab('glossary',this)">Glossary</button>
+  <button onclick="showTab('quiz',this)">Quiz</button>
+</nav>
+
+<!-- PHARMING -->
+<div id="pharming" class="tab-section active">
+  <h1 class="section-title">Pharming</h1>
+  <p class="section-sub">Malware that silently redirects genuine URLs to fake websites.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>What is Pharming?</h2>
+    <p><span class="kw">Pharming</span> is a cyber attack where malicious software secretly installed on a victim's device <strong>redirects</strong> them to a fake website — even when they type the correct URL.</p>
+    <p>The name combines <em>phishing</em> + <em>farming</em>. Perpetrators "harvest" data from many victims simultaneously.</p>
+    <div class="callout danger"><span class="ico">—</span><p><strong>Key danger:</strong> Unlike phishing, no suspicious link needs to be clicked. Visiting certain pages or opening a rogue email attachment can silently install the redirect malware.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>How a Pharming Attack Works</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><p>Perpetrator tricks victim via email attachment, pop-up or link.</p></div>
+      <div class="step"><div class="step-num">2</div><p><span class="kw">Malware</span> secretly downloaded and installed.</p></div>
+      <div class="step"><div class="step-num">3</div><p>Malware alters how URLs are resolved — genuine URLs redirect silently to fake sites.</p></div>
+      <div class="step"><div class="step-num">4</div><p>Victim types correct URL (e.g. their bank) but lands on a fake look-alike.</p></div>
+      <div class="step"><div class="step-num">5</div><p>Victim enters credentials — immediately captured by perpetrator.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Protection</h2>
+    <ul class="checklist">
+      <li>Only download software from <strong>trusted sources</strong></li>
+      <li>Verify the URL in the address bar is <strong>exactly correct</strong> before entering any details</li>
+      <li>Check for <strong>HTTPS</strong> and the padlock icon</li>
+      <li>Run <span class="kw">anti-malware software</span> regularly</li>
+      <li>If something feels wrong, close the site immediately</li>
+    </ul>
+    <div class="callout warn"><span class="ico">—</span><p>If you entered details on a fake site, <strong>change your passwords immediately</strong> on the real site and any other accounts using the same password.</p></div>
+  </div>
+</div>
+
+<!-- PHISHING -->
+<div id="phishing" class="tab-section">
+  <h1 class="section-title">Phishing</h1>
+  <p class="section-sub">Fake emails designed to steal personal data.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>What is Phishing?</h2>
+    <p><span class="kw">Phishing</span> uses <strong>fake emails</strong> designed to look like they come from trusted organisations — banks, social media platforms, government agencies. The goal is to trick victims into providing personal data.</p>
+    <p>Named after "fishing" — cast many fake emails as bait, wait for victims to bite.</p>
+    <div class="callout danger"><span class="ico">—</span><p>Goal: steal usernames, passwords, credit card numbers — used for fraud and identity theft.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Common Tactics</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">!</div><p><strong>"Unusual account activity detected"</strong> — log in immediately to verify.</p></div>
+      <div class="step"><div class="step-num">!</div><p><strong>"You've won a prize"</strong> — click here to claim and enter your details.</p></div>
+      <div class="step"><div class="step-num">!</div><p><strong>"Confirm your recent purchase"</strong> — click to dispute this transaction.</p></div>
+      <div class="step"><div class="step-num">!</div><p><strong>"Tax refund available"</strong> — enter bank details to receive payment.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>How to Spot a Phishing Email</h2>
+    <h3>Check the email</h3>
+    <ul class="checklist">
+      <li>Spelling mistakes and grammar errors</li>
+      <li>Generic greeting: "Dear Customer" rather than your name</li>
+      <li>Hover over links (don't click) — check the real destination URL</li>
+      <li>Sender email domain doesn't match the real company</li>
+    </ul>
+    <h3>Check the website (if you clicked)</h3>
+    <ul class="checklist">
+      <li>URL in address bar exactly correct?</li>
+      <li>HTTPS and padlock present?</li>
+      <li>Site looks identical to the real one?</li>
+    </ul>
+    <div class="callout tip"><span class="ico">—</span><p>Legitimate organisations never ask for passwords or credit card details via email links. When in doubt — navigate to the real site by typing the URL yourself.</p></div>
+  </div>
+</div>
+
+<!-- SOCIAL ENGINEERING -->
+<div id="social" class="tab-section">
+  <h1 class="section-title">Social Engineering</h1>
+  <p class="section-sub">Exploiting human psychology rather than technical vulnerabilities.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>What is Social Engineering?</h2>
+    <p><span class="kw">Social engineering</span> manipulates and deceives <strong>people</strong> rather than hacking systems. Perpetrators exploit human psychology — trust, fear, helpfulness — to obtain confidential information.</p>
+    <p>Phishing is one form. But social engineering also happens in person and by phone.</p>
+    <div class="callout warn"><span class="ico">—</span><p>The vulnerability being exploited is <em>human behaviour</em>, not a software bug. Technology alone cannot fully defend against it.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Real-World Examples</h2>
+    <h3>Example 1 — Fake IT Technician</h3>
+    <p>A perpetrator calls an employee claiming to be from IT, says there is a problem on their computer, and asks for login details to fix it remotely. An employee with a genuine IT issue that day may believe the call and hand over credentials.</p>
+    <div class="callout danger"><span class="ico">—</span><p>Legitimate IT staff never ask for your password. Hang up and call your IT department on a known number.</p></div>
+    <h3>Example 2 — The Friendly Stranger</h3>
+    <p>Over several meetings at a café, a perpetrator builds rapport and casually asks about company systems, data storage and security. The employee thinks it is friendly conversation. The perpetrator is building a profile to attack the network.</p>
+    <h3>Example 3 — Social Media Quizzes</h3>
+    <p>Fun quizzes asking for your first pet's name, first car, favourite teacher etc. — many people use exactly this as password components. Completing these gives perpetrators a list for brute-force attacks.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Protection</h2>
+    <ul class="checklist">
+      <li>Use <span class="kw">access levels</span> — employees see only the data they need</li>
+      <li><strong>Train employees</strong> to recognise manipulation tactics</li>
+      <li>Never share passwords — even with people claiming to be IT staff</li>
+      <li>Set social media <strong>privacy settings</strong> to maximum</li>
+      <li>Do not fill in social media quizzes asking personal questions</li>
+      <li>Verify identity independently before providing any information</li>
+    </ul>
+  </div>
+</div>
+
+<!-- COMPARE -->
+<div id="compare" class="tab-section">
+  <h1 class="section-title">Comparing the Three Threats</h1>
+  <p class="section-sub">Key differences and shared characteristics.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Side-by-Side Comparison</h2>
+    <table class="styled-table">
+      <thead><tr><th>Feature</th><th>Pharming</th><th>Phishing</th><th>Social Engineering</th></tr></thead>
+      <tbody>
+        <tr><td>Method</td><td>Malware on device</td><td>Fake email</td><td>Manipulating people</td></tr>
+        <tr><td>Trigger</td><td>Typing correct URL</td><td>Clicking a link</td><td>Any contact</td></tr>
+        <tr><td>Suspicious link needed?</td><td>No</td><td>Yes</td><td>No</td></tr>
+        <tr><td>Goal</td><td>Steal personal data</td><td>Steal personal data</td><td>Data or system access</td></tr>
+        <tr><td>Protection</td><td>Anti-malware + HTTPS</td><td>Check email + verify URLs</td><td>Training + access levels</td></tr>
+      </tbody>
+    </table>
+    <div class="callout tip"><span class="ico">—</span><p>Common exam mistake: confusing pharming and phishing. Pharming = malware redirects your device. Phishing = fake email. Social engineering = broader category including phishing and others.</p></div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div id="summary" class="tab-section">
+  <h1 class="section-title">Chapter 5 — Summary</h1>
+  <p class="section-sub">All three threats at a glance.</p>
+  <div class="summary-grid">
+    <div class="summary-tile"><h4>Pharming — what</h4><p>Malware redirects genuine URL to fake site silently.</p></div>
+    <div class="summary-tile"><h4>Pharming — aim</h4><p>Steal passwords and payment details for fraud or identity theft.</p></div>
+    <div class="summary-tile"><h4>Pharming — protection</h4><p>Anti-malware, check HTTPS/URL carefully.</p></div>
+    <div class="summary-tile"><h4>Phishing — what</h4><p>Fake email pretending to be a trusted organisation; link to fake site.</p></div>
+    <div class="summary-tile"><h4>Phishing — aim</h4><p>Steal login credentials and financial details.</p></div>
+    <div class="summary-tile"><h4>Phishing — protection</h4><p>Check spelling, personalisation, hover links, verify HTTPS.</p></div>
+    <div class="summary-tile"><h4>Social Eng. — what</h4><p>Manipulating people rather than systems to reveal confidential info.</p></div>
+    <div class="summary-tile"><h4>Social Eng. — aim</h4><p>Data for fraud, identity theft or corporate espionage.</p></div>
+    <div class="summary-tile"><h4>Social Eng. — protection</h4><p>Access levels, employee training, privacy settings, never share passwords.</p></div>
+    <div class="summary-tile"><h4>Key distinction</h4><p>Pharming = malware on device. Phishing = fake email. Social engineering = exploits humans directly.</p></div>
+  </div>
+</div>
+
+<!-- GLOSSARY -->
+<div id="glossary" class="tab-section">
+  <h1 class="section-title">Glossary</h1>
+  <p class="section-sub">Key terms from Chapter 5.</p>
+  <div class="card">
+    <div class="glossary-item"><span class="glossary-term">Pharming</span><span class="glossary-def">A cyber attack where malware on a user's device redirects a genuine URL to a fake website.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Phishing</span><span class="glossary-def">A cyber attack using fake emails designed to look genuine, tricking users into providing personal data.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Social engineering</span><span class="glossary-def">Manipulating people — rather than systems — into revealing confidential information.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Malware</span><span class="glossary-def">Malicious software designed to damage, disrupt or gain unauthorised access to a system.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Anti-malware</span><span class="glossary-def">Software that scans for malicious files, quarantines and removes them.</span></div>
+    <div class="glossary-item"><span class="glossary-term">HTTPS</span><span class="glossary-def">Hypertext Transfer Protocol Secure — encrypted web communication, shown as a padlock in the browser.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Access level</span><span class="glossary-def">The data and resources a user is permitted to access, linked to their role in an organisation.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Identity theft</span><span class="glossary-def">Using stolen personal data to impersonate the victim, typically for financial gain.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Brute-force attack</span><span class="glossary-def">Trying many password combinations until the correct one is found.</span></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="tab-section">
+  <h1 class="section-title">Quiz</h1>
+  <p class="section-sub">Ten questions on Chapter 5.</p>
+  <div id="q-container"></div>
+  <div class="quiz-actions">
+    <button class="btn" id="submit-btn" onclick="submitQuiz()" disabled>Submit Answers</button>
+    <button class="btn secondary" onclick="resetQuiz()">Reset</button>
+  </div>
+  <div id="quiz-results" class="quiz-results"></div>
+</div>
+
+<footer class="chapter-footer">
+  <span class="brand">Cambridge IGCSE Computer Science · Chapter 05</span>
+  <div class="nav-links">
+    <a href="chapter4.html">← Chapter 04</a>
+    <a href="index.html">Home</a>
+    <a href="chapter6.html">Chapter 06 →</a>
+  </div>
+</footer>
+
+<script>
+function showTab(id,btn){document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.tab-nav button').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');if(btn)btn.classList.add('active');window.scrollTo({top:document.querySelector('.tab-nav').offsetTop-48,behavior:'smooth'});}
+const questions=[
+  {q:"What is pharming?",opts:["Fake email to trick users into clicking a link","Malware that redirects genuine URLs to fake websites","Bots flooding a web server","Software recording keystrokes"],ans:1},
+  {q:"What method does phishing use?",opts:["Malware on victim's hard drive","Flooding the server","Fake email from a trusted-looking source","Breaking into a network through a port"],ans:2},
+  {q:"Primary aim of pharming and phishing:",opts:["Crash the victim's server","Encrypt files and demand ransom","Steal personal data — passwords and payment details","Send spam advertisements"],ans:2},
+  {q:"Most effective protection against pharming:",opts:["Using a proxy server","Limiting password attempts","Anti-malware software and checking HTTPS","Two-step verification only"],ans:2},
+  {q:"How does social engineering differ from hacking?",opts:["Only affects large companies","Exploits human psychology, not technical vulnerabilities","Always requires malware","Can only be done by email"],ans:1},
+  {q:"Calling an employee claiming to be IT and asking for login details is:",opts:["Phishing","Pharming","DDoS attack","Social engineering"],ans:3},
+  {q:"Which sign suggests a phishing email?",opts:["Uses HTTPS in links","Personalised with full name","Addressed 'Dear Customer' with spelling mistakes","Comes from a free email service"],ans:2},
+  {q:"If you entered details on a fake phishing website, you should:",opts:["Wait and see","Contact the fake site","Immediately change password on real site and any same-password accounts","Run a firewall scan only"],ans:2},
+  {q:"Which measure protects against social engineering by limiting data access?",opts:["Anti-malware","Access levels linked to usernames","Encrypting outgoing emails","Proxy server"],ans:1},
+  {q:"Why are social media quizzes asking personal questions a risk?",opts:["They install malware","They email your contacts","People often use that kind of personal info as passwords","They redirect to fake websites"],ans:2}
+];
+let answers=Array(questions.length).fill(null);
+function renderQuiz(){const c=document.getElementById('q-container');c.innerHTML='';questions.forEach((q,i)=>{const d=document.createElement('div');d.className='quiz-card';d.innerHTML=`<div class="q-num">Q${String(i+1).padStart(2,'0')} / ${questions.length}</div><div class="q-text">${q.q}</div><div class="quiz-options">${q.opts.map((o,j)=>`<button class="quiz-opt${answers[i]===j?' selected':''}" onclick="selAns(${i},${j},this)">${o}</button>`).join('')}</div>`;c.appendChild(d);});updateBtn();}
+function selAns(qi,oi,el){answers[qi]=oi;el.closest('.quiz-options').querySelectorAll('.quiz-opt').forEach((b,j)=>b.classList.toggle('selected',j===oi));updateBtn();}
+function updateBtn(){const n=answers.filter(a=>a!==null).length;const btn=document.getElementById('submit-btn');btn.disabled=n<questions.length;btn.textContent=n<questions.length?`Submit (${n}/${questions.length})`:'Submit Answers';}
+function submitQuiz(){let score=0;answers.forEach((a,i)=>{if(a===questions[i].ans)score++;});const pct=Math.round(score/questions.length*100);const res=document.getElementById('quiz-results');let html=`<h3>Score: <span class="score-badge">${score} / ${questions.length} — ${pct}%</span></h3><p style="margin:.5rem 0 1.2rem;font-size:.82rem;color:var(--text-3);">Review below.</p>`;questions.forEach((q,i)=>{const ok=answers[i]===q.ans;html+=`<div class="result-item ${ok?'correct-res':'wrong-res'}"><div class="result-item-header">${ok?'✓':'✗'} Q${i+1}. ${q.q}</div>${!ok?`<p class="your-ans">Your answer: ${q.opts[answers[i]]}</p>`:''}<p class="correct-ans">Correct: ${q.opts[q.ans]}</p></div>`;});html+=`<button class="btn secondary" style="margin-top:1.2rem;" onclick="resetQuiz()">Try Again</button>`;res.innerHTML=html;res.classList.add('show');}
+function resetQuiz(){answers=Array(questions.length).fill(null);document.getElementById('quiz-results').classList.remove('show');renderQuiz();}
+renderQuiz();
+</script>
+</body>
+</html>

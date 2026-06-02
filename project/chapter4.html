@@ -1,0 +1,3444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 4 — Software | Cambridge IGCSE Computer Science</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  :root { --accent: #c084fc; }
+  .layer { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); padding:.55rem 1rem; margin:.3rem auto; max-width:380px; font-size:.83rem; font-weight:500; color:var(--text-2); text-align:center; font-family:'IBM Plex Mono',monospace; }
+  .layer.app { border-color:var(--clr-warn); color:var(--clr-warn); }
+  .layer.sys { border-color:var(--accent); color:var(--text); }
+  .layer.fw  { border-color:var(--clr-ok); color:var(--clr-ok); }
+  .layer.hw  { background:var(--bg); color:var(--text-3); }
+  .diagram-center { text-align:center; padding:1.2rem; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); margin:1rem 0; }
+
+  /* ── Mini-App shell ── */
+  .miniapp {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg);
+    margin: 1rem 0 0;
+    overflow: hidden;
+  }
+  .miniapp-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .65rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .miniapp-head .lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .62rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .miniapp-head .title {
+    font-size: .82rem; font-weight: 600; color: var(--text);
+  }
+  .miniapp-body { padding: 1.1rem 1.2rem; }
+
+  .mini-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .68rem; letter-spacing: .04em;
+    padding: .42rem .8rem;
+    background: var(--text); color: var(--bg);
+    border: none; border-radius: var(--radius);
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .mini-btn:hover { opacity: .85; }
+  .mini-btn.ghost {
+    background: transparent; color: var(--text-2);
+    border: 1px solid var(--border-2);
+  }
+  .mini-btn.ghost:hover { background: var(--surface-2); opacity: 1; }
+  .mini-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* ── App 1: Classifier (drag & drop) ── */
+  .classifier-pool {
+    display: flex; flex-wrap: wrap; gap: .4rem;
+    padding: .8rem; background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    min-height: 60px;
+    margin-bottom: 1rem;
+  }
+  .classifier-bins {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem;
+  }
+  .bin {
+    border: 1px dashed var(--border-2);
+    border-radius: var(--radius);
+    padding: .8rem;
+    min-height: 130px;
+    background: var(--surface);
+    transition: background .15s, border-color .15s;
+  }
+  .bin.dragover { background: var(--surface-2); border-color: var(--accent); border-style: solid; }
+  .bin h5 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: .5rem; font-weight: 500;
+  }
+  .bin-items { display: flex; flex-direction: column; gap: .3rem; }
+  .item-chip {
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius);
+    padding: .35rem .6rem;
+    font-size: .76rem;
+    color: var(--text);
+    cursor: grab;
+    user-select: none;
+    transition: transform .1s, border-color .15s;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .item-chip:hover { border-color: var(--accent); }
+  .item-chip.dragging { opacity: .4; }
+  .item-chip.placed.correct { border-color: var(--clr-ok); background: var(--clr-ok-bg); }
+  .item-chip.placed.wrong { border-color: var(--clr-danger); background: var(--clr-danger-bg); }
+  .classifier-status {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: .8rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .7rem; color: var(--text-3);
+  }
+
+  /* ── App 2: OS function matcher ── */
+  .matcher {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  }
+  .matcher .col h5 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .62rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: .5rem;
+  }
+  .matcher .opt {
+    display: block; width: 100%; text-align: left;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .55rem .8rem;
+    font-size: .78rem;
+    color: var(--text-2);
+    cursor: pointer;
+    margin-bottom: .35rem;
+    font-family: inherit;
+    transition: border-color .15s, background .15s;
+  }
+  .matcher .opt:hover { border-color: var(--border-2); }
+  .matcher .opt.active { border-color: var(--accent); background: var(--surface-2); color: var(--text); }
+  .matcher .opt.matched { opacity: .35; pointer-events: none; }
+  .matcher .opt.matched.ok { border-color: var(--clr-ok); background: var(--clr-ok-bg); }
+  .matcher .opt.feedback-wrong { border-color: var(--clr-danger); background: var(--clr-danger-bg); }
+  @media (max-width: 600px) { .matcher { grid-template-columns: 1fr; } }
+
+  /* ── App 3: Boot sequence sorter ── */
+  .sorter { display: flex; flex-direction: column; gap: .4rem; }
+  .sorter-item {
+    display: flex; align-items: center; gap: .6rem;
+    padding: .55rem .8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: grab;
+    transition: border-color .15s, transform .15s;
+    user-select: none;
+  }
+  .sorter-item:hover { border-color: var(--border-2); }
+  .sorter-item.dragging { opacity: .3; }
+  .sorter-item.over-top { border-top-color: var(--accent); border-top-width: 2px; }
+  .sorter-item.over-bot { border-bottom-color: var(--accent); border-bottom-width: 2px; }
+  .sorter-item .handle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .7rem; color: var(--text-3); min-width: 18px;
+  }
+  .sorter-item .body { font-size: .8rem; color: var(--text); flex: 1; }
+  .sorter-item.correct { border-color: var(--clr-ok); background: var(--clr-ok-bg); }
+  .sorter-item.wrong { border-color: var(--clr-danger); background: var(--clr-danger-bg); }
+
+  /* ── App 3: Boot Sequence Builder ── */
+  .bsb-grid { display:grid; grid-template-columns: 280px 1fr; gap: 1.2rem; align-items:start; }
+  @media (max-width: 720px) { .bsb-grid { grid-template-columns: 1fr; } }
+  .bsb-pc { display:flex; flex-direction:column; align-items:center; }
+  .bsb-screen {
+    width:100%; aspect-ratio: 4/3;
+    background:#0a0a0a;
+    border: 8px solid #1a1a1a;
+    border-radius: 10px;
+    box-shadow: 0 0 0 2px #2a2a2a, inset 0 0 40px rgba(0,0,0,.7);
+    padding: .9rem 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .68rem;
+    color:#5dff7a;
+    overflow:hidden;
+    position:relative;
+    display:flex; flex-direction:column;
+    text-align:left;
+    line-height: 1.55;
+    text-shadow: 0 0 4px rgba(93,255,122,.4);
+  }
+  .bsb-screen::after{
+    content:''; position:absolute; inset:0;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0, rgba(255,255,255,.04) 1px, transparent 1px, transparent 3px);
+    pointer-events:none;
+  }
+  .bsb-screen.off { color:#222; align-items:center; justify-content:center; text-align:center; text-shadow:none; }
+  .bsb-screen.off > * { font-size:1.6rem; }
+  .bsb-screen.bsod { background:#1d4ed8; color:#fff; align-items:center; justify-content:center; text-align:center; font-size:.7rem; text-shadow:none; }
+  .bsb-screen.desktop { background: linear-gradient(135deg,#3b82f6 0%,#8b5cf6 100%); color:#fff; align-items:center; justify-content:center; text-align:center; text-shadow:none; }
+  .bsb-screen-content { position:relative; z-index:1; width:100%; }
+  .bsb-line { opacity:0; animation: bsb-type .25s forwards; }
+  @keyframes bsb-type { from{opacity:0;transform:translateX(-4px);} to{opacity:1;transform:none;} }
+  .bsb-stand { width:60px; height:14px; background:#1a1a1a; border-radius: 0 0 6px 6px; }
+  .bsb-base { width:120px; height:6px; background:#1a1a1a; border-radius: 4px; margin-top:2px; }
+
+  .bsb-slots { display:flex; flex-direction:column; gap:.45rem; }
+  .bsb-slot {
+    display:flex; align-items:center; gap:.6rem;
+    padding:.5rem .7rem;
+    border: 1.5px dashed var(--border-2);
+    border-radius: var(--radius);
+    background: var(--surface);
+    min-height: 44px;
+    transition: border-color .15s, background .15s;
+  }
+  .bsb-slot.dragover { border-color: var(--accent); background: var(--surface-2); border-style:solid; }
+  .bsb-slot.filled { border-style: solid; border-color: var(--border); }
+  .bsb-slot.correct { border-color: var(--clr-ok); background: var(--clr-ok-bg); }
+  .bsb-slot.wrong { border-color: var(--clr-danger); background: var(--clr-danger-bg); animation: bsb-shake .35s; }
+  @keyframes bsb-shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+  .bsb-slot .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .68rem; color: var(--text-3);
+    min-width: 22px;
+  }
+  .bsb-slot .placeholder { font-size:.74rem; color: var(--text-3); font-style: italic; }
+
+  .bsb-step {
+    flex:1;
+    font-size:.78rem; color: var(--text);
+    cursor: grab;
+    user-select:none;
+  }
+  .bsb-step.dragging { opacity:.3; }
+
+  .bsb-pool-label {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.6rem; letter-spacing:.12em; text-transform:uppercase;
+    color: var(--text-3); margin: 1rem 0 .45rem;
+  }
+  .bsb-pool {
+    display:flex; flex-direction:column; gap:.4rem;
+    padding:.55rem;
+    background:var(--surface-2);
+    border:1.5px dashed var(--border);
+    border-radius: var(--radius);
+    min-height: 48px;
+  }
+  .bsb-pool.dragover { border-color: var(--accent); border-style:solid; }
+  .bsb-pool .bsb-step {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius: var(--radius);
+    padding:.45rem .7rem;
+  }
+  .bsb-pool .bsb-step:hover { border-color: var(--accent); }
+  .bsb-empty { font-size:.72rem; color:var(--text-3); font-style:italic; padding:.3rem .4rem; }
+
+  /* ── App 2b: CLI vs GUI Race ── */
+  .race2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  @media (max-width:680px){ .race2 { grid-template-columns:1fr; } }
+  .race2-panel {
+    border:1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: .8rem;
+    display:flex; flex-direction:column;
+    min-height: 240px;
+  }
+  .race2-panel.done { border-color: var(--clr-ok); background: var(--clr-ok-bg); }
+  .race2-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:.6rem; }
+  .race2-head h5 {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.62rem; letter-spacing:.12em; text-transform:uppercase;
+    color: var(--text-3); margin:0;
+  }
+  .race2-timer {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.7rem; color: var(--text);
+    background: var(--surface-2);
+    padding: .15rem .5rem; border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+  .race2-timer.running { color: var(--clr-info); border-color: var(--clr-info); }
+  .race2-timer.done { color: var(--clr-ok); border-color: var(--clr-ok); }
+
+  /* CLI terminal */
+  .cli-term {
+    background:#0d0d0d; color:#5dff7a;
+    border-radius: var(--radius);
+    padding:.7rem .8rem;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem;
+    flex:1;
+    display:flex; flex-direction:column;
+    text-shadow: 0 0 3px rgba(93,255,122,.4);
+  }
+  .cli-history { flex:1; overflow-y:auto; line-height:1.6; margin-bottom:.4rem; }
+  .cli-history .cli-out { color:#bbb; }
+  .cli-history .cli-err { color:#ff6b6b; }
+  .cli-history .cli-cmd { color:#5dff7a; }
+  .cli-input-row { display:flex; gap:.3rem; align-items:center; }
+  .cli-input-row span { color:#5dff7a; }
+  .cli-input-row input {
+    flex:1; background:transparent; border:none; outline:none;
+    color:#5dff7a; font-family:inherit; font-size:inherit;
+    text-shadow: inherit;
+  }
+
+  /* GUI sim */
+  .gui-desk {
+    background: linear-gradient(135deg,#cbd5e1,#94a3b8);
+    border-radius: var(--radius);
+    flex:1; padding: .9rem;
+    position:relative;
+    min-height: 180px;
+    overflow:hidden;
+  }
+  .gui-files { display:flex; flex-wrap:wrap; gap:.7rem; }
+  .gui-file {
+    display:flex; flex-direction:column; align-items:center;
+    width: 64px; cursor:pointer;
+    padding:.3rem; border-radius: var(--radius);
+    user-select:none;
+    transition: background .12s;
+  }
+  .gui-file:hover { background: rgba(255,255,255,.4); }
+  .gui-file.selected { background: rgba(59,130,246,.35); }
+  .gui-file .icon { font-size:1.8rem; line-height:1; }
+  .gui-file .name {
+    font-size:.62rem; color:#1e293b; margin-top:.2rem;
+    background: rgba(255,255,255,.6);
+    padding:.05rem .25rem; border-radius:3px;
+    text-align:center; word-break:break-all;
+  }
+  .gui-menu {
+    position:absolute;
+    background:#fff; border:1px solid #94a3b8;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    padding: .25rem 0;
+    min-width: 130px;
+    z-index: 5;
+  }
+  .gui-menu button {
+    display:block; width:100%;
+    background:none; border:none;
+    padding: .35rem .7rem;
+    text-align:left;
+    font-size:.72rem; color:#1e293b;
+    cursor:pointer;
+    font-family: inherit;
+  }
+  .gui-menu button:hover { background:#e0e7ff; }
+  .gui-dialog {
+    position:absolute; left:50%; top:40%; transform:translate(-50%,-50%);
+    background:#fff; border:1px solid #94a3b8;
+    border-radius: var(--radius);
+    padding: .8rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,.25);
+    z-index: 6; min-width: 200px;
+  }
+  .gui-dialog label { display:block; font-size:.7rem; color:#1e293b; margin-bottom:.3rem; }
+  .gui-dialog input {
+    width:100%; padding:.35rem .5rem;
+    border:1px solid #94a3b8; border-radius:4px;
+    font-family:'IBM Plex Mono',monospace; font-size:.78rem;
+    margin-bottom:.5rem;
+  }
+  .gui-dialog .row { display:flex; gap:.4rem; justify-content:flex-end; }
+  .gui-dialog button {
+    padding:.3rem .7rem; font-size:.7rem;
+    border-radius:4px; border:1px solid #94a3b8;
+    background:#fff; cursor:pointer; font-family:inherit;
+  }
+  .gui-dialog button.primary { background:#3b82f6; color:#fff; border-color:#3b82f6; }
+  .race2-task {
+    background: var(--surface-2);
+    border:1px solid var(--border);
+    border-radius: var(--radius);
+    padding:.55rem .8rem;
+    font-size:.78rem; color: var(--text);
+    margin-bottom:.7rem;
+  }
+  .race2-task strong { font-family:'IBM Plex Mono',monospace; font-size:.72rem; letter-spacing:.05em; }
+  .race2-verdict {
+    margin-top:.7rem;
+    padding:.6rem .8rem;
+    background: var(--surface-2);
+    border:1px solid var(--border);
+    border-radius: var(--radius);
+    font-size:.76rem; color: var(--text-2);
+    line-height:1.55;
+    min-height: 1em;
+  }
+
+  /* ── App 5b: Assembly Robot ── */
+  .robo-grid-wrap { display:grid; grid-template-columns: 240px 1fr; gap:1rem; align-items:start; }
+  @media (max-width:680px){ .robo-grid-wrap { grid-template-columns:1fr; } }
+  .robo-board {
+    background:#0d0d0d;
+    border:1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0;
+    display: grid;
+    gap: 1px;
+    aspect-ratio: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .robo-cell {
+    background:#1a1a1a;
+    position:relative;
+  }
+  .robo-cell.wall { background:#525252; }
+  .robo-cell.goal { background: linear-gradient(135deg, #22c55e44, #22c55e22); border:1px solid #22c55e; }
+  .robo-cell.goal::before {
+    content:'★'; position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    color:#22c55e; font-size:1rem;
+  }
+  .robo-cell.trail { background:#2a4a3a; }
+  .robo-robot {
+    position:absolute;
+    background:#fbbf24;
+    border-radius: 3px;
+    transition: left .25s ease, top .25s ease, transform .2s ease;
+    display:flex; align-items:center; justify-content:center;
+    color:#000; font-weight:700;
+    font-family: 'IBM Plex Mono', monospace;
+    box-shadow: 0 0 8px rgba(251,191,36,.5);
+    width:  calc(100% / var(--rs, 5));
+    height: calc(100% / var(--rs, 5));
+    left:   calc(var(--rc, 0) * 100% / var(--rs, 5));
+    top:    calc(var(--rr, 0) * 100% / var(--rs, 5));
+    font-size: calc(80% / var(--rs, 5) * 5);
+  }
+  .robo-side { display:flex; flex-direction:column; gap:.5rem; }
+  .robo-level-pill {
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.62rem; letter-spacing:.12em; text-transform:uppercase;
+    color: var(--text-3);
+    padding:.2rem .55rem;
+    background: var(--surface-2);
+    border-radius: 999px;
+    align-self: flex-start;
+  }
+  .robo-instr-buttons { display:grid; grid-template-columns: repeat(2,1fr); gap:.3rem; }
+  .robo-instr-buttons button {
+    padding:.45rem .55rem;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.7rem;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    color: var(--text);
+    border-radius: var(--radius);
+    cursor:pointer;
+  }
+  .robo-instr-buttons button:hover { border-color: var(--accent); }
+  .robo-instr-buttons button:disabled { opacity:.4; cursor:not-allowed; }
+  .robo-program {
+    background:#0d0d0d;
+    border-radius: var(--radius);
+    padding:.55rem;
+    min-height: 90px;
+    max-height: 160px;
+    overflow-y:auto;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.72rem;
+    color:#5dff7a;
+    text-shadow: 0 0 3px rgba(93,255,122,.4);
+  }
+  .robo-program-line {
+    display:flex; justify-content:space-between; align-items:center;
+    padding: .2rem .4rem;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .robo-program-line:hover { background:#1a3a2a; }
+  .robo-program-line.active { background:#22c55e; color:#000; text-shadow:none; }
+  .robo-program-line .ln-num { color:#888; margin-right:.5rem; }
+  .robo-program-line .ln-x { color:#ff6b6b; opacity:.6; }
+  .robo-empty { color:#555; font-style:italic; padding:.3rem .4rem; }
+  .robo-msg {
+    font-size:.74rem; color: var(--text-2);
+    padding:.45rem .6rem;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    border:1px solid var(--border);
+    min-height: 1em;
+  }
+  .robo-msg.win { color: var(--clr-ok); border-color: var(--clr-ok); background: var(--clr-ok-bg); }
+  .robo-msg.fail { color: var(--clr-danger); border-color: var(--clr-danger); background: var(--clr-danger-bg); }
+
+  /* ════════════════════════════════════════════════
+     DESIGN UPGRADES for existing mini-apps
+     ════════════════════════════════════════════════ */
+
+  /* ─ App 1 polish: Classifier ─ */
+  .classifier-pool {
+    background: linear-gradient(135deg, var(--surface-2), var(--surface));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
+  }
+  .item-chip {
+    box-shadow: 0 1px 0 var(--border);
+    transition: transform .12s ease, border-color .15s, box-shadow .15s, background .15s;
+  }
+  .item-chip:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,.08); }
+  .item-chip::before {
+    content: '⋮⋮';
+    color: var(--text-3);
+    margin-right: .35rem;
+    letter-spacing: -2px;
+  }
+  .bin { position: relative; transition: background .15s, border-color .15s, transform .15s; }
+  .bin::before {
+    content:''; position:absolute; left:0; right:0; top:0; height:3px;
+    background: var(--border-2); border-radius: var(--radius) var(--radius) 0 0;
+    transition: background .2s;
+  }
+  .bin:nth-child(1)::before { background: var(--clr-info); }
+  .bin:nth-child(2)::before { background: var(--clr-warn); }
+  .bin:nth-child(3)::before { background: var(--accent); }
+  .bin h5 { padding-top: .25rem; }
+  .bin.dragover { transform: scale(1.015); box-shadow: 0 6px 16px rgba(0,0,0,.08); }
+
+  /* ─ App 2 polish: OS Function Matcher ─ */
+  .matcher .col { background: var(--surface-2); border:1px solid var(--border); border-radius: var(--radius); padding:.7rem; }
+  .matcher .col h5 {
+    display:flex; align-items:center; gap:.4rem;
+    margin: 0 0 .55rem;
+  }
+  .matcher .col h5::before {
+    content:''; display:inline-block; width:6px; height:6px; border-radius:50%;
+    background: var(--accent);
+  }
+  .matcher .col:first-child h5::before { background: var(--clr-info); }
+  .matcher .opt { box-shadow: 0 1px 0 var(--border); transition: border-color .15s, background .15s, transform .12s, box-shadow .15s; }
+  .matcher .opt:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,.06); }
+  .matcher .opt.active { box-shadow: 0 0 0 2px var(--accent) inset; transform: none; }
+  .matcher .opt.matched.ok::after {
+    content: ' ✓'; color: var(--clr-ok); font-weight: 700;
+  }
+
+  /* ─ App 4 polish: CPU Interrupt Simulator ─ */
+  .cpu-screen {
+    background: #0a0a0a !important;
+    border: 8px solid #1a1a1a !important;
+    border-radius: 10px !important;
+    box-shadow: 0 0 0 2px #2a2a2a, inset 0 0 30px rgba(0,0,0,.7) !important;
+    color: #5dff7a !important;
+    font-family: 'IBM Plex Mono', monospace !important;
+    position: relative;
+    overflow: hidden;
+    padding: 1rem !important;
+    text-shadow: 0 0 4px rgba(93,255,122,.35);
+  }
+  .cpu-screen::before {
+    content:''; position:absolute; inset:0;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0, rgba(255,255,255,.04) 1px, transparent 1px, transparent 3px);
+    pointer-events:none;
+  }
+  .cpu-screen > * { position: relative; z-index: 1; }
+  .cpu-state-pill {
+    background: transparent !important;
+    color: #5dff7a !important;
+    border-color: rgba(93,255,122,.4) !important;
+  }
+  .cpu-state-pill.busy {
+    background: rgba(59,130,246,.15) !important;
+    border-color: #3b82f6 !important;
+    color: #93c5fd !important;
+  }
+  .cpu-state-pill.servicing {
+    background: rgba(251,191,36,.18) !important;
+    border-color: #fbbf24 !important;
+    color: #fde68a !important;
+  }
+  .cpu-task { color: #e5e5e5 !important; font-family: 'IBM Plex Mono', monospace; }
+  .cpu-detail { color: rgba(93,255,122,.65) !important; }
+  .cpu-buttons button {
+    position: relative;
+    background: linear-gradient(180deg, var(--surface), var(--surface-2));
+    box-shadow: 0 1px 0 var(--border);
+    transition: border-color .15s, color .15s, transform .12s, box-shadow .15s;
+  }
+  .cpu-buttons button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,.08); }
+  .cpu-log {
+    background: #0d0d0d !important;
+    color: #d4d4d4 !important;
+    border-color: #2a2a2a !important;
+  }
+  .cpu-log .l-time { color: #6b7280 !important; }
+  .cpu-log .l-irq  { color: #fbbf24 !important; }
+  .cpu-log .l-isr  { color: #60a5fa !important; }
+  .cpu-log .l-resume { color: #5dff7a !important; }
+
+  /* ─ App 5 polish: Language Spot — dark editor look ─ */
+  .langquiz-snippet {
+    background: #0d1117 !important;
+    border-color: #1f2937 !important;
+    color: #d4d4d4 !important;
+    position: relative;
+    padding-left: 3.2rem !important;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+  }
+  .langquiz-snippet::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 2.4rem;
+    background: #161b22;
+    border-right: 1px solid #21262d;
+    background-image: repeating-linear-gradient(180deg, transparent 0, transparent calc(1.45em - 1px), rgba(255,255,255,.04) calc(1.45em - 1px), rgba(255,255,255,.04) 1.45em);
+  }
+  .langquiz-snippet::after {
+    content: '● ● ●';
+    position: absolute;
+    top: -.35rem; left: .6rem;
+    font-size: .5rem; letter-spacing: .15rem;
+    color: #6b7280;
+  }
+  .langquiz-progress span { height: 4px; border-radius: 999px; }
+  .langquiz-progress span.done.ok { box-shadow: 0 0 4px rgba(34,197,94,.5); }
+  .langquiz-actions button {
+    transition: background .15s, border-color .15s, transform .12s, box-shadow .15s;
+    box-shadow: 0 1px 0 var(--border);
+  }
+  .langquiz-actions button:hover:not(.right):not(.wrong) { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,.06); }
+
+  /* ─ App 6 polish: Compiler vs Interpreter Race ─ */
+  .racer {
+    position: relative;
+    background: linear-gradient(180deg, var(--surface), var(--surface-2)) !important;
+    overflow: hidden;
+  }
+  .racer::before {
+    content:''; position:absolute; left:0; right:0; bottom:0; height:3px;
+    background: var(--border);
+  }
+  .racer.compiler-racer::before { background: linear-gradient(90deg, var(--clr-info) var(--progress, 0%), var(--border) var(--progress, 0%)); }
+  .racer.interpreter-racer::before { background: linear-gradient(90deg, var(--clr-warn) var(--progress, 0%), var(--border) var(--progress, 0%)); }
+  .racer h5 {
+    display:flex; align-items:center; gap:.4rem;
+  }
+  .racer h5::before {
+    content:''; display:inline-block; width:8px; height:8px; border-radius:50%;
+    background: var(--border-2);
+    transition: background .2s, box-shadow .2s;
+  }
+  .racer.compiler-racer.live h5::before { background: var(--clr-info); box-shadow: 0 0 8px var(--clr-info); animation: pulse 1.2s infinite; }
+  .racer.interpreter-racer.live h5::before { background: var(--clr-warn); box-shadow: 0 0 8px var(--clr-warn); animation: pulse 1.2s infinite; }
+  .racer.winner { box-shadow: 0 0 0 2px var(--clr-ok) inset; }
+  .racer.winner h5::after {
+    content: '🏁'; margin-left: auto; font-size: 1rem;
+  }
+  .racer .stage { color: var(--text); font-weight: 500; }
+  .racer .ln {
+    border-radius: 3px;
+    transition: all .2s;
+  }
+  .racer .timer { display:flex; justify-content: space-between; align-items: center; }
+  .racer .timer::before { content: '⏱'; color: var(--text-3); }
+
+  /* ─ App 7 polish: Bug-fix IDE — VS Code window chrome ─ */
+  .bugfix {
+    background: #1e1e1e !important;
+    border-color: #0d0d0d !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+  .bugfix::before {
+    content: '● ● ● ⠀ code.py — debugger';
+    display: block;
+    background: #2d2d2d;
+    padding: .45rem .8rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .62rem;
+    color: #888;
+    letter-spacing: .04em;
+    border-bottom: 1px solid #0d0d0d;
+  }
+  .bugfix-toolbar {
+    background: #252526 !important;
+    border-bottom: 1px solid #0d0d0d !important;
+    margin-bottom: 0 !important;
+    padding: .55rem .7rem;
+  }
+  .bugfix-tool {
+    background: #3c3c3c !important;
+    border-color: #4a4a4a !important;
+    color: #d4d4d4 !important;
+  }
+  .bugfix-tool:hover:not(.used) { background: #094771 !important; border-color: #007acc !important; color: #fff !important; }
+  .bugfix-tool.used { opacity: .35; }
+  .bugfix-code {
+    background: #1e1e1e !important;
+    color: #d4d4d4 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: .8rem 0 .8rem 3rem !important;
+    position: relative;
+    counter-reset: bugln;
+  }
+  .bugfix-code::before {
+    content:''; position:absolute; left:0; top:0; bottom:0; width:2.4rem;
+    background: #1e1e1e; border-right: 1px solid #2d2d2d;
+  }
+  .bugfix-code .line {
+    counter-increment: bugln;
+    position: relative;
+    padding: 0 .8rem;
+  }
+  .bugfix-code .line::before {
+    content: counter(bugln);
+    position: absolute;
+    left: -2.4rem; width: 2.4rem;
+    text-align: right;
+    padding-right: .6rem;
+    color: #6b6b6b;
+    font-family: inherit;
+    font-size: .78rem;
+  }
+  .bugfix-code .line.bug {
+    background: rgba(239,68,68,.12) !important;
+    color: #f87171 !important;
+    text-decoration: wavy underline #f87171 !important;
+  }
+  .bugfix-code .line.fixed {
+    background: rgba(34,197,94,.12) !important;
+    color: #4ade80 !important;
+    text-decoration: none !important;
+  }
+  .bugfix-feedback {
+    background: #007acc;
+    color: #fff !important;
+    padding: .45rem .8rem;
+    margin: 0 !important;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .72rem !important;
+    min-height: 1.6em !important;
+  }
+  .bugfix-feedback:empty::before { content: 'status: ready'; opacity: .7; }
+
+  /* Card hover lift across all miniapps */
+  .miniapp { transition: box-shadow .25s ease, transform .15s ease; }
+  .miniapp:hover { box-shadow: 0 4px 18px rgba(0,0,0,.06); }
+  .mini-btn { transition: opacity .15s, transform .12s, box-shadow .15s; }
+  .mini-btn:active { transform: scale(.97); }
+
+  /* ── App 4: CPU interrupt simulator ── */
+  .cpu-sim {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 1rem;
+  }
+  @media (max-width: 600px) { .cpu-sim { grid-template-columns: 1fr; } }
+  .cpu-screen {
+    background: #fafaf7;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .9rem;
+    min-height: 200px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+  }
+  .cpu-state-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .62rem;
+    letter-spacing: .1em; text-transform: uppercase;
+    padding: .25rem .6rem;
+    border: 1px solid var(--border-2);
+    border-radius: 999px;
+    color: var(--text-3);
+    margin-bottom: .8rem;
+  }
+  .cpu-state-pill.busy { background: var(--clr-info-bg); border-color: var(--clr-info); color: var(--clr-info); }
+  .cpu-state-pill.servicing { background: var(--clr-warn-bg); border-color: var(--clr-warn); color: var(--clr-warn); animation: pulse 1s infinite; }
+  .cpu-task {
+    font-size: .85rem;
+    color: var(--text);
+    font-weight: 500;
+    margin-bottom: .4rem;
+  }
+  .cpu-detail {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .72rem;
+    color: var(--text-3);
+  }
+  .cpu-buttons {
+    display: flex; flex-direction: column; gap: .35rem;
+  }
+  .cpu-buttons button {
+    text-align: left;
+    padding: .55rem .75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .72rem;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .cpu-buttons button:hover:not(:disabled) { border-color: var(--accent); color: var(--text); }
+  .cpu-buttons button:disabled { opacity: .4; cursor: not-allowed; }
+  .cpu-log {
+    margin-top: .8rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .6rem .8rem;
+    height: 120px; overflow-y: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .7rem;
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+  .cpu-log .l-time { color: var(--text-3); margin-right: .5rem; }
+  .cpu-log .l-irq  { color: var(--clr-warn); }
+  .cpu-log .l-isr  { color: var(--clr-info); }
+  .cpu-log .l-resume { color: var(--clr-ok); }
+
+  /* ── App 5: Language classifier ── */
+  .langquiz-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    background: var(--surface);
+  }
+  .langquiz-snippet {
+    background: #f4f4f0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .8rem 1rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .82rem;
+    color: var(--text);
+    margin-bottom: .8rem;
+    white-space: pre;
+    overflow-x: auto;
+    line-height: 1.7;
+  }
+  .langquiz-actions { display: flex; gap: .5rem; flex-wrap: wrap; }
+  .langquiz-actions button {
+    flex: 1; min-width: 130px;
+    padding: .55rem .8rem;
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: .78rem;
+    color: var(--text);
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .langquiz-actions button:hover { background: var(--surface-2); }
+  .langquiz-actions button.right { background: var(--clr-ok-bg); border-color: var(--clr-ok); color: var(--clr-ok); }
+  .langquiz-actions button.wrong { background: var(--clr-danger-bg); border-color: var(--clr-danger); color: var(--clr-danger); }
+  .langquiz-feedback {
+    margin-top: .7rem;
+    font-size: .78rem;
+    color: var(--text-2);
+    line-height: 1.6;
+    min-height: 1.3em;
+  }
+  .langquiz-progress {
+    display: flex; gap: 4px; margin-bottom: .8rem;
+  }
+  .langquiz-progress span {
+    flex: 1; height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+  }
+  .langquiz-progress span.done.ok { background: var(--clr-ok); }
+  .langquiz-progress span.done.no { background: var(--clr-danger); }
+
+  /* ── App 6: Compiler vs Interpreter race ── */
+  .race {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  }
+  @media (max-width: 600px) { .race { grid-template-columns: 1fr; } }
+  .racer {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .9rem;
+    background: var(--surface);
+  }
+  .racer h5 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .65rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: .6rem;
+  }
+  .racer .stage {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .72rem;
+    color: var(--text-2);
+    height: 1.2em;
+    margin-bottom: .5rem;
+  }
+  .racer .lines { display: flex; flex-direction: column; gap: 2px; }
+  .racer .ln {
+    padding: .25rem .5rem;
+    border-left: 2px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .72rem;
+    color: var(--text-3);
+    transition: border-color .2s, color .2s, background .2s;
+  }
+  .racer .ln.translating { border-color: var(--clr-info); color: var(--clr-info); background: var(--clr-info-bg); }
+  .racer .ln.executing { border-color: var(--clr-warn); color: var(--clr-warn); background: var(--clr-warn-bg); }
+  .racer .ln.done { border-color: var(--clr-ok); color: var(--clr-ok); }
+  .racer .timer {
+    margin-top: .6rem;
+    text-align: right;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .72rem;
+    color: var(--text-3);
+  }
+  .racer .timer .num { color: var(--text); font-weight: 700; }
+
+  /* ── App 7: Bug-fix IDE ── */
+  .bugfix {
+    background: #fafaf7;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .8rem;
+  }
+  .bugfix-toolbar {
+    display: flex; gap: .35rem; flex-wrap: wrap;
+    margin-bottom: .7rem;
+    padding-bottom: .6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .bugfix-tool {
+    padding: .4rem .65rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .65rem; letter-spacing: .04em;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .bugfix-tool:hover:not(.used) { border-color: var(--accent); color: var(--text); }
+  .bugfix-tool.used { opacity: .35; cursor: not-allowed; }
+  .bugfix-code {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .7rem .9rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: .82rem;
+    color: var(--text);
+    line-height: 1.85;
+    min-height: 140px;
+  }
+  .bugfix-code .line { display: block; }
+  .bugfix-code .line.bug {
+    background: var(--clr-danger-bg);
+    color: var(--clr-danger);
+    text-decoration: wavy underline;
+    padding: 0 .2rem;
+    border-radius: 2px;
+  }
+  .bugfix-code .line.fixed {
+    background: var(--clr-ok-bg);
+    color: var(--clr-ok);
+  }
+  .bugfix-feedback {
+    margin-top: .6rem;
+    font-size: .78rem;
+    color: var(--text-2);
+    line-height: 1.6;
+    min-height: 1.4em;
+  }
+
+  /* ── Topic Quiz (per-topic 5Q) ── */
+  .tq-progress { display:flex; gap:4px; margin-bottom:1rem; }
+  .tq-progress span { flex:1; height:5px; background:var(--border); border-radius:999px; transition:background .25s; }
+  .tq-progress span.done.ok { background: var(--clr-ok); box-shadow: 0 0 4px rgba(34,197,94,.4); }
+  .tq-progress span.done.no { background: var(--clr-danger); }
+  .tq-progress span.now { background: var(--accent); }
+  .tq-q { font-size:.9rem; color:var(--text); font-weight:500; margin-bottom:.9rem; line-height:1.55; }
+  .tq-q .num { font-family:'IBM Plex Mono',monospace; font-size:.62rem; letter-spacing:.12em; color:var(--text-3); display:block; margin-bottom:.3rem; text-transform:uppercase; }
+  .tq-opts { display:grid; gap:.4rem; }
+  .tq-opt {
+    display:flex; align-items:center; gap:.7rem;
+    width:100%; text-align:left;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: .55rem .7rem;
+    font-family: inherit; font-size: .82rem; color: var(--text);
+    cursor: pointer;
+    transition: background .15s, border-color .15s, transform .12s, box-shadow .15s;
+    box-shadow: 0 1px 0 var(--border);
+  }
+  .tq-opt:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,.06); }
+  .tq-opt .letter {
+    font-family:'IBM Plex Mono', monospace;
+    font-size:.68rem; font-weight:600;
+    background: var(--surface-2);
+    color: var(--text-2);
+    width:22px; height:22px;
+    border-radius: 4px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .tq-opt .opt-text { flex:1; }
+  .tq-opt.right { background: var(--clr-ok-bg); border-color: var(--clr-ok); color: var(--clr-ok); }
+  .tq-opt.right .letter { background: var(--clr-ok); color:#fff; }
+  .tq-opt.wrong { background: var(--clr-danger-bg); border-color: var(--clr-danger); color: var(--clr-danger); }
+  .tq-opt.wrong .letter { background: var(--clr-danger); color:#fff; }
+  .tq-opt:disabled { cursor:default; }
+  .tq-feedback {
+    margin-top: .8rem;
+    padding: .55rem .8rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    font-size: .78rem;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .tq-feedback.ok { border-left-color: var(--clr-ok); }
+  .tq-feedback.no { border-left-color: var(--clr-danger); }
+  .tq-next { margin-top: .7rem; display:flex; justify-content:flex-end; }
+  .tq-summary { text-align:center; padding: 1rem .5rem; }
+  .tq-summary .score-circle {
+    width: 88px; height:88px; border-radius:50%;
+    border: 4px solid var(--accent);
+    display:inline-flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    margin-bottom:.55rem;
+  }
+  .tq-summary .score-circle.full { border-color: var(--clr-ok); }
+  .tq-summary .score-circle .num { font-size:1.6rem; font-weight:700; color:var(--text); line-height:1; }
+  .tq-summary .score-circle .of { font-size:.68rem; color:var(--text-3); margin-top:.1rem; font-family:'IBM Plex Mono',monospace; }
+  .tq-summary h4 { font-size:.95rem; color:var(--text); margin: .3rem 0 .4rem; }
+  .tq-summary p { font-size:.78rem; color:var(--text-2); margin-bottom:.7rem; }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="logo">Cambridge CS</div>
+  <a href="index.html"><span class="ch-num">—</span> Home</a>
+  <a href="chapter1.html"><span class="ch-num">01</span> Data Representation</a>
+  <a href="chapter2.html"><span class="ch-num">02</span> Data Transmission</a>
+  <a href="chapter3.html"><span class="ch-num">03</span> Hardware</a>
+  <a href="chapter4.html" class="active"><span class="ch-num">04</span> Software</a>
+  <a href="chapter5.html"><span class="ch-num">05</span> Cyber Threats</a>
+  <a href="chapter6.html"><span class="ch-num">06</span> Emerging Tech</a>
+</nav>
+
+<header class="ch-header">
+  <span class="chapter-tag">Cambridge IGCSE Computer Science · Chapter 04</span>
+  <h1>Software</h1>
+  <p class="subtitle">From operating systems to compilers — how software brings hardware to life and programs are translated for the CPU. Each topic ships with a hands-on mini-app.</p>
+  <div class="pills">
+    <span class="pill">7 Mini Apps</span>
+    <span class="pill">Operating Systems</span>
+    <span class="pill">Interrupts</span>
+    <span class="pill">Languages</span>
+    <span class="pill">Translators</span>
+    <span class="pill">IDEs</span>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="active" onclick="showTab('types',this)">Software Types</button>
+  <button onclick="showTab('os',this)">Operating Systems</button>
+  <button onclick="showTab('booting',this)">Booting Up</button>
+  <button onclick="showTab('interrupts',this)">Interrupts</button>
+  <button onclick="showTab('languages',this)">Languages</button>
+  <button onclick="showTab('translators',this)">Translators</button>
+  <button onclick="showTab('ide',this)">IDEs</button>
+  <button onclick="showTab('summary',this)">Summary</button>
+  <button onclick="showTab('glossary',this)">Glossary</button>
+  <button onclick="showTab('quiz',this)">Quiz</button>
+</nav>
+
+<!-- ═══ SOFTWARE TYPES ═══ -->
+<div id="types" class="tab-section active">
+  <h1 class="section-title">4.1 Software Types</h1>
+  <p class="section-sub">System software, application software and utility programs.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>The Software Hierarchy</h2>
+    <div class="diagram-center">
+      <div class="layer app">APPLICATION SOFTWARE — what the user runs</div>
+      <div style="font-size:.7rem;color:var(--text-3);margin:.2rem 0;">↓</div>
+      <div class="layer sys">SYSTEM SOFTWARE — makes hardware usable</div>
+      <div style="font-size:.7rem;color:var(--text-3);margin:.2rem 0;">↓</div>
+      <div class="layer hw">HARDWARE — CPU, RAM, storage…</div>
+    </div>
+    <p>Every computer begins life as a pile of connected hardware — a CPU, some memory, a few peripherals. Without software, none of it moves. The software stack solves that in two layers: <strong>system software</strong> that wakes the hardware up and keeps it sane, and <strong>application software</strong> that lets a person actually do something useful with the machine.</p>
+
+    <div class="compare-grid" style="margin-top:.7rem;">
+      <div class="compare-col neutral">
+        <h4>General features of system software</h4>
+        <ul style="font-size:.81rem;padding-left:1.1rem;line-height:1.7;color:var(--text-2);">
+          <li>A set of programs that <strong>control and manage</strong> the operation of computer hardware</li>
+          <li>Provides a <strong>platform</strong> on which other software can run</li>
+          <li>Lets hardware and software run together without conflicts</li>
+          <li>Provides the <strong>Human Computer Interface (HCI)</strong></li>
+          <li>Controls the allocation and usage of hardware resources</li>
+        </ul>
+      </div>
+      <div class="compare-col neutral">
+        <h4>General features of application software</h4>
+        <ul style="font-size:.81rem;padding-left:1.1rem;line-height:1.7;color:var(--text-2);">
+          <li>Used to perform specific <strong>applications (apps)</strong> on a computer</li>
+          <li>Lets the user perform specific <strong>tasks</strong> using the computer's resources</li>
+          <li>May be a <strong>single program</strong> (Notepad) or a <strong>suite</strong> (Microsoft Office)</li>
+          <li>User executes it <strong>as and when they require</strong></li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:.82rem;color:var(--text-3);margin-top:.6rem;"><strong>Utility programs</strong> are a sub-category of system software — small housekeeping tools (anti-virus, backup, defragmentation, file compression). Some run quietly in the background (a virus checker), others the user starts deliberately (file compression). A <strong>linker</strong> (also system software) takes the object files produced by a compiler from different modules and combines them into one runnable program.</p>
+
+    <!-- ─ Mini App 1: Classifier ─ -->
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Mini App 01</span>
+          <span class="title">Software Classifier</span>
+        </div>
+        <button class="mini-btn ghost" onclick="resetClassifier()">Reset</button>
+      </div>
+      <div class="miniapp-body">
+        <p style="font-size:.8rem;color:var(--text-2);margin-bottom:.7rem;">Drag each program into the correct category.</p>
+        <div id="classifier-pool" class="classifier-pool"></div>
+        <div class="classifier-bins">
+          <div class="bin" data-cat="system"><h5>System</h5><div class="bin-items"></div></div>
+          <div class="bin" data-cat="app"><h5>Application</h5><div class="bin-items"></div></div>
+          <div class="bin" data-cat="utility"><h5>Utility</h5><div class="bin-items"></div></div>
+        </div>
+        <div class="classifier-status">
+          <span id="cls-status">Drag to begin —</span>
+          <span id="cls-score">0 / 0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Software Types card -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Application Software — Types &amp; Examples</h2>
+    <p>Application software is what most people picture when they hear the word "computer". It lets a user perform specific tasks using the machine's resources — write an essay, balance accounts, edit a holiday photo, model a chemical plant. It can be a <strong>single program</strong> (Notepad) or a <strong>suite</strong> of related programs sold together (Microsoft Office, Adobe Creative Cloud). The user launches it on demand; it sits on top of the operating system and uses the OS to reach the hardware.</p>
+    <div class="summary-grid" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.7rem;margin-top:.9rem;">
+      <div class="summary-tile">
+        <h4>Spreadsheet</h4>
+        <p>Organises and manipulates numerical data (integers, real numbers, dates) on a grid of lettered columns and numbered rows. Each cell has a unique address such as <code>B6</code>. Key features: <strong>formulas</strong> that recalculate automatically, the ability to produce <strong>graphs</strong> from data, and <strong>modelling / "what-if"</strong> calculations — change one input and watch every dependent cell update.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Database</h4>
+        <p>Organises, manipulates and analyses data stored in one or more <strong>tables</strong>. Each row is a <em>record</em> (one customer, one product) and each column is a <em>field</em> (Name, Price, Quantity). Supports <strong>queries</strong> to pull out matching records, <strong>reports</strong> that format the results, and add / delete / modify operations on individual records.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Word Processor</h4>
+        <p>Manipulates text documents such as essays or reports. Text is entered using a keyboard and the software supplies the tools: <strong>create, edit, save</strong>; <strong>copy &amp; paste</strong>; <strong>spell-checker and thesaurus</strong>; importing photos into a structured page layout; even <strong>translation</strong> into a foreign language.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Apps (Mobile)</h4>
+        <p>"Apps" is just short for <em>applications</em> — the term has stuck for software that runs on phones and tablets. Downloaded from an <strong>App Store</strong>, ranging from games to sophisticated banking. Common examples: video / music streaming, <strong>GPS</strong> navigation, and camera apps that capture, store and manipulate photos.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Control &amp; Measuring</h4>
+        <p>Interfaces a computer or microprocessor with <strong>sensors</strong>. Two main roles: <strong>measure</strong> physical quantities in the real world (e.g. temperature), and <strong>control</strong> applications by comparing sensor data with stored values and sending signals back — for example, opening a valve to add acid to a chemical mix and shift the pH.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Video Editing</h4>
+        <p>Manipulates raw video to produce a finished film. Allows the user to <strong>rearrange, add and remove</strong> sections of video or audio, apply <strong>colour correction</strong>, filters and other enhancements, add titles, alter the soundtrack, and create smooth <strong>transitions</strong> between clips.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Graphics Manipulation</h4>
+        <p>Edits images in two very different ways. <strong>Bitmap</strong> editors change individual pixels (each carrying brightness and colour). <strong>Vector</strong> editors manipulate lines, curves and text rather than pixels — so the result scales smoothly to any size. The choice depends on the original image's format.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Photo Editing</h4>
+        <p>Lets a user manipulate digital photographs — change brightness, contrast, colour saturation, or remove red-eye. Also supports very complex effects: changing facial features, combining photos, removing unwanted items, and "touching up" a shot to make it as perfect as possible.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Utility Programs card -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>System Software — Utility Programs</h2>
+    <p>Utilities are part of system software designed to help <strong>manage, maintain and control</strong> computer resources. Some run in the background without any user input — a <em>virus checker</em> is the obvious example — while others wait for the user to start them, such as a file-compression tool you reach for when emailing a folder of photos. They are small, focused tools that keep the system healthy and the data safe.</p>
+
+    <table class="styled-table" style="margin-top:.8rem;">
+      <thead><tr><th>Utility</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Virus checker (anti-virus)</strong></td>
+          <td>Runs in the background scanning every file before it loads. Compares files against a <strong>database of known viruses</strong>; performs <span class="kw">heuristic checking</span> — looking for <em>behaviour</em> that suggests a virus, even one not yet in the database. Suspect files are placed in <span class="kw">quarantine</span> for automatic deletion, or for the user to review. A clean file flagged as infected is called a <strong>false positive</strong> — the main drawback of heuristic detection. Must be kept up to date as new viruses appear daily; a full system scan is recommended weekly.</td>
+        </tr>
+        <tr>
+          <td><strong>Defragmentation</strong></td>
+          <td>Over time, as files are deleted, extended and rewritten, an HDD's data ends up scattered across non-adjacent sectors and tracks — every read needs many head movements. A defragmenter rearranges the blocks so each file occupies <span class="kw">contiguous</span> sectors, slashing access time. <em>Not needed for SSDs</em>, which have no moving heads and read any block in equal time.</td>
+        </tr>
+        <tr>
+          <td><strong>Back-up software</strong></td>
+          <td>Schedules automatic copies and only backs up files that have <strong>changed</strong> since last time (saving space). Best practice: three versions of every file — (1) the working copy on the internal HDD/SSD, (2) a local backup on a portable drive, (3) a remote backup well away from the computer (e.g. cloud storage). Windows uses <strong>File History</strong> (snapshots every hour to an external HDD, kept forever by default); Mac OS uses <strong>Time Machine</strong> (hourly for a day, daily for a month, weekly thereafter — oldest backups deleted when the drive fills).</td>
+        </tr>
+        <tr>
+          <td><strong>Security software</strong></td>
+          <td>An umbrella utility. Manages access control and user accounts; integrates with anti-virus and anti-spyware; protects network interfaces (firewalls); uses <strong>encryption / decryption</strong> so intercepted data is meaningless without a key; oversees software updates — verifying each update comes from a <em>legitimate source</em>.</td>
+        </tr>
+        <tr>
+          <td><strong>Screensaver</strong></td>
+          <td>Originally invented to protect old <strong>CRT</strong> monitors from "phosphor burn" caused by a static image — irrelevant for modern LCD / OLED panels. Today screensavers play three roles: (1) personalising the desktop, (2) acting as a <strong>security lock</strong> — after a few minutes of inactivity the user is automatically logged out, (3) triggering background tasks that should only run when the machine is idle, such as a virus scan or a distributed-computing job.</td>
+        </tr>
+        <tr>
+          <td><strong>Device drivers</strong></td>
+          <td>Software that talks to the operating system and translates data into a format that a specific hardware peripheral understands. The instant a USB device is plugged in, the OS hunts for the matching driver — fail to find one and you see "device not recognised". Every USB driver contains <span class="kw">descriptors</span>: <strong>Vendor ID (VID)</strong>, <strong>Product ID (PID)</strong> and a unique serial number. Without a serial number, the OS treats the device as new every single time it's plugged in.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="background:var(--clr-info-bg);border:1px solid var(--clr-info);border-radius:var(--radius);padding:.7rem 1rem;margin-top:.9rem;font-size:.82rem;color:var(--text-2);line-height:1.65;">
+      <strong style="color:var(--clr-info);">Defragmentation illustrated</strong><br>
+      When files are deleted and extended over time, data blocks scatter across different sectors. Example — File 1 ends up in sectors 0–3 and 10–11, File 3 spans two tracks. The defragmenter rewrites blocks so each file occupies consecutive sectors on one track, cutting head movements dramatically.
+    </div>
+  </div>
+
+  <!-- ─ Topic Quiz 4.1 ─ -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Check your understanding</h2>
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Topic Quiz · 4.1</span>
+          <span class="title">Software Types — 5 questions</span>
+        </div>
+        <button class="mini-btn ghost" onclick="tqReset('types')">↺ Restart</button>
+      </div>
+      <div class="miniapp-body">
+        <div class="tq-progress" id="tq-prog-types"></div>
+        <div id="tq-body-types"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ OPERATING SYSTEMS ═══ -->
+<div id="os" class="tab-section">
+  <h1 class="section-title">4.2 Operating Systems</h1>
+  <p class="section-sub">The 9 functions of an OS, plus CLI vs GUI.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>9 Functions of an OS</h2>
+    <p>An <span class="kw">operating system</span> is software running quietly in the background of every computer. Without it, most machines would be almost unusable — you'd be talking to bare hardware. It does three jobs at once: it <strong>provides an environment</strong> in which applications can run, it gives <strong>humans an interface</strong> to drive the machine, and it <strong>disguises the complexity</strong> of software and hardware underneath. Familiar examples include Microsoft Windows, Apple macOS, Linux, Google Android and Apple iOS (the last two designed primarily for phones and tablets). On a desktop the OS lives on the HDD or SSD because it is large; on a phone it sits on solid-state storage for the same reason — there's simply no room for a hard disk.</p>
+    <div class="summary-grid">
+      <div class="summary-tile"><h4>1. HCI</h4><p>Provides CLI or GUI for user interaction.</p></div>
+      <div class="summary-tile"><h4>2. Multitasking</h4><p>Runs several programs by sharing CPU time.</p></div>
+      <div class="summary-tile"><h4>3. Memory management</h4><p>Allocates RAM to programs; prevents interference.</p></div>
+      <div class="summary-tile"><h4>4. Security</h4><p>Manages logins, passwords and permissions.</p></div>
+      <div class="summary-tile"><h4>5. Peripheral management</h4><p>Controls I/O devices via device drivers.</p></div>
+      <div class="summary-tile"><h4>6. File management</h4><p>Create, open, save, copy, delete and organise files.</p></div>
+      <div class="summary-tile"><h4>7. Interrupt handling</h4><p>Responds to signals from devices or programs.</p></div>
+      <div class="summary-tile"><h4>8. Platform for apps</h4><p>Provides the environment applications need to run.</p></div>
+      <div class="summary-tile"><h4>9. User accounts</h4><p>Multiple users with separate files and permissions.</p></div>
+    </div>
+
+    <!-- ─ Mini App 2: Function matcher ─ -->
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Mini App 02</span>
+          <span class="title">Match the OS Function</span>
+        </div>
+        <button class="mini-btn ghost" onclick="resetMatcher()">Reset</button>
+      </div>
+      <div class="miniapp-body">
+        <p style="font-size:.8rem;color:var(--text-2);margin-bottom:.7rem;">Click a scenario, then click the OS function that handles it.</p>
+        <div class="matcher">
+          <div class="col">
+            <h5>Scenario</h5>
+            <div id="match-left"></div>
+          </div>
+          <div class="col">
+            <h5>OS Function</h5>
+            <div id="match-right"></div>
+          </div>
+        </div>
+        <div class="classifier-status">
+          <span id="match-status">Pick a scenario —</span>
+          <span id="match-score">0 / 0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>CLI vs GUI — Full Comparison</h2>
+    <p>The HCI (Human Computer Interface) is provided by the OS in one of two forms.</p>
+    <table class="styled-table" style="margin-top:.8rem;">
+      <thead><tr><th>Interface</th><th>Advantages</th><th>Disadvantages</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>CLI</strong><br><span style="font-size:.75rem;color:var(--text-3);">Command Line Interface</span></td>
+          <td>
+            <ul style="font-size:.8rem;padding-left:1.1rem;line-height:1.7;">
+              <li>Direct communication with the computer</li>
+              <li>Not restricted to pre-determined options</li>
+              <li>Can alter configuration settings</li>
+              <li>Uses very little memory</li>
+            </ul>
+          </td>
+          <td>
+            <ul style="font-size:.8rem;padding-left:1.1rem;line-height:1.7;">
+              <li>Must learn many commands</li>
+              <li>All commands typed — slow and error-prone</li>
+              <li>Exact spelling, format and case required</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>GUI</strong><br><span style="font-size:.75rem;color:var(--text-3);">Graphical User Interface (WIMP)</span></td>
+          <td>
+            <ul style="font-size:.8rem;padding-left:1.1rem;line-height:1.7;">
+              <li>No commands to learn</li>
+              <li>More user-friendly — icons represent apps</li>
+              <li>Mouse click or touch to launch</li>
+              <li>Post-WIMP: supports pinch, rotate, swipe</li>
+            </ul>
+          </td>
+          <td>
+            <ul style="font-size:.8rem;padding-left:1.1rem;line-height:1.7;">
+              <li>Uses considerably more memory than CLI</li>
+              <li>User limited to icons provided</li>
+              <li>Requires a full OS like Windows — uses more RAM</li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:.8rem;color:var(--text-2);margin-top:.8rem;"><strong>Who uses each?</strong> CLI: programmers, analysts, technicians — anyone who needs direct communication with the computer to develop software, find errors and remove them, or initiate <em>memory dumps</em> (capture the exact contents of memory at one instant). GUI: end-users who don't have, and don't need, deep knowledge of how the computer works — running apps, playing games, browsing photos.</p>
+    <div style="background:var(--clr-info-bg);border:1px solid var(--clr-info);border-radius:var(--radius);padding:.65rem 1rem;margin-top:.85rem;font-size:.81rem;color:var(--text-2);line-height:1.6;">
+      <strong style="color:var(--clr-info);">WIMP &amp; post-WIMP.</strong> The standard PC paradigm is <strong>WIMP</strong> — Windows, Icons, Menus, Pointing device — built around the mouse. Each window holds an application; modern systems let several be open at once. A <em>windows manager</em> orchestrates the interaction between windows, applications, the pointer and the cursor's position. Phones and tablets use <strong>post-WIMP</strong>: fingers directly on the screen, with gestures like pinching and rotating that would be awkward with a single mouse pointer.
+    </div>
+  </div>
+
+  <!-- OS Functions Detail -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>OS Functions — In Depth</h2>
+
+    <h3 style="margin-top:1rem;">Memory Management</h3>
+    <p style="font-size:.83rem;color:var(--text-2);">Controls primary storage (RAM) while programs are running. The OS:</p>
+    <ul style="font-size:.82rem;color:var(--text-2);padding-left:1.2rem;line-height:1.75;margin-bottom:.8rem;">
+      <li>Moves data <strong>between RAM and HDD/SSD</strong> during program execution — keeping the most-used pages in fast memory</li>
+      <li><strong>Keeps track of every memory location</strong>: what's free, what's allocated, and to which process</li>
+      <li>Carries out <strong>memory protection</strong> — stops two competing applications using the same memory location at the same time. Without it: data could be <em>lost</em>; applications could produce <em>incorrect results</em> from corrupted values; misplaced data could create a <em>security hole</em> by becoming visible to other software; in extreme cases the whole computer could <em>crash</em>.</li>
+    </ul>
+
+    <h3>Security Management</h3>
+    <p style="font-size:.83rem;color:var(--text-2);">Ensures the <strong>integrity, confidentiality and availability</strong> of data by:</p>
+    <ul style="font-size:.82rem;color:var(--text-2);padding-left:1.2rem;line-height:1.75;margin-bottom:.8rem;">
+      <li>Applying OS updates and keeping anti-virus software current</li>
+      <li>Communicating with firewalls to check all incoming/outgoing traffic</li>
+      <li>Setting up user accounts, passwords and user IDs with privilege levels</li>
+      <li>Maintaining access rights and offering data recovery / system restore</li>
+    </ul>
+
+    <h3>Hardware Peripheral Management</h3>
+    <p style="font-size:.83rem;color:var(--text-2);">Controls all I/O devices using device drivers. Example — printing a document:</p>
+    <ol style="font-size:.82rem;color:var(--text-2);padding-left:1.2rem;line-height:1.8;margin-bottom:.8rem;">
+      <li>Printer driver is located and loaded into memory</li>
+      <li>Data is sent to the <span class="kw">printer buffer</span></li>
+      <li>If the printer is busy or low priority, data queues in the <span class="kw">print queue</span></li>
+      <li>Control commands are sent throughout the printing process</li>
+      <li>Error messages and interrupts from the printer are received and handled</li>
+    </ol>
+
+    <h3>File Management</h3>
+    <ul style="font-size:.82rem;color:var(--text-2);padding-left:1.2rem;line-height:1.75;margin-bottom:.8rem;">
+      <li>Enforces naming conventions (e.g. <code>report.docx</code>, <code>data.csv</code>)</li>
+      <li>Performs operations: create, open, close, delete, rename, copy, move</li>
+      <li>Maintains directory structures and access rights</li>
+      <li>Allocates memory — reads files from HDD/SSD into RAM</li>
+    </ul>
+
+    <h3>Multitasking</h3>
+    <p style="font-size:.83rem;color:var(--text-2);">Lets a computer carry out more than one process at a time. Each process shares the hardware resources under OS control. To stop processes clashing, the OS constantly monitors the status of each one. The three rules below are collectively known as <strong>pre-emptive multitasking</strong>:</p>
+    <ul style="font-size:.82rem;color:var(--text-2);padding-left:1.2rem;line-height:1.75;margin-bottom:.8rem;">
+      <li>Resources are allocated to a process for a specific <em>time limit</em></li>
+      <li>The process can be <em>interrupted</em> while it is running</li>
+      <li>Each process is given a <em>priority</em> — the risk is that a very low-priority process can be <em>starved</em> of resources</li>
+    </ul>
+    <p style="font-size:.81rem;color:var(--text-3);margin-bottom:.8rem;">Through good multitasking management, main memory, HDD/SSD and virtual memory are all used more efficiently — squeezing the most out of CPU time.</p>
+
+    <h3>User Accounts</h3>
+    <p style="font-size:.82rem;color:var(--text-2);">Each user logs in with a username and password. The OS:</p>
+    <ul style="font-size:.82rem;color:var(--text-2);padding-left:1.2rem;line-height:1.75;">
+      <li>Stores each user's files in separate, protected memory areas</li>
+      <li>Lets users customise their own screen layout and settings</li>
+      <li>Allows an <span class="kw">administrator</span> to create, delete and restrict accounts</li>
+      <li>Enforces <em>multi-access levels</em> — e.g. a clerk can order stationery but cannot access personal data</li>
+    </ul>
+  </div>
+
+  <!-- ─ Mini App 2b: CLI vs GUI Race ─ -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>CLI vs GUI — feel the difference</h2>
+    <p style="font-size:.83rem;color:var(--text-2);margin-bottom:.6rem;">Same task, two interfaces. Race them side-by-side to feel why power-users love the command line and beginners love the desktop.</p>
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Mini App 02b</span>
+          <span class="title">CLI vs GUI Race</span>
+        </div>
+        <div style="display:flex;gap:.4rem;">
+          <button class="mini-btn ghost" onclick="cgNext()">Next Task</button>
+          <button class="mini-btn" onclick="cgStart()">▶ Start Race</button>
+        </div>
+      </div>
+      <div class="miniapp-body">
+        <div class="race2-task" id="cg-task">Press <strong>Start Race</strong> to begin.</div>
+        <div class="race2">
+          <!-- CLI side -->
+          <div class="race2-panel" id="cg-cli-panel">
+            <div class="race2-head">
+              <h5>Command Line</h5>
+              <span class="race2-timer" id="cg-cli-timer">0.00s</span>
+            </div>
+            <div class="cli-term">
+              <div class="cli-history" id="cg-cli-history"></div>
+              <div class="cli-input-row">
+                <span>$</span>
+                <input id="cg-cli-input" type="text" autocomplete="off" spellcheck="false" disabled>
+              </div>
+            </div>
+          </div>
+          <!-- GUI side -->
+          <div class="race2-panel" id="cg-gui-panel">
+            <div class="race2-head">
+              <h5>Graphical UI</h5>
+              <span class="race2-timer" id="cg-gui-timer">0.00s</span>
+            </div>
+            <div class="gui-desk" id="cg-gui-desk"></div>
+          </div>
+        </div>
+        <div class="race2-verdict" id="cg-verdict">Tip: CLI rewards memorising syntax. GUI rewards discoverability. Try both.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─ Topic Quiz 4.2 ─ -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Check your understanding</h2>
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Topic Quiz · 4.2</span>
+          <span class="title">Operating Systems — 5 questions</span>
+        </div>
+        <button class="mini-btn ghost" onclick="tqReset('os')">↺ Restart</button>
+      </div>
+      <div class="miniapp-body">
+        <div class="tq-progress" id="tq-prog-os"></div>
+        <div id="tq-body-os"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BOOTING ═══ -->
+<div id="booting" class="tab-section">
+  <h1 class="section-title">4.3 Booting Up</h1>
+  <p class="section-sub">Firmware, BIOS, and how an application runs.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Hardware vs Firmware vs OS</h2>
+    <table class="styled-table">
+      <thead><tr><th>Term</th><th>What it is</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td>Hardware</td><td>Physical components</td><td>CPU, RAM, hard drive</td></tr>
+        <tr><td>Firmware</td><td>Low-level program on ROM/EEPROM chip</td><td>BIOS</td></tr>
+        <tr><td>OS</td><td>Loaded from storage to RAM at boot</td><td>Windows, Linux</td></tr>
+        <tr><td>Application</td><td>Runs on top of OS</td><td>Word, Chrome</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ─ Mini App 3: Boot Sequence Builder ─ -->
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Mini App 03</span>
+          <span class="title">Boot Sequence Builder</span>
+        </div>
+        <div style="display:flex;gap:.4rem;">
+          <button class="mini-btn ghost" onclick="bsbReset()">Reset</button>
+          <button class="mini-btn" onclick="bsbPowerOn()">⏻ Power On</button>
+        </div>
+      </div>
+      <div class="miniapp-body">
+        <p style="font-size:.8rem;color:var(--text-2);margin-bottom:.9rem;">Drag each step into a slot in the right order, then press <strong>Power On</strong>. Boot it right or watch it crash with a BSOD.</p>
+        <div class="bsb-grid">
+          <div class="bsb-pc">
+            <div id="bsb-screen" class="bsb-screen off">
+              <div id="bsb-screen-content">⏻<div style="font-size:.6rem;letter-spacing:.25em;margin-top:.4rem;">OFF</div></div>
+            </div>
+            <div class="bsb-stand"></div>
+            <div class="bsb-base"></div>
+          </div>
+          <div class="bsb-slots" id="bsb-slots"></div>
+        </div>
+        <div class="bsb-pool-label">Steps — drag from here ↓</div>
+        <div class="bsb-pool" id="bsb-pool"></div>
+        <div class="classifier-status" style="margin-top:.9rem;">
+          <span id="bsb-status">Place all 6 steps to enable Power On —</span>
+          <span id="bsb-score" style="color:var(--text-2);">Wins: 0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BIOS / EEPROM / CMOS detail -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>BIOS, EEPROM &amp; CMOS</h2>
+    <p>When you press the power button, the OS isn't there yet — it's still on the hard drive. Something has to be running <em>already</em> to fetch it. That something is the <span class="kw">BIOS</span> (Basic Input/Output System) — a small program permanently stored on the motherboard. The BIOS tells the computer where the OS lives, loads the bit of the OS that's needed, and hands control over. Because it provides low-level control for hardware, the BIOS is called <strong>firmware</strong>.</p>
+
+    <table class="styled-table" style="margin-top:.8rem;">
+      <thead><tr><th>Component</th><th>What it stores</th><th>Memory type</th><th>Key property</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>BIOS software</strong></td>
+          <td>The actual BIOS program — POST routines, bootstrap loader</td>
+          <td>EEPROM (flash ROM chip)</td>
+          <td>Non-volatile; can be rewritten/updated by user</td>
+        </tr>
+        <tr>
+          <td><strong>BIOS settings</strong></td>
+          <td>User-configured values: clock speed, boot order, date/time</td>
+          <td>CMOS chip (battery-backed)</td>
+          <td>Loses settings if motherboard battery is removed</td>
+        </tr>
+        <tr>
+          <td><strong>OS &amp; apps</strong></td>
+          <td>Operating system + application software</td>
+          <td>HDD or SSD</td>
+          <td>Loaded into RAM when needed</td>
+        </tr>
+        <tr>
+          <td><strong>Running program</strong></td>
+          <td>Part of OS or app currently executing</td>
+          <td>RAM</td>
+          <td>Volatile — lost on power-off</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="background:var(--clr-warn-bg);border:1px solid var(--clr-warn);border-radius:var(--radius);padding:.7rem 1rem;margin-top:.9rem;font-size:.82rem;color:var(--text-2);line-height:1.65;">
+      <strong style="color:var(--clr-warn);">What happens at power-on?</strong><br>
+      1 → CPU starts; BIOS runs from EEPROM.<br>
+      2 → BIOS runs <strong>POST</strong> (Power-On Self Test) — checks CPU, RAM and keyboard.<br>
+      3 → BIOS reads CMOS for boot-device settings, locates the OS on that device.<br>
+      4 → <strong>Bootstrap loader</strong> copies the OS kernel into RAM.<br>
+      5 → OS takes over; loads device drivers and the user interface.<br>
+      6 → Application software can now be launched by the user.
+    </div>
+
+    <p style="font-size:.8rem;color:var(--text-3);margin-top:.7rem;">
+      <strong>Firmware</strong> = a program providing low-level control for a device, stored on ROM / EEPROM. The BIOS is the best-known example. <strong>EEPROM</strong> (Electrically Erasable Programmable ROM) is a flash memory chip — its contents survive power-off, yet it can still be rewritten, updated, or even deleted by a user. The BIOS <em>program</em> lives there. The BIOS <em>settings</em> — clock speed, boot order, date and time — live on the separate <strong>CMOS</strong> chip, which is kept alive by a small rechargeable battery on the motherboard. Pull that battery and the CMOS forgets everything: when power returns, the BIOS will reload but every setting reverts to factory defaults. So if a user tweaks the clock speed and then the battery dies, their tweak is gone.
+    </p>
+    <p style="font-size:.8rem;color:var(--text-2);margin-top:.5rem;">Once the OS is up and running, the application software runs <em>on top of</em> it, accessing system software (such as device drivers) as needed. Different parts of the OS itself get loaded in and out of RAM as the software runs — there's never a single "the OS" sitting still in memory.</p>
+  </div>
+
+  <!-- ─ Topic Quiz 4.3 ─ -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Check your understanding</h2>
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Topic Quiz · 4.3</span>
+          <span class="title">Booting Up — 5 questions</span>
+        </div>
+        <button class="mini-btn ghost" onclick="tqReset('booting')">↺ Restart</button>
+      </div>
+      <div class="miniapp-body">
+        <div class="tq-progress" id="tq-prog-booting"></div>
+        <div id="tq-body-booting"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ INTERRUPTS ═══ -->
+<div id="interrupts" class="tab-section">
+  <h1 class="section-title">4.4 Interrupts</h1>
+  <p class="section-sub">How devices and software get the CPU's attention.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>What is an Interrupt?</h2>
+    <p>An <span class="kw">interrupt</span> is a signal sent from a device or from software to the microprocessor. The signal causes the CPU to <strong>temporarily stop</strong> what it's doing so it can <em>service</em> the interrupt — run a short piece of code called the <strong>Interrupt Service Routine (ISR)</strong>. When the ISR finishes, the saved state is restored and the original task carries on as though nothing happened. Interrupts are the reason you can download a file <em>while</em> listening to music: data is passing in and out of memory so rapidly that both tasks appear to be running simultaneously.</p>
+    <h3>5 Causes</h3>
+    <ul>
+      <li><strong>Timing signal</strong> — the system clock or a timer needs servicing on a schedule</li>
+      <li><strong>I/O process</strong> — a printer or disk drive needs more data, or has finished a job</li>
+      <li><strong>Hardware fault</strong> — a paper jam in the printer, low battery, a disk error</li>
+      <li><strong>User interaction</strong> — keys like <code>&lt;CTRL&gt;&lt;ALT&gt;&lt;BREAK&gt;</code>, a mouse click, or any key-press</li>
+      <li><strong>Software error</strong> — an <code>.exe</code> file that cannot be found, two processes accessing the same memory location, or an attempt to <strong>divide by zero</strong></li>
+    </ul>
+    <p style="font-size:.81rem;color:var(--text-3);margin-top:.5rem;">Once the signal arrives, the CPU either carries on or stops to service it, depending on the interrupt's <strong>type</strong> and <strong>priority</strong>. A high-priority interrupt (e.g. a thermal warning) is dealt with immediately; a low-priority one (timer tick) may be queued.</p>
+
+    <!-- ─ Mini App 4: CPU Interrupt Sim ─ -->
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Mini App 04</span>
+          <span class="title">CPU Interrupt Simulator</span>
+        </div>
+        <button class="mini-btn ghost" onclick="cpuReset()">Reset</button>
+      </div>
+      <div class="miniapp-body">
+        <p style="font-size:.8rem;color:var(--text-2);margin-bottom:.7rem;">The CPU is busy. Send an interrupt and watch the registers save → ISR run → state restore.</p>
+        <div class="cpu-sim">
+          <div>
+            <div id="cpu-screen" class="cpu-screen">
+              <div id="cpu-state-pill" class="cpu-state-pill busy">Running</div>
+              <div id="cpu-task" class="cpu-task">Calculating spreadsheet…</div>
+              <div id="cpu-detail" class="cpu-detail">PC = 0x4012  |  reg = ready</div>
+            </div>
+          </div>
+          <div>
+            <div class="cpu-buttons" id="cpu-buttons">
+              <button data-irq="kbd">⌨ Send keyboard interrupt</button>
+              <button data-irq="prn">🖨 Printer buffer empty</button>
+              <button data-irq="tmr">⏱ Timer tick</button>
+              <button data-irq="err">⚠ Divide by zero</button>
+              <button data-irq="bat">🔋 Low battery</button>
+            </div>
+          </div>
+        </div>
+        <div id="cpu-log" class="cpu-log"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buffers card -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Buffers &amp; Why They Matter</h2>
+    <p>A <span class="kw">buffer</span> is a temporary memory area used to compensate for the speed difference between a fast device (CPU) and a slow device (printer, disk, network).</p>
+
+    <div class="compare-grid" style="margin-top:.8rem;">
+      <div class="compare-col neutral">
+        <h4>Printing example</h4>
+        <p style="font-size:.82rem;color:var(--text-2);line-height:1.7;">Document data is sent from memory to the <strong>printer buffer</strong>. The CPU can refill the buffer in microseconds; the printer drains it over seconds. Without a buffer the CPU would be locked waiting for each page to print — wasting processing time.</p>
+      </div>
+      <div class="compare-col neutral">
+        <h4>Video streaming example</h4>
+        <p style="font-size:.82rem;color:var(--text-2);line-height:1.7;">Data downloads from the web server into a <strong>stream buffer</strong>. The buffer absorbs network speed fluctuations. If the download rate drops below the playback rate, the buffer empties and the video "freezes".</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1rem;">How interrupts + buffers work together (printing)</h3>
+    <ol style="font-size:.82rem;color:var(--text-2);padding-left:1.2rem;line-height:1.9;margin-top:.4rem;">
+      <li>Document data is sent from memory to the <strong>printer buffer</strong>.</li>
+      <li>The CPU continues its own tasks (it does <em>not</em> wait idle).</li>
+      <li>When the printer buffer empties, the printer sends an <strong>interrupt signal</strong> to the CPU.</li>
+      <li>The CPU saves its current state (PC + registers → stack).</li>
+      <li>The <strong>ISR</strong> runs — checks if more data exists and refills the buffer.</li>
+      <li>If all data has been printed, no more data is sent; interrupt is cleared.</li>
+      <li>The CPU restores its saved state and <strong>resumes</strong> its original task.</li>
+    </ol>
+
+    <div style="background:var(--clr-ok-bg);border:1px solid var(--clr-ok);border-radius:var(--radius);padding:.65rem 1rem;margin-top:.85rem;font-size:.81rem;color:var(--text-2);line-height:1.6;">
+      <strong style="color:var(--clr-ok);">Key insight:</strong> Buffers and interrupts together maximise CPU utilisation. Without them, the CPU would remain idle waiting for slow I/O — an enormous waste of processing power.
+    </div>
+  </div>
+
+  <!-- ISR step-by-step card -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>The Interrupt Service Routine (ISR)</h2>
+    <p>Every interrupt goes through the same sequence. Interrupts are assigned a <span class="kw">priority</span> so the CPU knows which to service first.</p>
+
+    <div style="display:flex;flex-direction:column;gap:.4rem;margin-top:.8rem;">
+      <div style="display:flex;align-items:flex-start;gap:.8rem;padding:.6rem .9rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);min-width:28px;padding-top:.1rem;">01</span>
+        <span style="font-size:.82rem;color:var(--text-2);">Interrupt signal received by the CPU from a device or software.</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:.8rem;padding:.6rem .9rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);min-width:28px;padding-top:.1rem;">02</span>
+        <span style="font-size:.82rem;color:var(--text-2);">CPU checks the <strong>interrupt register</strong> — identifies the interrupt type and priority.</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:.8rem;padding:.6rem .9rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);min-width:28px;padding-top:.1rem;">03</span>
+        <span style="font-size:.82rem;color:var(--text-2);"><strong>State saved</strong> — contents of the Program Counter (PC) and all registers pushed to the stack.</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:.8rem;padding:.6rem .9rem;background:var(--clr-warn-bg);border:1px solid var(--clr-warn);border-radius:var(--radius);">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--clr-warn);min-width:28px;padding-top:.1rem;">04</span>
+        <span style="font-size:.82rem;color:var(--text-2);"><strong>ISR executes</strong> — start address of the ISR loaded into the PC; interrupt is serviced.</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:.8rem;padding:.6rem .9rem;background:var(--clr-ok-bg);border:1px solid var(--clr-ok);border-radius:var(--radius);">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--clr-ok);min-width:28px;padding-top:.1rem;">05</span>
+        <span style="font-size:.82rem;color:var(--text-2);"><strong>State restored</strong> — saved registers popped from stack; interrupt register reset.</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:.8rem;padding:.6rem .9rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--accent);min-width:28px;padding-top:.1rem;">06</span>
+        <span style="font-size:.82rem;color:var(--text-2);">Original task <strong>resumes</strong> from exactly where it was paused (PC restored).</span>
+      </div>
+    </div>
+
+    <p style="font-size:.8rem;color:var(--text-3);margin-top:.8rem;">Five interrupt causes: <strong>timing signal · I/O process · hardware fault · user interaction · software error</strong> (e.g. divide by zero, missing .exe, two processes accessing the same memory location).</p>
+  </div>
+
+  <!-- A-Level extension: interrupts in the Fetch–Execute cycle -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Extension — Interrupts in the Fetch–Execute Cycle</h2>
+    <p style="font-size:.83rem;color:var(--text-2);">Beyond the syllabus, but worth peeking at if you continue to A Level. A special <strong>interrupt register</strong> sits inside the CPU. While the CPU is mid-cycle, an event (say a write failure on the hard drive) flips a bit in that register — for example, the contents change from <code>0000 0000</code> to <code>0000 1000</code>. Here's what happens next:</p>
+    <ul style="font-size:.82rem;color:var(--text-2);padding-left:1.2rem;line-height:1.8;margin-top:.5rem;">
+      <li>At the <strong>next Fetch–Execute cycle</strong>, the interrupt register is checked bit by bit.</li>
+      <li>A non-zero bit shows an interrupt has occurred and still needs servicing — the CPU either services it now or, depending on priority, leaves it for a moment.</li>
+      <li>To service it, the CPU stops the current task and <strong>stores the contents of all its registers</strong>.</li>
+      <li>Control transfers to the <strong>interrupt handler / ISR</strong>.</li>
+      <li>Once the interrupt is fully serviced, the register is <strong>reset</strong> and the saved registers are <strong>restored</strong>.</li>
+    </ul>
+    <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:.7rem 1rem;margin-top:.8rem;font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--text-2);line-height:1.7;">
+      <strong style="color:var(--accent);">FETCH</strong> → fetch next instruction &nbsp;·&nbsp; interrupts <em>disabled</em><br>
+      <strong style="color:var(--accent);">DECODE / EXECUTE</strong> → decode and execute the instruction<br>
+      <strong style="color:var(--accent);">INTERRUPT STAGE</strong> → interrupts <em>enabled</em>, priority checked → <em>any interrupts?</em><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--clr-warn);">YES</span> → suspend current program → execute ISR → resume<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--clr-ok);">NO</span> &nbsp;→ continue to next cycle (unless end of program)
+    </div>
+  </div>
+
+  <!-- ─ Topic Quiz 4.4 ─ -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Check your understanding</h2>
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Topic Quiz · 4.4</span>
+          <span class="title">Interrupts — 5 questions</span>
+        </div>
+        <button class="mini-btn ghost" onclick="tqReset('interrupts')">↺ Restart</button>
+      </div>
+      <div class="miniapp-body">
+        <div class="tq-progress" id="tq-prog-interrupts"></div>
+        <div id="tq-body-interrupts"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LANGUAGES ═══ -->
+<div id="languages" class="tab-section">
+  <h1 class="section-title">4.5 Programming Languages</h1>
+  <p class="section-sub">High-level vs low-level — readability, portability and control.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>High-Level vs Low-Level</h2>
+    <p><strong>High-level</strong> languages (Python, Java, C++) are close to English and portable. <strong>Low-level</strong> languages — machine code (binary) and assembly (mnemonics like LDA, ADD, STO) — are tied to a specific CPU but very fast and compact.</p>
+
+    <div class="compare-grid">
+      <div class="compare-col pro"><h4>HLL Pros</h4><ul><li>Easy to read &amp; write</li><li>Fast development</li><li>Portable across CPUs</li></ul></div>
+      <div class="compare-col con"><h4>LLL Pros</h4><ul><li>Direct hardware control</li><li>Very fast at runtime</li><li>Tiny memory footprint</li></ul></div>
+    </div>
+
+    <!-- HLL vs LLL comparison table -->
+    <table class="styled-table" style="margin-top:1rem;">
+      <thead><tr><th>Language type</th><th>Advantages</th><th>Disadvantages</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>High-level (HLL)</strong><br><span style="font-size:.75rem;color:var(--text-3);">Python, Java, C++, Visual Basic</span></td>
+          <td>
+            <ul style="font-size:.8rem;padding-left:1.1rem;line-height:1.75;">
+              <li>Independent of the computer type (portable)</li>
+              <li>Easier to read, write and understand</li>
+              <li>Quicker to write and debug programs</li>
+              <li>Easier to maintain programs in use</li>
+            </ul>
+          </td>
+          <td>
+            <ul style="font-size:.8rem;padding-left:1.1rem;line-height:1.75;">
+              <li>Programs can be larger in size</li>
+              <li>Programs may run more slowly</li>
+              <li>Cannot always exploit special hardware</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Low-level (LLL)</strong><br><span style="font-size:.75rem;color:var(--text-3);">Machine code, Assembly</span></td>
+          <td>
+            <ul style="font-size:.8rem;padding-left:1.1rem;line-height:1.75;">
+              <li>Can use special hardware features</li>
+              <li>Includes machine-dependent instructions</li>
+              <li>Code takes up very little primary memory</li>
+              <li>Tasks execute very quickly</li>
+            </ul>
+          </td>
+          <td>
+            <ul style="font-size:.8rem;padding-left:1.1rem;line-height:1.75;">
+              <li>Longer to write and debug</li>
+              <li>More difficult to understand</li>
+              <li>Programs are hardware-specific (not portable)</li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ─ Mini App 5: Language ID ─ -->
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Mini App 05</span>
+          <span class="title">Spot the Language Level</span>
+        </div>
+        <button class="mini-btn ghost" onclick="resetLang()">Restart</button>
+      </div>
+      <div class="miniapp-body">
+        <div class="langquiz-progress" id="lang-progress"></div>
+        <div class="langquiz-card">
+          <div id="lang-snippet" class="langquiz-snippet"></div>
+          <div class="langquiz-actions" id="lang-actions">
+            <button data-lvl="high">High-level (HLL)</button>
+            <button data-lvl="assembly">Assembly</button>
+            <button data-lvl="machine">Machine code</button>
+          </div>
+          <div id="lang-feedback" class="langquiz-feedback"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assembly Language card -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Assembly Language &amp; Machine Code</h2>
+    <p>Assembly language uses short <span class="kw">mnemonics</span> — one per machine instruction — instead of raw binary. An <span class="kw">assembler</span> translates it 1:1 into machine code.</p>
+
+    <div class="compare-grid" style="margin-top:.8rem;">
+      <div class="compare-col neutral">
+        <h4>High-level (Python)</h4>
+        <pre style="font-family:'IBM Plex Mono',monospace;font-size:.82rem;background:var(--surface-2);padding:.7rem .9rem;border-radius:var(--radius);border:1px solid var(--border);line-height:1.8;margin-top:.4rem;">Sum = First + Second</pre>
+        <p style="font-size:.78rem;color:var(--text-3);margin-top:.4rem;">One readable statement. Compiles into several machine instructions.</p>
+      </div>
+      <div class="compare-col neutral">
+        <h4>Assembly (mnemonics)</h4>
+        <pre style="font-family:'IBM Plex Mono',monospace;font-size:.82rem;background:var(--surface-2);padding:.7rem .9rem;border-radius:var(--radius);border:1px solid var(--border);line-height:1.8;margin-top:.4rem;">LDA  First
+ADD  Second
+STO  Sum</pre>
+        <p style="font-size:.78rem;color:var(--text-3);margin-top:.4rem;">Three mnemonics → three machine instructions (1:1 mapping).</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1rem;">Mnemonic meanings</h3>
+    <table class="styled-table" style="margin-top:.5rem;">
+      <thead><tr><th>Mnemonic</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><code>LDA First</code></td><td>Load the value of variable <em>First</em> into the accumulator register</td></tr>
+        <tr><td><code>ADD Second</code></td><td>Add the value of variable <em>Second</em> to the accumulator</td></tr>
+        <tr><td><code>STO Sum</code></td><td>Store the accumulator's value into variable <em>Sum</em></td></tr>
+      </tbody>
+    </table>
+
+    <div style="background:var(--clr-key-bg);border:1px solid var(--clr-key);border-radius:var(--radius);padding:.65rem 1rem;margin-top:.9rem;font-size:.81rem;color:var(--text-2);line-height:1.6;">
+      <strong style="color:var(--clr-key);">Why use assembly?</strong> To use special hardware features, write machine-dependent instructions, minimise memory footprint, or maximise execution speed — e.g. in embedded systems, device drivers, or game engines.
+    </div>
+
+    <h3 style="margin-top:1rem;">Machine code (binary / hex)</h3>
+    <p style="font-size:.82rem;color:var(--text-2);">The same three-instruction program in machine code looks like this:</p>
+    <table class="styled-table" style="margin-top:.5rem;">
+      <thead><tr><th>Hex</th><th>Binary</th></tr></thead>
+      <tbody>
+        <tr><td><code>12</code></td><td><code>0001 0010</code></td></tr>
+        <tr><td><code>4D</code></td><td><code>0100 1101</code></td></tr>
+        <tr><td><code>1A</code></td><td><code>0001 1010</code></td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.78rem;color:var(--text-3);margin-top:.5rem;">Machine code is directly executable by the CPU — no translation needed. Programmers never write it by hand; an assembler or compiler produces it automatically.</p>
+  </div>
+
+  <!-- ─ Mini App 5b: Assembly Robot ─ -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Feel low-level — guide a robot with assembly</h2>
+    <p style="font-size:.83rem;color:var(--text-2);margin-bottom:.7rem;">High-level languages let you write <code>robot.goTo(goal)</code>. In assembly you must spell out every micro-step. Build a program from the instruction set and run it.</p>
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Mini App 05b</span>
+          <span class="title">Assembly Robot</span>
+        </div>
+        <div style="display:flex;gap:.4rem;">
+          <button class="mini-btn ghost" onclick="roboClear()">Clear</button>
+          <button class="mini-btn ghost" onclick="roboNextLevel()">Next Level</button>
+          <button class="mini-btn" onclick="roboRun()">▶ Run</button>
+        </div>
+      </div>
+      <div class="miniapp-body">
+        <div class="robo-grid-wrap">
+          <div>
+            <div class="robo-level-pill" id="robo-level">Level 1/3</div>
+            <div class="robo-board" id="robo-board" style="margin-top:.5rem;"></div>
+          </div>
+          <div class="robo-side">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);">Instruction Set</div>
+            <div class="robo-instr-buttons">
+              <button onclick="roboAdd('MOV_N')">MOV N</button>
+              <button onclick="roboAdd('MOV_E')">MOV E</button>
+              <button onclick="roboAdd('MOV_S')">MOV S</button>
+              <button onclick="roboAdd('MOV_W')">MOV W</button>
+              <button onclick="roboAdd('NOP')" style="grid-column:span 2;">NOP (no-op)</button>
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);margin-top:.4rem;">Program</div>
+            <div class="robo-program" id="robo-program"></div>
+            <div class="robo-msg" id="robo-msg">Click instructions to build a program, then Run.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─ Topic Quiz 4.5 ─ -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Check your understanding</h2>
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Topic Quiz · 4.5</span>
+          <span class="title">Programming Languages — 5 questions</span>
+        </div>
+        <button class="mini-btn ghost" onclick="tqReset('languages')">↺ Restart</button>
+      </div>
+      <div class="miniapp-body">
+        <div class="tq-progress" id="tq-prog-languages"></div>
+        <div id="tq-body-languages"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TRANSLATORS ═══ -->
+<div id="translators" class="tab-section">
+  <h1 class="section-title">4.6 Translators</h1>
+  <p class="section-sub">Compilers, interpreters and assemblers.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Compiler vs Interpreter</h2>
+    <p>A <span class="kw">compiler</span> translates the entire program at once into a stand-alone executable. An <span class="kw">interpreter</span> translates and executes one statement at a time — no executable is produced. An <span class="kw">assembler</span> translates assembly mnemonics into machine code (1:1 per instruction).</p>
+
+    <table class="styled-table">
+      <thead><tr><th></th><th>Compiler</th><th>Interpreter</th></tr></thead>
+      <tbody>
+        <tr><td>Translates</td><td>Whole program at once</td><td>One line at a time</td></tr>
+        <tr><td>Executable file?</td><td>Yes</td><td>No</td></tr>
+        <tr><td>Needs translator to run?</td><td>No</td><td>Yes</td></tr>
+        <tr><td>Best for</td><td>Distributing finished apps</td><td>Development &amp; testing</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Three-way comparison table -->
+    <h3 style="margin-top:1rem;">Compiler vs Interpreter vs Assembler</h3>
+    <table class="styled-table" style="margin-top:.6rem;">
+      <thead><tr><th></th><th>Compiler</th><th>Interpreter</th><th>Assembler</th></tr></thead>
+      <tbody>
+        <tr><td>Source language</td><td>High-level (HLL)</td><td>High-level (HLL)</td><td>Assembly language</td></tr>
+        <tr><td>Translation method</td><td>Entire program at once</td><td>One statement at a time</td><td>Entire program at once</td></tr>
+        <tr><td>Executable file produced?</td><td>Yes</td><td>No</td><td>Yes</td></tr>
+        <tr><td>Translator needed to run?</td><td>No</td><td>Yes — always</td><td>No</td></tr>
+        <tr><td>One source → how many machine instructions?</td><td>One HLL statement → several</td><td>One HLL statement → several</td><td>One LLL statement → usually one</td></tr>
+        <tr><td>Typical use</td><td>Distributing finished software</td><td>Development &amp; testing</td><td>Distributing finished software</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:1rem;">Advantages &amp; Disadvantages</h3>
+    <table class="styled-table" style="margin-top:.6rem;">
+      <thead><tr><th>Translator</th><th>Advantages</th><th>Disadvantages</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Interpreter</strong></td>
+          <td>
+            <ul style="font-size:.8rem;padding-left:1.1rem;line-height:1.75;">
+              <li>Easier and quicker to debug during development</li>
+              <li>Errors shown line by line — easier to locate</li>
+              <li>Easier to edit programs during development</li>
+            </ul>
+          </td>
+          <td>
+            <ul style="font-size:.8rem;padding-left:1.1rem;line-height:1.75;">
+              <li>Program <strong>cannot run</strong> without the interpreter</li>
+              <li>Executes more slowly (translates each line every run)</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Compiler</strong></td>
+          <td>
+            <ul style="font-size:.8rem;padding-left:1.1rem;line-height:1.75;">
+              <li>Compiled program stored ready for repeated use</li>
+              <li>Runs <strong>without</strong> the compiler present</li>
+              <li>Takes up less memory at runtime</li>
+              <li>Executes faster — translation done once</li>
+            </ul>
+          </td>
+          <td>
+            <ul style="font-size:.8rem;padding-left:1.1rem;line-height:1.75;">
+              <li>Takes longer to write, test and debug during development</li>
+              <li>Full recompilation needed after any change</li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ─ Mini App 6: Race ─ -->
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Mini App 06</span>
+          <span class="title">Compiler vs Interpreter — Race</span>
+        </div>
+        <div style="display:flex;gap:.4rem;">
+          <button class="mini-btn ghost" onclick="raceReset()">Reset</button>
+          <button class="mini-btn" id="race-go" onclick="raceStart()">▶ Run both</button>
+        </div>
+      </div>
+      <div class="miniapp-body">
+        <p style="font-size:.8rem;color:var(--text-2);margin-bottom:.8rem;">Same 6-line program, two strategies. Watch the compiler translate everything first, then run instantly. The interpreter starts faster — but translates each line every time.</p>
+        <div class="race">
+          <div class="racer compiler-racer" id="racer-c">
+            <h5>Compiler</h5>
+            <div class="stage" id="stage-c">Idle</div>
+            <div class="lines" id="lines-c"></div>
+            <div class="timer">Total: <span class="num" id="time-c">0.00s</span></div>
+          </div>
+          <div class="racer interpreter-racer" id="racer-i">
+            <h5>Interpreter</h5>
+            <div class="stage" id="stage-i">Idle</div>
+            <div class="lines" id="lines-i"></div>
+            <div class="timer">Total: <span class="num" id="time-i">0.00s</span></div>
+          </div>
+        </div>
+        <p id="race-result" style="margin-top:.8rem;font-size:.78rem;color:var(--text-3);min-height:1.2em;"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─ Topic Quiz 4.6 ─ -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Check your understanding</h2>
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Topic Quiz · 4.6</span>
+          <span class="title">Translators — 5 questions</span>
+        </div>
+        <button class="mini-btn ghost" onclick="tqReset('translators')">↺ Restart</button>
+      </div>
+      <div class="miniapp-body">
+        <div class="tq-progress" id="tq-prog-translators"></div>
+        <div id="tq-body-translators"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ IDE ═══ -->
+<div id="ide" class="tab-section">
+  <h1 class="section-title">4.7 Integrated Development Environments</h1>
+  <p class="section-sub">Tools that help programmers write, test and debug.</p>
+
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>7 Key IDE Features</h2>
+    <div class="summary-grid">
+      <div class="summary-tile"><h4>Code editor</h4><p>Built-in text editor for source code.</p></div>
+      <div class="summary-tile"><h4>Translator</h4><p>Built-in compiler and/or interpreter.</p></div>
+      <div class="summary-tile"><h4>Debugger</h4><p>Single stepping, breakpoints, inspect variables.</p></div>
+      <div class="summary-tile"><h4>Error diagnostics</h4><p>Underlines errors as you type.</p></div>
+      <div class="summary-tile"><h4>Auto-correction</h4><p>Fixes simple typos automatically.</p></div>
+      <div class="summary-tile"><h4>Auto-completion</h4><p>Prompts variable &amp; keyword names.</p></div>
+      <div class="summary-tile"><h4>Prettyprinting</h4><p>Colour-codes keywords and strings.</p></div>
+    </div>
+
+    <!-- IDE Features detailed -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.7rem;margin-top:.9rem;">
+      <div class="summary-tile">
+        <h4>Code Editor</h4>
+        <p>Built-in text editor — write and edit source code without switching to a separate app. Speeds up the development cycle.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Translator</h4>
+        <p>Built-in compiler <em>and/or</em> interpreter. Typically the interpreter is used during development; the compiler produces the final distributable version.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Debugger</h4>
+        <p>Runs the program under development. Allows <strong>single stepping</strong> (one line at a time) and <strong>breakpoints</strong> (pause at a chosen line). A report window shows the contents of all variables at that point, helping locate logic errors.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Error Diagnostics</h4>
+        <p>Dynamic error checking — finds possible errors <em>as code is typed</em> and underlines them (usually in red). Alerts the programmer immediately without needing to run the code.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Auto-correction</h4>
+        <p>Provides <strong>suggested corrections</strong> for flagged errors. Many simple typos (e.g. <code>pritn</code> → <code>print</code>) are corrected automatically during writing and editing.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Auto-completion</h4>
+        <p>Context-sensitive prompts — suggests variable names and reserved words as you type (e.g. type <code>pri</code> → IDE offers <code>print</code>). Reduces typing and prevents name-spelling bugs.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Prettyprinting</h4>
+        <p>Colour-codes keywords, strings and comments; auto-indents blocks; lays out code in a standardised readable format. Makes it easier to see structure at a glance.</p>
+      </div>
+      <div class="summary-tile">
+        <h4>Auto-documenter</h4>
+        <p>Generates explanatory comments describing the function and purpose of procedures and variables — either automatically or from structured comment templates in the source code.</p>
+      </div>
+    </div>
+
+    <!-- ─ Mini App 7: Bug-fix IDE ─ -->
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Mini App 07</span>
+          <span class="title">Pick the IDE Tool to Catch the Bug</span>
+        </div>
+        <button class="mini-btn ghost" onclick="bugReset()">Next bug</button>
+      </div>
+      <div class="miniapp-body">
+        <p style="font-size:.8rem;color:var(--text-2);margin-bottom:.7rem;">A bug is highlighted. Click the IDE feature that would catch it.</p>
+        <div class="bugfix">
+          <div class="bugfix-toolbar" id="bug-toolbar">
+            <button class="bugfix-tool" data-tool="diag">⚠ Error diagnostics</button>
+            <button class="bugfix-tool" data-tool="autoc">↶ Auto-correction</button>
+            <button class="bugfix-tool" data-tool="autocomp">⌥ Auto-completion</button>
+            <button class="bugfix-tool" data-tool="debug">🔍 Debugger</button>
+            <button class="bugfix-tool" data-tool="pretty">🎨 Prettyprinting</button>
+          </div>
+          <div id="bug-code" class="bugfix-code"></div>
+          <div id="bug-feedback" class="bugfix-feedback"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─ Topic Quiz 4.7 ─ -->
+  <div class="card">
+    <div class="card-accent"></div>
+    <h2>Check your understanding</h2>
+    <div class="miniapp">
+      <div class="miniapp-head">
+        <div>
+          <span class="lbl">Topic Quiz · 4.7</span>
+          <span class="title">IDE Features — 5 questions</span>
+        </div>
+        <button class="mini-btn ghost" onclick="tqReset('ide')">↺ Restart</button>
+      </div>
+      <div class="miniapp-body">
+        <div class="tq-progress" id="tq-prog-ide"></div>
+        <div id="tq-body-ide"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SUMMARY ═══ -->
+<div id="summary" class="tab-section">
+  <h1 class="section-title">Chapter 4 — Summary</h1>
+  <p class="section-sub">All key software concepts at a glance.</p>
+  <div class="summary-grid">
+    <div class="summary-tile"><h4>System software</h4><p>OS, drivers, utilities, compilers, linkers.</p></div>
+    <div class="summary-tile"><h4>Application software</h4><p>Word processor, spreadsheet, database, photo editor.</p></div>
+    <div class="summary-tile"><h4>Utility programs</h4><p>Anti-virus, backup, defrag, compression, disk repair.</p></div>
+    <div class="summary-tile"><h4>OS — 9 functions</h4><p>HCI · multitasking · memory · security · peripherals · files · interrupts · platform · user accounts</p></div>
+    <div class="summary-tile"><h4>CLI vs GUI</h4><p>CLI = type commands. GUI = click icons (WIMP).</p></div>
+    <div class="summary-tile"><h4>Firmware (BIOS)</h4><p>ROM chip program. POST, locate OS, bootstrap.</p></div>
+    <div class="summary-tile"><h4>Interrupts</h4><p>Pause CPU. ISR runs. Saved registers restored after.</p></div>
+    <div class="summary-tile"><h4>HLL vs LLL</h4><p>HLL = English-like, portable. LLL = fast, hardware-specific.</p></div>
+    <div class="summary-tile"><h4>Compiler</h4><p>Whole program → executable. Fast runtime.</p></div>
+    <div class="summary-tile"><h4>Interpreter</h4><p>Line by line. Good for testing. Needs interpreter to run.</p></div>
+    <div class="summary-tile"><h4>Assembler</h4><p>Assembly → machine code. 1:1 mapping.</p></div>
+    <div class="summary-tile"><h4>IDE features</h4><p>Editor · translator · debugger · diagnostics · auto-correct · auto-complete · prettyprint</p></div>
+  </div>
+</div>
+
+<!-- ═══ GLOSSARY ═══ -->
+<div id="glossary" class="tab-section">
+  <h1 class="section-title">Glossary</h1>
+  <p class="section-sub">Key terms from Chapter 4.</p>
+  <div class="card">
+    <p style="font-size:.78rem;color:var(--text-3);margin-bottom:.8rem;">All key terms from Cambridge IGCSE CS Chapter 4 (Watson &amp; Williams, 2nd ed.).</p>
+
+    <h3 style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin-bottom:.5rem;">Software Types</h3>
+    <div class="glossary-item"><span class="glossary-term">System software</span><span class="glossary-def">A set of programs that control and manage the operation of hardware; provides a platform on which other software can run.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Application software</span><span class="glossary-def">Programs that allow the user to perform specific tasks using the computer's resources.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Utility programs (utilities)</span><span class="glossary-def">Part of system software that carries out maintenance functions such as virus checking, defragmentation and screensavers.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Malware</span><span class="glossary-def">Programs (viruses, worms, Trojan horses) installed on a computer with the aim of deleting, corrupting or manipulating data illegally.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Anti-virus software</span><span class="glossary-def">Software that quarantines and deletes files infected by a virus; can run in the background or be started by the user.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Heuristic checking</span><span class="glossary-def">Checking software for types of behaviour that could indicate a possible virus, even if it is not in the known-virus database.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Quarantine</span><span class="glossary-def">Isolating a file identified as possibly infected, so it can be deleted or reviewed without spreading the infection.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Defragmentation</span><span class="glossary-def">Reorganises sectors on an HDD by rearranging data blocks so files are stored in contiguous sectors, reducing head movement.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Contiguous</span><span class="glossary-def">Next to each other — sectors that are adjacent on a disk surface.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Back-up</span><span class="glossary-def">Copies of files on separate media in case the original is corrupted or deleted. Best practice: 3 copies — working, local and remote.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Screensaver</span><span class="glossary-def">Software displaying a still or moving image after a period of inactivity; used as a security lock and to trigger background tasks.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Device driver</span><span class="glossary-def">Software that communicates with the OS and translates data into a format understood by a hardware peripheral.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Descriptor</span><span class="glossary-def">A collection of device information (VID, PID, serial number) stored in a USB driver so the OS can identify a newly connected device.</span></div>
+
+    <h3 style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin:1rem 0 .5rem;">Operating System</h3>
+    <div class="glossary-item"><span class="glossary-term">Operating system</span><span class="glossary-def">Software providing an environment in which applications can run and an interface between human and computer.</span></div>
+    <div class="glossary-item"><span class="glossary-term">HCI (Human Computer Interface)</span><span class="glossary-def">Interface supplied by the OS to hide the complexity of hardware and software from the user; takes the form of CLI or GUI.</span></div>
+    <div class="glossary-item"><span class="glossary-term">CLI (Command Line Interface)</span><span class="glossary-def">Interface where the user communicates by typing commands using a keyboard.</span></div>
+    <div class="glossary-item"><span class="glossary-term">GUI (Graphical User Interface)</span><span class="glossary-def">Interface using icons to represent apps; user selects by clicking a mouse or touching a screen.</span></div>
+    <div class="glossary-item"><span class="glossary-term">WIMP</span><span class="glossary-def">Windows, Icons, Menus and Pointing device — the standard GUI paradigm for personal computers.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Post-WIMP</span><span class="glossary-def">Modern touch-screen interface allowing actions such as pinching, rotating and swiping.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Memory management</span><span class="glossary-def">The part of an OS that controls primary storage — allocates RAM, tracks locations, and prevents two programs using the same addresses.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Security management</span><span class="glossary-def">The part of an OS ensuring the integrity, confidentiality and availability of data via accounts, firewalls and encryption.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Hardware management</span><span class="glossary-def">The part of an OS that controls all I/O devices using device drivers; manages queues and buffers.</span></div>
+    <div class="glossary-item"><span class="glossary-term">File management</span><span class="glossary-def">OS function for creating, opening, closing, renaming, copying, moving and deleting files; maintains directory structures.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Multitasking</span><span class="glossary-def">A function allowing a computer to process more than one task at a time by sharing CPU time between processes.</span></div>
+    <div class="glossary-item"><span class="glossary-term">User account</span><span class="glossary-def">An agreement allowing an individual to use a computer system; protected by a username and password.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Administrator</span><span class="glossary-def">A person responsible for managing a multi-user computer system; can create, delete and restrict user accounts.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Error handling routine</span><span class="glossary-def">A routine that recognises and recovers from abnormal inputs or hardware faults, e.g. division by zero.</span></div>
+
+    <h3 style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin:1rem 0 .5rem;">Booting &amp; Firmware</h3>
+    <div class="glossary-item"><span class="glossary-term">Firmware</span><span class="glossary-def">A program providing low-level control for a device, stored on ROM or EEPROM (e.g. BIOS).</span></div>
+    <div class="glossary-item"><span class="glossary-term">Boot up / Bootstrap loader</span><span class="glossary-def">A small program that loads the OS into RAM to correctly start up a computer system.</span></div>
+    <div class="glossary-item"><span class="glossary-term">BIOS</span><span class="glossary-def">Basic Input/Output System — firmware stored on EEPROM that runs POST and locates/loads the OS on power-up.</span></div>
+    <div class="glossary-item"><span class="glossary-term">EEPROM</span><span class="glossary-def">Electrically Erasable Programmable ROM — flash memory chip storing the BIOS program; non-volatile and rewritable.</span></div>
+    <div class="glossary-item"><span class="glossary-term">CMOS</span><span class="glossary-def">Battery-backed chip on the motherboard that stores BIOS settings (clock speed, boot order, date/time). Settings reset if battery is removed.</span></div>
+
+    <h3 style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin:1rem 0 .5rem;">Interrupts &amp; Buffers</h3>
+    <div class="glossary-item"><span class="glossary-term">Interrupt</span><span class="glossary-def">A signal sent from a device or software to the microprocessor requesting its attention; the CPU suspends operations until the interrupt is serviced.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Interrupt priority</span><span class="glossary-def">A ranking assigned to interrupts so the CPU knows which to service first and how urgently.</span></div>
+    <div class="glossary-item"><span class="glossary-term">ISR (Interrupt Service Routine)</span><span class="glossary-def">Software that handles a specific interrupt request and sends the result to the CPU for processing.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Buffer</span><span class="glossary-def">A temporary memory area used to hold data while a slow output device (printer, disk) processes it, freeing the CPU for other tasks.</span></div>
+
+    <h3 style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin:1rem 0 .5rem;">Languages &amp; Translators</h3>
+    <div class="glossary-item"><span class="glossary-term">Machine code</span><span class="glossary-def">A binary programming language directly executed by the CPU — no translation required.</span></div>
+    <div class="glossary-item"><span class="glossary-term">High-level language (HLL)</span><span class="glossary-def">A portable, hardware-independent language (Python, Java, C++) that must be translated into machine code before execution.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Low-level language (LLL)</span><span class="glossary-def">A hardware-dependent language — both machine code and assembly are LLLs.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Assembly language</span><span class="glossary-def">A hardware-specific language using mnemonics (LDA, ADD, STO); translated into machine code by an assembler.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Mnemonic</span><span class="glossary-def">A short code in assembly language representing one machine instruction (e.g. LDA = Load into Accumulator).</span></div>
+    <div class="glossary-item"><span class="glossary-term">Compiler</span><span class="glossary-def">Translates an entire HLL program into a stand-alone machine code executable in one go.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Interpreter</span><span class="glossary-def">Translates and executes a HLL program one statement at a time; no executable is produced.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Assembler</span><span class="glossary-def">Translates an assembly language program into machine code (one-to-one mapping per instruction).</span></div>
+    <div class="glossary-item"><span class="glossary-term">Translator</span><span class="glossary-def">General term for any program (compiler, interpreter or assembler) that converts source code into machine code.</span></div>
+
+    <h3 style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);margin:1rem 0 .5rem;">IDE</h3>
+    <div class="glossary-item"><span class="glossary-term">IDE (Integrated Development Environment)</span><span class="glossary-def">A suite of programs used to write, run and test source code — bundles code editor, translator, debugger and diagnostic tools.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Debugging</span><span class="glossary-def">Finding and fixing errors in a program by running or tracing it.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Prettyprinting</span><span class="glossary-def">Displaying source code with different colours and formatting to make it easier to read and understand.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Report window</span><span class="glossary-def">A separate window in the IDE runtime environment showing the current contents of variables during program execution.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Breakpoint</span><span class="glossary-def">A marker set in source code that pauses execution at that line so the programmer can inspect variables and program state.</span></div>
+    <div class="glossary-item"><span class="glossary-term">Single stepping</span><span class="glossary-def">Running a program one line at a time in the debugger to trace logic and find errors.</span></div>
+  </div>
+</div>
+
+<!-- ═══ QUIZ ═══ -->
+<div id="quiz" class="tab-section">
+  <h1 class="section-title">Quiz</h1>
+  <p class="section-sub">Twenty questions on Chapter 4 — from the textbook exam-style bank.</p>
+  <div id="q-container"></div>
+  <div class="quiz-actions">
+    <button class="btn" id="submit-btn" onclick="submitQuiz()" disabled>Submit Answers</button>
+    <button class="btn secondary" onclick="resetQuiz()">Reset</button>
+  </div>
+  <div id="quiz-results" class="quiz-results"></div>
+</div>
+
+<footer class="chapter-footer">
+  <span class="brand">Cambridge IGCSE Computer Science · Chapter 04</span>
+  <div class="nav-links">
+    <a href="chapter3.html">← Chapter 03</a>
+    <a href="index.html">Home</a>
+    <a href="chapter5.html">Chapter 05 →</a>
+  </div>
+</footer>
+
+<script>
+function showTab(id,btn){document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.tab-nav button').forEach(b=>b.classList.remove('active'));document.getElementById(id).classList.add('active');if(btn)btn.classList.add('active');window.scrollTo({top:document.querySelector('.tab-nav').offsetTop-48,behavior:'smooth'});}
+
+/* ════════ APP 1: Classifier ════════ */
+const CLS_ITEMS = [
+  {name:'Windows 11', cat:'system'},
+  {name:'Microsoft Word', cat:'app'},
+  {name:'Norton Anti-Virus', cat:'utility'},
+  {name:'Photoshop', cat:'app'},
+  {name:'Disk Defragmenter', cat:'utility'},
+  {name:'Linux Kernel', cat:'system'},
+  {name:'Chrome', cat:'app'},
+  {name:'File Backup Tool', cat:'utility'},
+  {name:'Printer Driver', cat:'system'}
+];
+let clsScore = 0, clsTotal = 0;
+function buildClassifier(){
+  const pool = document.getElementById('classifier-pool');
+  pool.innerHTML = '';
+  CLS_ITEMS.forEach((it, i) => {
+    const c = document.createElement('div');
+    c.className = 'item-chip';
+    c.textContent = it.name;
+    c.draggable = true;
+    c.dataset.cat = it.cat;
+    c.dataset.idx = i;
+    c.addEventListener('dragstart', e => { c.classList.add('dragging'); e.dataTransfer.setData('text', i); });
+    c.addEventListener('dragend', () => c.classList.remove('dragging'));
+    pool.appendChild(c);
+  });
+  document.querySelectorAll('.bin').forEach(b => {
+    b.addEventListener('dragover', e => { e.preventDefault(); b.classList.add('dragover'); });
+    b.addEventListener('dragleave', () => b.classList.remove('dragover'));
+    b.addEventListener('drop', e => {
+      e.preventDefault();
+      b.classList.remove('dragover');
+      const idx = e.dataTransfer.getData('text');
+      const chip = pool.querySelector(`[data-idx="${idx}"]`) || document.querySelector(`.item-chip[data-idx="${idx}"]`);
+      if (!chip || chip.classList.contains('placed')) return;
+      const correct = chip.dataset.cat === b.dataset.cat;
+      chip.classList.add('placed', correct ? 'correct' : 'wrong');
+      chip.draggable = false;
+      b.querySelector('.bin-items').appendChild(chip);
+      clsTotal++; if (correct) clsScore++;
+      document.getElementById('cls-score').textContent = `${clsScore} / ${clsTotal}`;
+      const remaining = pool.querySelectorAll('.item-chip').length;
+      document.getElementById('cls-status').textContent = remaining
+        ? (correct ? 'Correct ✓' : `Wrong — that's ${chip.dataset.cat}`)
+        : `Done — ${clsScore}/${CLS_ITEMS.length} right.`;
+    });
+  });
+}
+function resetClassifier(){ clsScore=0; clsTotal=0; document.querySelectorAll('.bin .bin-items').forEach(b=>b.innerHTML=''); document.getElementById('cls-score').textContent='0 / 0'; document.getElementById('cls-status').textContent='Drag to begin —'; buildClassifier(); }
+buildClassifier();
+
+/* ════════ APP 2: OS Function Matcher ════════ */
+const MATCH_PAIRS = [
+  {l:'You log in with your password.', r:'Security'},
+  {l:'You print a doc while playing music.', r:'Multitasking'},
+  {l:'A file is moved to a new folder.', r:'File management'},
+  {l:'Mouse driver lets the cursor move.', r:'Peripheral management'},
+  {l:'A new app gets RAM allocated.', r:'Memory management'},
+  {l:'Pressing Ctrl+Alt+Del.', r:'Interrupt handling'}
+];
+let matchSel = null, matchScore = 0, matchTotal = 0, matchDone = 0;
+function shuffle(a){const x=a.slice();for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];}return x;}
+function buildMatcher(){
+  const left = document.getElementById('match-left');
+  const right = document.getElementById('match-right');
+  left.innerHTML = ''; right.innerHTML = '';
+  shuffle(MATCH_PAIRS).forEach((p,i) => {
+    const b = document.createElement('button');
+    b.className = 'opt'; b.textContent = p.l; b.dataset.r = p.r;
+    b.onclick = () => { document.querySelectorAll('#match-left .opt').forEach(o=>o.classList.remove('active'));b.classList.add('active'); matchSel=b; document.getElementById('match-status').textContent='Now pick the function →'; };
+    left.appendChild(b);
+  });
+  shuffle(MATCH_PAIRS).forEach(p => {
+    const b = document.createElement('button');
+    b.className = 'opt'; b.textContent = p.r; b.dataset.r = p.r;
+    b.onclick = () => {
+      if (!matchSel) { document.getElementById('match-status').textContent='Pick a scenario first —'; return; }
+      matchTotal++;
+      if (matchSel.dataset.r === b.dataset.r) {
+        matchSel.classList.add('matched','ok'); b.classList.add('matched','ok');
+        matchScore++; matchDone++;
+        document.getElementById('match-status').textContent = matchDone===MATCH_PAIRS.length ? `All matched — ${matchScore}/${matchTotal}` : 'Match ✓';
+      } else {
+        b.classList.add('feedback-wrong');
+        setTimeout(()=>b.classList.remove('feedback-wrong'),700);
+        matchSel.classList.remove('active');
+        document.getElementById('match-status').textContent = 'Not quite — try again';
+      }
+      matchSel=null;
+      document.getElementById('match-score').textContent = `${matchScore} / ${matchTotal}`;
+    };
+    right.appendChild(b);
+  });
+}
+function resetMatcher(){matchSel=null;matchScore=0;matchTotal=0;matchDone=0;document.getElementById('match-score').textContent='0 / 0';document.getElementById('match-status').textContent='Pick a scenario —';buildMatcher();}
+buildMatcher();
+
+/* ════════ APP 3: Boot Sequence Builder ════════ */
+const BSB_STEPS = [
+  {n:1, t:'Power button pressed — CPU receives power',           lines:['> POWER ON','> CPU.reset()','> Voltage stable ✓']},
+  {n:2, t:'BIOS starts from EEPROM on motherboard',              lines:['> BIOS v2.41 loaded from EEPROM','> Firmware initialised']},
+  {n:3, t:'BIOS runs POST — checks CPU, RAM, keyboard',          lines:['> POST: CPU.......OK','> POST: RAM 16GB..OK','> POST: KBD......OK']},
+  {n:4, t:'Bootstrap loader copies OS kernel into RAM',          lines:['> Reading boot sector...','> Loading kernel into RAM','> [████████████] 100%']},
+  {n:5, t:'OS takes control — loads drivers and UI',             lines:['> Starting kernel...','> Loading drivers...','> Mounting filesystem']},
+  {n:6, t:'User opens an app → OS loads it into RAM',            lines:['> User session ready','> Launching app...']}
+];
+let bsbPool = [];
+let bsbSlots = [null,null,null,null,null,null];
+let bsbWins = 0;
+let bsbBooting = false;
+
+function bsbShuffleArr(a){ a=[...a]; for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function bsbRender(){
+  const slotsEl = document.getElementById('bsb-slots');
+  slotsEl.innerHTML='';
+  bsbSlots.forEach((s,i)=>{
+    const div=document.createElement('div');
+    div.className='bsb-slot'+(s?' filled':'');
+    div.dataset.slot=i;
+    if(s){
+      div.innerHTML = `<span class="num">${String(i+1).padStart(2,'0')}</span><div class="bsb-step" draggable="true" data-n="${s.n}">${s.t}</div>`;
+    } else {
+      div.innerHTML = `<span class="num">${String(i+1).padStart(2,'0')}</span><span class="placeholder">Drop step ${i+1} here…</span>`;
+    }
+    bsbAttachSlot(div);
+    const stepEl = div.querySelector('.bsb-step');
+    if(stepEl) bsbAttachStep(stepEl);
+    slotsEl.appendChild(div);
+  });
+
+  const poolEl = document.getElementById('bsb-pool');
+  poolEl.innerHTML='';
+  if(bsbPool.length===0){
+    poolEl.innerHTML = '<div class="bsb-empty">All steps placed — ready to boot.</div>';
+  } else {
+    bsbPool.forEach(s=>{
+      const d=document.createElement('div');
+      d.className='bsb-step'; d.draggable=true; d.dataset.n=s.n; d.textContent=s.t;
+      bsbAttachStep(d);
+      poolEl.appendChild(d);
+    });
+  }
+  bsbAttachPool(poolEl);
+
+  const placed = bsbSlots.filter(x=>x).length;
+  if(!bsbBooting){
+    document.getElementById('bsb-status').textContent =
+      placed===6 ? 'Ready — press ⏻ Power On' : `${placed} of 6 placed —`;
+  }
+  document.getElementById('bsb-score').textContent = `Wins: ${bsbWins}`;
+}
+
+function bsbAttachStep(el){
+  el.addEventListener('dragstart',e=>{
+    if(bsbBooting){ e.preventDefault(); return; }
+    el.classList.add('dragging');
+    e.dataTransfer.setData('text/plain', el.dataset.n);
+    e.dataTransfer.effectAllowed='move';
+  });
+  el.addEventListener('dragend',()=>{
+    el.classList.remove('dragging');
+    document.querySelectorAll('.bsb-slot,.bsb-pool').forEach(x=>x.classList.remove('dragover'));
+  });
+}
+function bsbAttachSlot(slot){
+  slot.addEventListener('dragover',e=>{ e.preventDefault(); slot.classList.add('dragover'); });
+  slot.addEventListener('dragleave',()=>slot.classList.remove('dragover'));
+  slot.addEventListener('drop',e=>{
+    e.preventDefault(); slot.classList.remove('dragover');
+    if(bsbBooting) return;
+    const n=+e.dataTransfer.getData('text/plain');
+    bsbMoveStep(n, {kind:'slot', idx:+slot.dataset.slot});
+  });
+}
+function bsbAttachPool(pool){
+  pool.addEventListener('dragover',e=>{ e.preventDefault(); pool.classList.add('dragover'); });
+  pool.addEventListener('dragleave',()=>pool.classList.remove('dragover'));
+  pool.addEventListener('drop',e=>{
+    e.preventDefault(); pool.classList.remove('dragover');
+    if(bsbBooting) return;
+    const n=+e.dataTransfer.getData('text/plain');
+    bsbMoveStep(n, {kind:'pool'});
+  });
+}
+function bsbFindStep(n){
+  let i=bsbPool.findIndex(s=>s.n===n);
+  if(i>=0) return {kind:'pool', idx:i, step:bsbPool[i]};
+  i=bsbSlots.findIndex(s=>s && s.n===n);
+  if(i>=0) return {kind:'slot', idx:i, step:bsbSlots[i]};
+  return null;
+}
+function bsbMoveStep(n, dest){
+  const src = bsbFindStep(n); if(!src) return;
+  if(src.kind==='pool') bsbPool.splice(src.idx,1);
+  else bsbSlots[src.idx]=null;
+  if(dest.kind==='pool'){
+    bsbPool.push(src.step);
+  } else {
+    if(src.kind==='slot' && src.idx===dest.idx){ bsbSlots[dest.idx]=src.step; bsbRender(); return; }
+    if(bsbSlots[dest.idx]) bsbPool.push(bsbSlots[dest.idx]);
+    bsbSlots[dest.idx]=src.step;
+  }
+  bsbRender();
+}
+
+function bsbScreenSet(klass, html){
+  const s=document.getElementById('bsb-screen');
+  s.className='bsb-screen'+(klass?' '+klass:'');
+  document.getElementById('bsb-screen-content').innerHTML=html;
+}
+function bsbScreenAppend(line){
+  const c=document.getElementById('bsb-screen-content');
+  const d=document.createElement('div');
+  d.className='bsb-line'; d.textContent=line;
+  c.appendChild(d);
+}
+
+async function bsbPowerOn(){
+  if(bsbBooting) return;
+  if(bsbSlots.some(s=>!s)){
+    document.getElementById('bsb-status').textContent='Fill all 6 slots first.';
+    return;
+  }
+  bsbBooting=true;
+  document.querySelectorAll('.bsb-slot').forEach(el=>el.classList.remove('correct','wrong'));
+  bsbScreenSet('', '');
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const slotEls=document.querySelectorAll('.bsb-slot');
+  for(let i=0;i<6;i++){
+    const placed=bsbSlots[i];
+    if(placed.n !== i+1){
+      slotEls[i].classList.add('wrong');
+      await sleep(450);
+      bsbScreenSet('bsod',
+        `<div style="font-size:1.4rem;">:(</div>
+         <div style="margin-top:.6rem;font-weight:600;">SYSTEM HALTED</div>
+         <div style="margin-top:.6rem;font-size:.62rem;opacity:.9;">Step ${i+1} expected:<br>"${BSB_STEPS[i].t}"</div>
+         <div style="margin-top:.5rem;font-size:.62rem;opacity:.9;">But got:<br>"${placed.t}"</div>
+         <div style="margin-top:.7rem;font-size:.6rem;opacity:.7;">STOP_CODE: 0x000${i+1}_BOOT_ORDER</div>`);
+      document.getElementById('bsb-status').textContent=`Crashed at step ${i+1}. Re-order and try again.`;
+      bsbBooting=false;
+      return;
+    }
+    slotEls[i].classList.add('correct');
+    BSB_STEPS[i].lines.forEach(ln => bsbScreenAppend(ln));
+    await sleep(750);
+  }
+  await sleep(350);
+  bsbScreenSet('desktop',
+    `<div style="font-size:1.8rem;">🖥️</div>
+     <div style="font-weight:600;margin-top:.4rem;font-size:.85rem;">DESKTOP READY</div>
+     <div style="font-size:.62rem;opacity:.85;margin-top:.3rem;">Boot complete — 6/6 steps ✓</div>`);
+  bsbWins++;
+  document.getElementById('bsb-status').textContent='Perfect boot ✓ — try Reset for a fresh shuffle.';
+  document.getElementById('bsb-score').textContent=`Wins: ${bsbWins}`;
+  bsbBooting=false;
+}
+
+function bsbReset(){
+  bsbBooting=false;
+  bsbSlots=[null,null,null,null,null,null];
+  bsbPool=bsbShuffleArr(BSB_STEPS);
+  bsbScreenSet('off','⏻<div style="font-size:.6rem;letter-spacing:.25em;margin-top:.4rem;">OFF</div>');
+  bsbRender();
+}
+bsbReset();
+
+/* ════════ APP 2b: CLI vs GUI Race ════════ */
+const CG_TASKS = [
+  {
+    desc: 'Rename the file <code>report.txt</code> to <code>final.txt</code>.',
+    files: [{name:'report.txt', icon:'📄'}, {name:'notes.md', icon:'📝'}],
+    cli: ['mv report.txt final.txt'],
+    goal: (state)=> state.files.some(f=>f.name==='final.txt') && !state.files.some(f=>f.name==='report.txt'),
+    target: 'report.txt', action: 'Rename', newName: 'final.txt'
+  },
+  {
+    desc: 'Create a new folder named <code>docs</code>.',
+    files: [{name:'image.png', icon:'🖼️'}],
+    cli: ['mkdir docs'],
+    goal: (state)=> state.files.some(f=>f.name==='docs' && f.icon==='📁'),
+    action: 'New Folder', newName: 'docs'
+  },
+  {
+    desc: 'Delete the file <code>temp.log</code>.',
+    files: [{name:'temp.log', icon:'📄'}, {name:'app.exe', icon:'⚙️'}],
+    cli: ['rm temp.log', 'del temp.log'],
+    goal: (state)=> !state.files.some(f=>f.name==='temp.log'),
+    target: 'temp.log', action: 'Delete'
+  }
+];
+let cgIdx = 0;
+let cgState = null;
+let cgCliDone=false, cgGuiDone=false;
+let cgCliStart=0, cgGuiStart=0, cgCliEnd=0, cgGuiEnd=0;
+let cgTimerHandle=null;
+let cgRunning=false;
+
+function cgLoadTask(){
+  const task = CG_TASKS[cgIdx];
+  cgState = { files: task.files.map(f=>({...f})) };
+  document.getElementById('cg-task').innerHTML = `<strong>TASK ${cgIdx+1}/${CG_TASKS.length} —</strong> ${task.desc}`;
+  document.getElementById('cg-cli-history').innerHTML = '<div class="cli-out">// Ready. Press Start Race, then type the command.</div>';
+  document.getElementById('cg-cli-input').value=''; document.getElementById('cg-cli-input').disabled=true;
+  document.getElementById('cg-cli-panel').classList.remove('done');
+  document.getElementById('cg-gui-panel').classList.remove('done');
+  document.getElementById('cg-cli-timer').textContent='0.00s';
+  document.getElementById('cg-gui-timer').textContent='0.00s';
+  document.getElementById('cg-cli-timer').className='race2-timer';
+  document.getElementById('cg-gui-timer').className='race2-timer';
+  document.getElementById('cg-verdict').textContent='Press Start Race to begin both timers.';
+  cgRenderGui();
+  cgCliDone=false; cgGuiDone=false; cgRunning=false;
+}
+
+function cgRenderGui(menuFor=null, dialog=null){
+  const desk = document.getElementById('cg-gui-desk');
+  let html = '<div class="gui-files">';
+  cgState.files.forEach((f,i)=>{
+    html += `<div class="gui-file" data-i="${i}" onclick="cgFileClick(event,${i})" oncontextmenu="cgFileMenu(event,${i});return false;"><div class="icon">${f.icon}</div><div class="name">${f.name}</div></div>`;
+  });
+  html += '</div>';
+  if(menuFor!==null){
+    const task = CG_TASKS[cgIdx];
+    const m = menuFor;
+    const menuItems = m.kind==='desktop'
+      ? ['New Folder','New File','Refresh']
+      : ['Open','Rename','Delete','Properties'];
+    html += `<div class="gui-menu" style="left:${m.x}px;top:${m.y}px;">`;
+    menuItems.forEach(it=>{
+      html += `<button onclick="cgMenuClick('${it}',${m.target===undefined?'null':m.target})">${it}</button>`;
+    });
+    html += '</div>';
+  }
+  if(dialog){
+    html += `<div class="gui-dialog">
+      <label>${dialog.label}</label>
+      <input id="cg-gui-input" type="text" value="${dialog.preset||''}">
+      <div class="row">
+        <button onclick="cgDialogCancel()">Cancel</button>
+        <button class="primary" onclick="cgDialogOk()">OK</button>
+      </div>
+    </div>`;
+  }
+  desk.innerHTML = html;
+  if(dialog){
+    const inp = document.getElementById('cg-gui-input');
+    inp.focus(); inp.select();
+    inp.addEventListener('keydown',e=>{ if(e.key==='Enter') cgDialogOk(); if(e.key==='Escape') cgDialogCancel(); });
+    cgGuiDialog = dialog;
+  }
+}
+let cgGuiDialog=null, cgGuiMenuTarget=null;
+
+function cgFileClick(e, i){
+  if(!cgRunning || cgGuiDone) return;
+  cgRenderGui({kind:'file', target:i, x:e.offsetX+40, y:e.offsetY+30});
+  cgGuiMenuTarget = i;
+}
+function cgFileMenu(e, i){
+  if(!cgRunning || cgGuiDone) return;
+  const rect = document.getElementById('cg-gui-desk').getBoundingClientRect();
+  cgRenderGui({kind:'file', target:i, x:e.clientX-rect.left, y:e.clientY-rect.top});
+  cgGuiMenuTarget = i;
+}
+document.addEventListener('contextmenu',e=>{
+  const desk=document.getElementById('cg-gui-desk');
+  if(desk && desk.contains(e.target) && !e.target.closest('.gui-file')){
+    if(cgRunning && !cgGuiDone){
+      e.preventDefault();
+      const rect=desk.getBoundingClientRect();
+      cgRenderGui({kind:'desktop', x:e.clientX-rect.left, y:e.clientY-rect.top});
+      cgGuiMenuTarget = null;
+    }
+  }
+});
+
+function cgMenuClick(action, targetIdx){
+  if(!cgRunning) return;
+  const task = CG_TASKS[cgIdx];
+  if(action==='Rename'){
+    const cur = cgState.files[targetIdx].name;
+    cgRenderGui(null, {label:'Rename to:', preset:cur, op:'rename', target:targetIdx});
+  } else if(action==='Delete'){
+    cgState.files.splice(targetIdx,1);
+    cgRenderGui();
+    cgCheckGui();
+  } else if(action==='New Folder'){
+    cgRenderGui(null, {label:'Folder name:', preset:'New Folder', op:'newfolder'});
+  } else if(action==='New File'){
+    cgRenderGui(null, {label:'File name:', preset:'new.txt', op:'newfile'});
+  } else {
+    cgRenderGui(); // dismiss menu, no-op
+  }
+}
+function cgDialogOk(){
+  const inp = document.getElementById('cg-gui-input');
+  const val = inp.value.trim();
+  const d = cgGuiDialog; if(!d||!val) return;
+  if(d.op==='rename'){
+    cgState.files[d.target].name = val;
+  } else if(d.op==='newfolder'){
+    cgState.files.push({name:val, icon:'📁'});
+  } else if(d.op==='newfile'){
+    cgState.files.push({name:val, icon:'📄'});
+  }
+  cgGuiDialog=null;
+  cgRenderGui();
+  cgCheckGui();
+}
+function cgDialogCancel(){ cgGuiDialog=null; cgRenderGui(); }
+
+function cgCheckGui(){
+  const task = CG_TASKS[cgIdx];
+  if(task.goal(cgState) && !cgGuiDone){
+    cgGuiDone=true;
+    cgGuiEnd=performance.now();
+    document.getElementById('cg-gui-timer').textContent = ((cgGuiEnd-cgGuiStart)/1000).toFixed(2)+'s';
+    document.getElementById('cg-gui-timer').className='race2-timer done';
+    document.getElementById('cg-gui-panel').classList.add('done');
+    cgMaybeFinish();
+  }
+}
+
+function cgCliSubmit(){
+  if(!cgRunning || cgCliDone) return;
+  const inp = document.getElementById('cg-cli-input');
+  const cmd = inp.value.trim();
+  if(!cmd) return;
+  const hist = document.getElementById('cg-cli-history');
+  hist.innerHTML += `<div class="cli-cmd">$ ${cmd}</div>`;
+  const task = CG_TASKS[cgIdx];
+  if(task.cli.some(c=>c.toLowerCase()===cmd.toLowerCase())){
+    hist.innerHTML += `<div class="cli-out">// ok</div>`;
+    cgCliDone=true;
+    cgCliEnd=performance.now();
+    document.getElementById('cg-cli-timer').textContent = ((cgCliEnd-cgCliStart)/1000).toFixed(2)+'s';
+    document.getElementById('cg-cli-timer').className='race2-timer done';
+    document.getElementById('cg-cli-panel').classList.add('done');
+    inp.disabled=true;
+    cgMaybeFinish();
+  } else {
+    hist.innerHTML += `<div class="cli-err">// command not recognised — try again</div>`;
+  }
+  inp.value='';
+  hist.scrollTop = hist.scrollHeight;
+}
+
+function cgMaybeFinish(){
+  if(cgCliDone && cgGuiDone){
+    cgRunning=false;
+    clearInterval(cgTimerHandle);
+    const cli=(cgCliEnd-cgCliStart)/1000, gui=(cgGuiEnd-cgGuiStart)/1000;
+    const fast = cli < gui ? 'CLI' : 'GUI';
+    const diff = Math.abs(cli-gui).toFixed(2);
+    document.getElementById('cg-verdict').innerHTML =
+      `<strong>${fast} won by ${diff}s.</strong> ` +
+      (cli<gui
+        ? `Once you know the syntax, the CLI is unbeatable — one line, no clicks, scriptable. But you must memorise commands.`
+        : `The GUI is faster for one-off tasks and beginners — you can discover options by clicking. But it doesn't scale: imagine renaming 200 files this way.`);
+  }
+}
+
+function cgStart(){
+  if(cgRunning) return;
+  cgRunning=true;
+  cgCliDone=false; cgGuiDone=false;
+  cgCliStart=cgGuiStart=performance.now();
+  document.getElementById('cg-cli-input').disabled=false;
+  document.getElementById('cg-cli-input').focus();
+  document.getElementById('cg-cli-timer').className='race2-timer running';
+  document.getElementById('cg-gui-timer').className='race2-timer running';
+  document.getElementById('cg-verdict').textContent='Race on. Type the CLI command and use the GUI desktop in parallel.';
+  document.getElementById('cg-cli-history').innerHTML='<div class="cli-out">// race started</div>';
+  cgTimerHandle = setInterval(()=>{
+    const now=performance.now();
+    if(!cgCliDone) document.getElementById('cg-cli-timer').textContent = ((now-cgCliStart)/1000).toFixed(2)+'s';
+    if(!cgGuiDone) document.getElementById('cg-gui-timer').textContent = ((now-cgGuiStart)/1000).toFixed(2)+'s';
+  }, 60);
+}
+function cgNext(){
+  clearInterval(cgTimerHandle);
+  cgIdx = (cgIdx+1) % CG_TASKS.length;
+  cgLoadTask();
+}
+document.getElementById('cg-cli-input').addEventListener('keydown', e=>{ if(e.key==='Enter') cgCliSubmit(); });
+cgLoadTask();
+
+/* ════════ APP 4: CPU Interrupt Sim ════════ */
+const IRQ = {
+  kbd: {label:'Keyboard input',  isr:'Read scan code → buffer', priority:'Medium'},
+  prn: {label:'Printer buffer empty', isr:'Refill print buffer', priority:'Low'},
+  tmr: {label:'Timer tick',       isr:'Update system clock', priority:'High'},
+  err: {label:'Divide by zero',   isr:'Raise exception → halt task', priority:'Critical'},
+  bat: {label:'Low battery',      isr:'Display warning, prepare shutdown', priority:'High'}
+};
+let cpuBusy = false;
+function cpuLog(html){
+  const log = document.getElementById('cpu-log');
+  const t = new Date().toLocaleTimeString().split(' ')[0];
+  log.insertAdjacentHTML('afterbegin', `<div><span class="l-time">${t}</span>${html}</div>`);
+}
+function cpuReset(){
+  cpuBusy=false;
+  document.getElementById('cpu-state-pill').textContent='Running';
+  document.getElementById('cpu-state-pill').className='cpu-state-pill busy';
+  document.getElementById('cpu-task').textContent='Calculating spreadsheet…';
+  document.getElementById('cpu-detail').textContent='PC = 0x4012  |  reg = ready';
+  document.getElementById('cpu-log').innerHTML='';
+  document.querySelectorAll('#cpu-buttons button').forEach(b=>b.disabled=false);
+}
+document.querySelectorAll('#cpu-buttons button').forEach(b => {
+  b.onclick = () => {
+    if (cpuBusy) return;
+    const key = b.dataset.irq;
+    const irq = IRQ[key];
+    cpuBusy = true;
+    document.querySelectorAll('#cpu-buttons button').forEach(x=>x.disabled=true);
+    const pill = document.getElementById('cpu-state-pill');
+    const task = document.getElementById('cpu-task');
+    const detail = document.getElementById('cpu-detail');
+
+    cpuLog(`<span class="l-irq">IRQ</span> received: <strong>${irq.label}</strong> (${irq.priority})`);
+    setTimeout(() => {
+      pill.textContent='Saving state'; pill.className='cpu-state-pill servicing';
+      task.textContent='Saving registers…';
+      detail.textContent='Push PC, accumulator, flags → stack';
+      cpuLog(`Save: PC + registers pushed to stack`);
+    }, 400);
+    setTimeout(() => {
+      pill.textContent='Servicing IRQ';
+      task.textContent=`ISR: ${irq.label}`;
+      detail.textContent=irq.isr;
+      cpuLog(`<span class="l-isr">ISR</span> running: ${irq.isr}`);
+    }, 1200);
+    setTimeout(() => {
+      pill.textContent='Restoring state'; pill.className='cpu-state-pill servicing';
+      task.textContent='Restoring registers…';
+      detail.textContent='Pop saved registers ← stack';
+      cpuLog(`Restore: PC + registers popped from stack`);
+    }, 2200);
+    setTimeout(() => {
+      pill.textContent='Running'; pill.className='cpu-state-pill busy';
+      task.textContent='Calculating spreadsheet…';
+      detail.textContent='PC = 0x4012  |  reg = ready';
+      cpuLog(`<span class="l-resume">Resumed</span> original task at PC = 0x4012`);
+      cpuBusy = false;
+      document.querySelectorAll('#cpu-buttons button').forEach(x=>x.disabled=false);
+    }, 3000);
+  };
+});
+
+/* ════════ APP 5: Language ID ════════ */
+const LANGQ = [
+  {code:'total = first + second\nprint(total)', a:'high', why:'Python — English-like keywords (print) and clean syntax. Fully portable.'},
+  {code:'LDA  First\nADD  Second\nSTO  Total', a:'assembly', why:'Mnemonics like LDA / ADD / STO — assembly. Each line maps to one machine instruction.'},
+  {code:'00010001  00010010\n00100001  00010011\n00110000  00011010', a:'machine', why:'Pure binary — that\'s machine code. Directly executable by the CPU.'},
+  {code:'for i in range(10):\n    print(i * 2)', a:'high', why:'Python again — a for-loop with English keywords. High-level.'},
+  {code:'MOV AX, 5\nADD AX, 3\nINT 21h', a:'assembly', why:'Intel x86 mnemonics. Hardware-specific assembly.'},
+  {code:'if (score >= 50)\n    cout << "Pass";', a:'high', why:'C++ — readable English-ish syntax with operators. High-level.'}
+];
+let langIdx = 0, langScore = 0;
+function buildLangProgress(){
+  const p = document.getElementById('lang-progress');
+  p.innerHTML = LANGQ.map(()=>'<span></span>').join('');
+}
+function showLang(){
+  const q = LANGQ[langIdx];
+  document.getElementById('lang-snippet').textContent = q.code;
+  document.getElementById('lang-feedback').textContent = '';
+  document.querySelectorAll('#lang-actions button').forEach(b => {
+    b.className = ''; b.disabled = false;
+  });
+}
+document.querySelectorAll('#lang-actions button').forEach(b => {
+  b.onclick = () => {
+    const q = LANGQ[langIdx];
+    const ok = b.dataset.lvl === q.a;
+    document.querySelectorAll('#lang-actions button').forEach(x => {
+      x.disabled = true;
+      if (x.dataset.lvl === q.a) x.classList.add('right');
+      else if (x === b && !ok) x.classList.add('wrong');
+    });
+    document.getElementById('lang-feedback').innerHTML = (ok ? '<strong style="color:var(--clr-ok);">Correct.</strong> ' : '<strong style="color:var(--clr-danger);">Not quite.</strong> ') + q.why;
+    if (ok) langScore++;
+    const pNodes = document.querySelectorAll('#lang-progress span');
+    pNodes[langIdx].classList.add('done', ok ? 'ok' : 'no');
+    langIdx++;
+    if (langIdx < LANGQ.length) {
+      setTimeout(showLang, 1600);
+    } else {
+      setTimeout(() => {
+        document.getElementById('lang-snippet').textContent = `// finished`;
+        document.getElementById('lang-feedback').innerHTML = `<strong>Final score: ${langScore} / ${LANGQ.length}</strong> — press Restart to play again.`;
+      }, 1600);
+    }
+  };
+});
+function resetLang(){ langIdx=0; langScore=0; buildLangProgress(); showLang(); }
+resetLang();
+
+/* ════════ APP 5b: Assembly Robot ════════ */
+// Grid coords: [row, col], row 0 = top. N=-row, S=+row, E=+col, W=-col
+const ROBO_LEVELS = [
+  { size:5, start:[4,0], goal:[0,4], walls:[] },
+  { size:6, start:[5,0], goal:[0,5], walls:[[3,1],[3,2],[3,3],[2,3]] },
+  { size:7, start:[6,3], goal:[0,3], walls:[[5,2],[5,3],[5,4],[3,1],[3,2],[3,3],[3,5],[1,3],[1,4],[1,5]] }
+];
+let roboLevel = 0;
+let roboProgram = [];
+let roboRunning = false;
+let roboPos = null;
+
+function roboBuildBoard(){
+  const lv = ROBO_LEVELS[roboLevel];
+  const board = document.getElementById('robo-board');
+  board.style.gridTemplateColumns = `repeat(${lv.size}, 1fr)`;
+  board.style.gridTemplateRows = `repeat(${lv.size}, 1fr)`;
+  board.style.setProperty('--rs', lv.size);
+  board.innerHTML = '';
+  const wallSet = new Set(lv.walls.map(w=>w.join(',')));
+  for(let r=0;r<lv.size;r++){
+    for(let c=0;c<lv.size;c++){
+      const cell = document.createElement('div');
+      cell.className = 'robo-cell';
+      cell.dataset.r=r; cell.dataset.c=c;
+      if(wallSet.has(`${r},${c}`)) cell.classList.add('wall');
+      if(r===lv.goal[0] && c===lv.goal[1]) cell.classList.add('goal');
+      board.appendChild(cell);
+    }
+  }
+  const robot = document.createElement('div');
+  robot.className = 'robo-robot';
+  robot.id = 'robo-robot';
+  robot.textContent = '◆';
+  board.appendChild(robot);
+  roboPos = [...lv.start];
+  roboPlaceRobot();
+  document.getElementById('robo-level').textContent = `Level ${roboLevel+1}/${ROBO_LEVELS.length} — ${lv.size}×${lv.size}`;
+}
+function roboPlaceRobot(){
+  const robot = document.getElementById('robo-robot');
+  if(!robot) return;
+  robot.style.setProperty('--rr', roboPos[0]);
+  robot.style.setProperty('--rc', roboPos[1]);
+}
+
+function roboRenderProgram(activeIdx=-1){
+  const el = document.getElementById('robo-program');
+  if(roboProgram.length===0){
+    el.innerHTML = '<div class="robo-empty">; empty program</div>';
+    return;
+  }
+  el.innerHTML = roboProgram.map((ins,i)=>
+    `<div class="robo-program-line ${i===activeIdx?'active':''}" onclick="roboRemove(${i})">
+      <span><span class="ln-num">${String(i).padStart(2,'0')}</span>${ins.replace('_',' ')}</span>
+      <span class="ln-x">✕</span>
+    </div>`
+  ).join('');
+}
+function roboAdd(ins){
+  if(roboRunning) return;
+  if(roboProgram.length>=30){ return; }
+  roboProgram.push(ins);
+  roboRenderProgram();
+}
+function roboRemove(i){
+  if(roboRunning) return;
+  roboProgram.splice(i,1);
+  roboRenderProgram();
+}
+function roboClear(){
+  if(roboRunning) return;
+  roboProgram=[];
+  roboRenderProgram();
+  document.querySelectorAll('.robo-cell.trail').forEach(c=>c.classList.remove('trail'));
+  roboPos = [...ROBO_LEVELS[roboLevel].start];
+  roboPlaceRobot();
+  roboMsg('Cleared. Build a new program.','');
+}
+function roboMsg(text, cls){
+  const el=document.getElementById('robo-msg');
+  el.textContent=text;
+  el.className='robo-msg'+(cls?' '+cls:'');
+}
+function roboNextLevel(){
+  if(roboRunning) return;
+  roboLevel = (roboLevel+1) % ROBO_LEVELS.length;
+  roboProgram=[];
+  roboBuildBoard();
+  roboPlaceRobot();
+  roboRenderProgram();
+  roboMsg('New level loaded.','');
+}
+async function roboRun(){
+  if(roboRunning) return;
+  if(roboProgram.length===0){ roboMsg('Add some instructions first.',''); return; }
+  roboRunning=true;
+  document.querySelectorAll('.robo-cell.trail').forEach(c=>c.classList.remove('trail'));
+  roboPos = [...ROBO_LEVELS[roboLevel].start];
+  roboPlaceRobot();
+  const lv = ROBO_LEVELS[roboLevel];
+  const wallSet = new Set(lv.walls.map(w=>w.join(',')));
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  for(let i=0;i<roboProgram.length;i++){
+    roboRenderProgram(i);
+    const ins = roboProgram[i];
+    let dr=0,dc=0;
+    if(ins==='MOV_N') dr=-1;
+    else if(ins==='MOV_S') dr=1;
+    else if(ins==='MOV_E') dc=1;
+    else if(ins==='MOV_W') dc=-1;
+    if(ins!=='NOP'){
+      const nr=roboPos[0]+dr, nc=roboPos[1]+dc;
+      if(nr<0||nc<0||nr>=lv.size||nc>=lv.size){
+        roboMsg(`Crash at line ${i}: off-grid (${ins})`,'fail');
+        roboRunning=false; return;
+      }
+      if(wallSet.has(`${nr},${nc}`)){
+        roboMsg(`Crash at line ${i}: hit wall (${ins})`,'fail');
+        roboRunning=false; return;
+      }
+      roboPos=[nr,nc];
+      roboPlaceRobot();
+      // mark trail
+      const cell = document.querySelector(`.robo-cell[data-r="${nr}"][data-c="${nc}"]`);
+      if(cell && !cell.classList.contains('goal')) cell.classList.add('trail');
+    }
+    await sleep(380);
+  }
+  roboRenderProgram(-1);
+  if(roboPos[0]===lv.goal[0] && roboPos[1]===lv.goal[1]){
+    roboMsg(`★ Reached the goal in ${roboProgram.length} instructions. Notice how verbose low-level is — high-level would be one line.`,'win');
+  } else {
+    roboMsg(`Program ended at [${roboPos[0]},${roboPos[1]}], not the goal. Add more steps.`,'fail');
+  }
+  roboRunning=false;
+}
+roboBuildBoard();
+roboRenderProgram();
+
+/* ════════ APP 6: Compiler vs Interpreter Race ════════ */
+const PROG = ['x = 5', 'y = 10', 'z = x + y', 'if z > 10:', '    print(z)', 'print("done")'];
+const TRANSLATE_MS = 380;
+const EXEC_MS = 120;
+function buildLines(id){
+  const wrap = document.getElementById(id);
+  wrap.innerHTML = PROG.map(p => `<div class="ln">${p.replace(/ /g,'&nbsp;')}</div>`).join('');
+}
+let raceTimers = [];
+function raceReset(){
+  raceTimers.forEach(t=>clearTimeout(t)); raceTimers=[];
+  buildLines('lines-c'); buildLines('lines-i');
+  document.getElementById('stage-c').textContent='Idle';
+  document.getElementById('stage-i').textContent='Idle';
+  document.getElementById('time-c').textContent='0.00s';
+  document.getElementById('time-i').textContent='0.00s';
+  document.getElementById('race-result').textContent='';
+  document.getElementById('race-go').disabled=false;
+  ['racer-c','racer-i'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.classList.remove('live','winner');
+    el.style.setProperty('--progress','0%');
+  });
+}
+function raceStart(){
+  raceReset();
+  document.getElementById('race-go').disabled=true;
+  document.getElementById('racer-c').classList.add('live');
+  document.getElementById('racer-i').classList.add('live');
+  // Compiler: translate all (linesN * TRANSLATE_MS), then run all
+  const compileTotal = PROG.length * TRANSLATE_MS;
+  const cLines = document.querySelectorAll('#lines-c .ln');
+  const iLines = document.querySelectorAll('#lines-i .ln');
+  document.getElementById('stage-c').textContent='Compiling…';
+  document.getElementById('stage-i').textContent='Running line by line…';
+  let cStart = performance.now();
+  let iStart = cStart;
+
+  // Compiler phase 1: translate
+  PROG.forEach((_, i) => {
+    raceTimers.push(setTimeout(() => {
+      cLines[i].classList.add('translating');
+      raceTimers.push(setTimeout(()=>{cLines[i].classList.remove('translating');cLines[i].classList.add('done');}, TRANSLATE_MS-30));
+      document.getElementById('time-c').textContent = ((performance.now()-cStart)/1000).toFixed(2)+'s';
+      document.getElementById('racer-c').style.setProperty('--progress', Math.round(((i+1)/(PROG.length*2))*100)+'%');
+    }, i * TRANSLATE_MS));
+  });
+  // Compiler phase 2: execute (super fast since pre-translated)
+  raceTimers.push(setTimeout(() => {
+    document.getElementById('stage-c').textContent='Executing…';
+    PROG.forEach((_, i) => {
+      raceTimers.push(setTimeout(() => {
+        cLines[i].classList.remove('done'); cLines[i].classList.add('executing');
+        raceTimers.push(setTimeout(()=>{cLines[i].classList.remove('executing');cLines[i].classList.add('done');}, EXEC_MS-30));
+        document.getElementById('time-c').textContent=((performance.now()-cStart)/1000).toFixed(2)+'s';
+        document.getElementById('racer-c').style.setProperty('--progress', Math.round(((PROG.length+i+1)/(PROG.length*2))*100)+'%');
+      }, i*EXEC_MS));
+    });
+    raceTimers.push(setTimeout(() => {
+      document.getElementById('stage-c').textContent='Done ✓';
+      document.getElementById('racer-c').classList.remove('live');
+      document.getElementById('racer-c').style.setProperty('--progress','100%');
+    }, PROG.length*EXEC_MS+50));
+  }, compileTotal+100));
+
+  // Interpreter: translate + execute each line, sequentially
+  let interpDelay = 0;
+  PROG.forEach((_, i) => {
+    raceTimers.push(setTimeout(() => {
+      iLines[i].classList.add('translating');
+    }, interpDelay));
+    raceTimers.push(setTimeout(() => {
+      iLines[i].classList.remove('translating'); iLines[i].classList.add('executing');
+    }, interpDelay+TRANSLATE_MS));
+    raceTimers.push(setTimeout(() => {
+      iLines[i].classList.remove('executing'); iLines[i].classList.add('done');
+      document.getElementById('time-i').textContent=((performance.now()-iStart)/1000).toFixed(2)+'s';
+      document.getElementById('racer-i').style.setProperty('--progress', Math.round(((i+1)/PROG.length)*100)+'%');
+    }, interpDelay+TRANSLATE_MS+EXEC_MS));
+    interpDelay += TRANSLATE_MS + EXEC_MS;
+  });
+  raceTimers.push(setTimeout(() => {
+    document.getElementById('stage-i').textContent='Done ✓';
+    document.getElementById('racer-i').classList.remove('live');
+    document.getElementById('racer-i').style.setProperty('--progress','100%');
+  }, interpDelay+50));
+
+  // Final result
+  const totalC = compileTotal + 100 + PROG.length*EXEC_MS;
+  const totalI = interpDelay;
+  raceTimers.push(setTimeout(() => {
+    const winner = totalC < totalI ? 'Compiler' : 'Interpreter';
+    document.getElementById(totalC < totalI ? 'racer-c' : 'racer-i').classList.add('winner');
+    document.getElementById('race-result').innerHTML = `<strong>🏁 ${winner} finished first this run.</strong> But the compiler did all the translation up front — running it again would be near-instant. The interpreter has to translate every line every time.`;
+    document.getElementById('race-go').disabled=false;
+  }, Math.max(totalC,totalI)+200));
+}
+raceReset();
+
+/* ════════ APP 7: Bug-fix IDE ════════ */
+const BUGS = [
+  {
+    code:[
+      'def total(a, b):',
+      '    return a + b',
+      'pritn(total(2, 3))'
+    ],
+    bugLine:2,
+    fixedLine:'print(total(2, 3))',
+    answer:'autoc',
+    why:'Auto-correction fixes simple typos in keywords automatically — "pritn" → "print".'
+  },
+  {
+    code:[
+      'x = 5',
+      'y = 0',
+      'print(x / y)'
+    ],
+    bugLine:2,
+    fixedLine:'print(x / y)  # → DivisionError caught at runtime',
+    answer:'debug',
+    why:'A divide-by-zero error only appears at runtime. The debugger lets you single-step and inspect variables to find it.'
+  },
+  {
+    code:[
+      'name = "Ada"',
+      'print("Hello, " + nam)'
+    ],
+    bugLine:1,
+    fixedLine:'print("Hello, " + name)',
+    answer:'diag',
+    why:'Error diagnostics underline undefined variable names as you type — "nam" is flagged immediately.'
+  },
+  {
+    code:[
+      'def greet(user):',
+      '    print("Hi " + use',
+      ')'
+    ],
+    bugLine:1,
+    fixedLine:'    print("Hi " + user)',
+    answer:'autocomp',
+    why:'Auto-completion would have offered "user" as you typed "use" — and added the closing bracket.'
+  },
+  {
+    code:[
+      'if score >= 50: print("pass") else: print("fail")'
+    ],
+    bugLine:0,
+    fixedLine:'if score >= 50:\n    print("pass")\nelse:\n    print("fail")',
+    answer:'pretty',
+    why:'Prettyprinting auto-formats and colour-codes — splitting this onto separate indented lines and highlighting keywords.'
+  }
+];
+let bugIdx = 0, bugUsed = false;
+function showBug(){
+  bugUsed = false;
+  const b = BUGS[bugIdx];
+  const codeEl = document.getElementById('bug-code');
+  codeEl.innerHTML = b.code.map((l,i) => `<span class="line${i===b.bugLine?' bug':''}">${l.replace(/ /g,'&nbsp;')}</span>`).join('');
+  document.getElementById('bug-feedback').textContent = '';
+  document.querySelectorAll('#bug-toolbar .bugfix-tool').forEach(t => t.classList.remove('used'));
+}
+document.querySelectorAll('#bug-toolbar .bugfix-tool').forEach(t => {
+  t.onclick = () => {
+    if (bugUsed) return;
+    bugUsed = true;
+    const b = BUGS[bugIdx];
+    const ok = t.dataset.tool === b.answer;
+    document.querySelectorAll('#bug-toolbar .bugfix-tool').forEach(x => {
+      if (x.dataset.tool !== b.answer) x.classList.add('used');
+    });
+    if (ok) {
+      document.getElementById('bug-feedback').innerHTML = `<strong style="color:var(--clr-ok);">Correct ✓</strong> — ${b.why}`;
+      // Show fixed line
+      const codeEl = document.getElementById('bug-code');
+      const lines = codeEl.querySelectorAll('.line');
+      if (lines[b.bugLine]) {
+        lines[b.bugLine].classList.remove('bug');
+        lines[b.bugLine].classList.add('fixed');
+        lines[b.bugLine].innerHTML = b.fixedLine.replace(/ /g,'&nbsp;').replace(/\n/g,'<br>');
+      }
+    } else {
+      document.getElementById('bug-feedback').innerHTML = `<strong style="color:var(--clr-danger);">Not quite.</strong> ${b.why}`;
+    }
+  };
+});
+function bugReset(){ bugIdx = (bugIdx + 1) % BUGS.length; showBug(); }
+showBug();
+
+/* ════════ QUIZ ════════ */
+const questions=[
+  {q:"Which type of software manages hardware and provides a platform for applications?",opts:["Application software","System software","Firmware","A compiler"],ans:1},
+  {q:"What does the BIOS do at power-on?",opts:["Loads all application software","Runs POST and loads the OS via the bootstrap loader","Manages user accounts","Allocates RAM to programs"],ans:1},
+  {q:"Which interface requires the user to type commands?",opts:["GUI","WIMP","Touch","CLI"],ans:3},
+  {q:"An interrupt causes the CPU to:",opts:["Shut down","Save state and execute an ISR","Restart","Double clock speed"],ans:1},
+  {q:"What is a BUFFER used for?",opts:["Permanent data storage","Temporarily holding data for a slow device","Compressing files","Managing passwords"],ans:1},
+  {q:"Which translator produces a stand-alone executable file?",opts:["Interpreter","Assembler only","Compiler","JIT compiler"],ans:2},
+  {q:"An advantage of an interpreter over a compiler during development:",opts:["Runs faster","Produces a smaller executable","Errors found and shown line by line","Needs no translator to run"],ans:2},
+  {q:"Assembly mnemonics are:",opts:["Encrypted instructions","Short codes representing machine code instructions","Platform-independent code","Self-compiling programs"],ans:1},
+  {q:"Which IDE feature steps through code one line at a time?",opts:["Auto-completion","Prettyprinting","Single stepping / debugger","Error diagnostics"],ans:2},
+  {q:"A high-level language described as PORTABLE means:",opts:["It runs faster than assembly","It can run on different CPU types without modification","It produces smaller files","It requires no translation"],ans:1},
+  {q:"Where are the BIOS settings stored?",opts:["EEPROM","RAM","ROM","CMOS"],ans:3},
+  {q:"A virus checker uses heuristic checking to:",opts:["Delete all unknown files","Check for virus-like behaviour not in the database","Speed up the hard drive","Compress suspicious files"],ans:1},
+  {q:"Defragmentation software is NOT needed for:",opts:["Hard disk drives (HDD)","Optical discs","Solid state drives (SSD)","All spinning disk media"],ans:2},
+  {q:"Which of these is a low-level language?",opts:["Python","Java","Assembly language","Visual Basic"],ans:2},
+  {q:"An assembler translates:",opts:["HLL to machine code","Assembly language to machine code","Machine code to HLL","HLL to assembly"],ans:1},
+  {q:"A compiled program, when run a second time:",opts:["Must be recompiled from source","Requires the compiler to be present","Runs directly without recompilation","Needs an interpreter"],ans:2},
+  {q:"WIMP stands for:",opts:["Windows, Interfaces, Menus, Programs","Windows, Icons, Menus, Pointing device","Web, Icons, Mouse, Pointer","Widgets, Images, Menus, Programs"],ans:1},
+  {q:"Pre-emptive multitasking means:",opts:["Running one program to completion before the next","Sharing CPU time between processes, each with a priority and time limit","Using multiple CPUs","Storing all programs in RAM simultaneously"],ans:1},
+  {q:"Which is an advantage of a CLI over a GUI?",opts:["More user-friendly for beginners","Requires more memory","User not restricted to pre-set options; direct computer control","Better for playing games"],ans:2},
+  {q:"The role of the bootstrap loader is to:",opts:["Run POST tests on hardware","Copy the operating system into RAM at start-up","Store BIOS settings","Manage device drivers"],ans:1}
+];
+let answers=Array(questions.length).fill(null);
+function renderQuiz(){const c=document.getElementById('q-container');c.innerHTML='';questions.forEach((q,i)=>{const d=document.createElement('div');d.className='quiz-card';d.innerHTML=`<div class="q-num">Q${String(i+1).padStart(2,'0')} / ${questions.length}</div><div class="q-text">${q.q}</div><div class="quiz-options">${q.opts.map((o,j)=>`<button class="quiz-opt${answers[i]===j?' selected':''}" onclick="selAns(${i},${j},this)">${o}</button>`).join('')}</div>`;c.appendChild(d);});updateBtn();}
+function selAns(qi,oi,el){answers[qi]=oi;el.closest('.quiz-options').querySelectorAll('.quiz-opt').forEach((b,j)=>b.classList.toggle('selected',j===oi));updateBtn();}
+function updateBtn(){const n=answers.filter(a=>a!==null).length;const btn=document.getElementById('submit-btn');btn.disabled=n<questions.length;btn.textContent=n<questions.length?`Submit (${n}/${questions.length})`:'Submit Answers';}
+function submitQuiz(){let score=0;answers.forEach((a,i)=>{if(a===questions[i].ans)score++;});const pct=Math.round(score/questions.length*100);const res=document.getElementById('quiz-results');let html=`<h3>Score: <span class="score-badge">${score} / ${questions.length} — ${pct}%</span></h3><p style="margin:.5rem 0 1.2rem;font-size:.82rem;color:var(--text-3);">Review below.</p>`;questions.forEach((q,i)=>{const ok=answers[i]===q.ans;html+=`<div class="result-item ${ok?'correct-res':'wrong-res'}"><div class="result-item-header">${ok?'✓':'✗'} Q${i+1}. ${q.q}</div>${!ok?`<p class="your-ans">Your answer: ${q.opts[answers[i]]}</p>`:''}<p class="correct-ans">Correct: ${q.opts[q.ans]}</p></div>`;});html+=`<button class="btn secondary" style="margin-top:1.2rem;" onclick="resetQuiz()">Try Again</button>`;res.innerHTML=html;res.classList.add('show');}
+function resetQuiz(){answers=Array(questions.length).fill(null);document.getElementById('quiz-results').classList.remove('show');renderQuiz();}
+renderQuiz();
+
+/* ════════ Topic Quizzes — 5 questions per section ════════ */
+const TOPIC_QUIZZES = {
+  types: [
+    { q:"A device driver belongs to which category of software?",
+      opts:["Application software","System software","User-installed software","Productivity software"],
+      a:1, why:"Device drivers are system software — they let the OS communicate with specific hardware." },
+    { q:"Which of these is NOT a typical utility program?",
+      opts:["Disk defragmenter","Web browser","Anti-virus scanner","Backup tool"],
+      a:1, why:"A web browser is application software. Defragmenter, anti-virus and backup tools all fit the utility category." },
+    { q:"What best describes application software?",
+      opts:["Software that operates the hardware","Software that performs specific tasks for the user","Software stored permanently on ROM","Software that runs only at boot"],
+      a:1, why:"Applications give the user something useful to do — word processing, drawing, browsing. They sit on top of the OS." },
+    { q:"Linkers and compilers are classified as:",
+      opts:["Application software","Utility software","System software","Firmware"],
+      a:2, why:"Translators (compilers) and linkers help build other software — part of the system software family." },
+    { q:"A library of pre-written functions that other programs call is best classified as:",
+      opts:["Application software","System software","Firmware in ROM","An end-user utility"],
+      a:1, why:"Programming libraries are system software — they support the development and execution of other programs." }
+  ],
+  os: [
+    { q:"What does pre-emptive multitasking allow the OS to do?",
+      opts:["Run only one process at a time","Pause a running process to give CPU time to a higher-priority one","Allocate the CPU permanently to background tasks","Avoid loading multiple programs"],
+      a:1, why:"Pre-emptive multitasking means the OS can interrupt whatever is running to service something more urgent." },
+    { q:"Which OS function deals with allocating disk space to files?",
+      opts:["Memory management","File management","Process scheduling","User account management"],
+      a:1, why:"File management handles the directory structure and where files physically sit on disk." },
+    { q:"An advantage of a CLI over a GUI is that:",
+      opts:["It requires no training","It is more intuitive for beginners","Commands can be scripted and combined","It uses less electricity"],
+      a:2, why:"CLI commands are plain text — easy to put in scripts, pipe together and run repeatedly. GUI clicks are not scriptable." },
+    { q:"Which task is NOT a typical OS responsibility?",
+      opts:["Allocating memory to running programs","Translating source code into machine code","Handling input from peripherals","Managing user accounts"],
+      a:1, why:"Translation is done by compilers and interpreters, not by the OS itself." },
+    { q:"A printer signals that it needs more data. Which OS subsystem handles this?",
+      opts:["File management","I/O management","Security","Process scheduling"],
+      a:1, why:"Communication with peripherals is the job of the OS's input/output management subsystem." }
+  ],
+  booting: [
+    { q:"The BIOS program itself is stored on:",
+      opts:["RAM","CMOS","EEPROM","The hard disk"],
+      a:2, why:"BIOS lives on an EEPROM (flash ROM) chip on the motherboard so it's available before any disk is accessed." },
+    { q:"The CMOS chip stores:",
+      opts:["The OS kernel","User-configurable BIOS settings (boot order, clock)","All installed device drivers","Compressed firmware updates"],
+      a:1, why:"CMOS holds BIOS settings and is kept alive by a small motherboard battery." },
+    { q:"What does POST stand for?",
+      opts:["Pre-Operation System Trigger","Power-On Self-Test","Primary Operating Software Tool","Program Operation Standby Test"],
+      a:1, why:"POST runs early in boot to check that essential hardware (CPU, RAM, keyboard) is healthy." },
+    { q:"The bootstrap loader's main job is to:",
+      opts:["Scan the disk for viruses","Copy the OS kernel from disk into RAM","Format the hard disk on first boot","Update the BIOS firmware"],
+      a:1, why:"The bootstrap loader is the BIOS routine that locates the OS and loads its kernel into memory." },
+    { q:"If the CMOS battery is removed and replaced, what is lost?",
+      opts:["The BIOS program","User BIOS settings such as boot order and clock","The contents of the hard disk","The operating system files"],
+      a:1, why:"The BIOS program survives on EEPROM. Only the BIOS settings stored on the battery-backed CMOS reset to defaults." }
+  ],
+  interrupts: [
+    { q:"On receiving an interrupt, the CPU first:",
+      opts:["Resets to factory defaults","Saves its current registers and program counter","Powers off peripherals","Reloads the OS kernel"],
+      a:1, why:"The CPU must remember where it was — register state and PC are pushed onto the stack before the ISR runs." },
+    { q:"What is an ISR?",
+      opts:["A specialised CPU chip","A routine that services a specific interrupt","A buffer used by printers","A region of ROM"],
+      a:1, why:"ISR = Interrupt Service Routine — the code that runs to handle one type of interrupt." },
+    { q:"Which of these would NOT normally generate an interrupt?",
+      opts:["Divide-by-zero error","Timer tick","Disk read complete","Routine defrag scan"],
+      a:3, why:"Defragmentation is a normal program task scheduled by the OS, not a discrete interrupt source. Errors, timer ticks and finished I/O are." },
+    { q:"A buffer exists mainly to:",
+      opts:["Encrypt outgoing data","Bridge the speed gap between the CPU and a slower device","Replace RAM during heavy load","Translate code for the CPU"],
+      a:1, why:"The CPU is far faster than printers, disks or networks. Buffers store data while the slow device drains them." },
+    { q:"Once the ISR has finished, the CPU will:",
+      opts:["Clear all RAM","Restart the operating system","Restore its saved state and resume the original task","Power down for safety"],
+      a:2, why:"Saved registers and the program counter are popped back; the interrupted program continues exactly where it left off." }
+  ],
+  languages: [
+    { q:"Machine code is best described as:",
+      opts:["Binary the CPU executes directly","Words like LDA and STO","Portable source code","A high-level language"],
+      a:0, why:"Machine code = the binary stream the CPU fetches and executes. No translation needed." },
+    { q:"Which is NOT an advantage of a high-level language?",
+      opts:["Easier to debug","Portable across machines","Closer to English syntax","Always faster than assembly"],
+      a:3, why:"Hand-tuned assembly can still beat compiled HLL code in tight cases — speed is not an HLL guarantee." },
+    { q:"Assembly language uses:",
+      opts:["Plain English sentences","Binary digit patterns","Mnemonics like ADD and STO","Decimal arithmetic only"],
+      a:2, why:"Assembly replaces opaque binary with short readable mnemonics — one per machine instruction." },
+    { q:"Re-compiling a C program for a different CPU relies on the language being:",
+      opts:["Compiled","Portable","Object-oriented","Statically typed"],
+      a:1, why:"High-level languages are portable — the same source can be retargeted to a different machine." },
+    { q:"The main reason to use assembly today is to:",
+      opts:["Save typing time","Make code easier to read","Squeeze maximum speed or access special CPU features","Run code on any CPU"],
+      a:2, why:"Drivers, embedded systems and tight performance loops still use assembly to talk directly to hardware." }
+  ],
+  translators: [
+    { q:"A compiler's output is:",
+      opts:["The same source code, prettified","A standalone executable","Lines translated one at a time","Always slower than the source"],
+      a:1, why:"Compilation turns source into a self-contained machine-code file you can run on its own." },
+    { q:"How does an interpreter differ from a compiler?",
+      opts:["It produces an .exe","It translates and runs one line at a time","It only handles assembly","It is generally faster"],
+      a:1, why:"Interpreters never produce a permanent executable — they re-translate every line each time the program runs." },
+    { q:"What does an assembler do?",
+      opts:["Translates HLL source to assembly","Maps assembly mnemonics to machine code","Converts hex to decimal","Combines multiple source files"],
+      a:1, why:"Assembler = one-to-one mapping from mnemonic instructions to machine code." },
+    { q:"Which scenario suits an interpreter best?",
+      opts:["Distributing a finished game","Embedded firmware in a microwave","Testing code during development","Real-time graphics rendering"],
+      a:2, why:"Interpreters give instant feedback per line — perfect for iterating during development." },
+    { q:"Each assembly statement typically translates into:",
+      opts:["Several machine-code instructions","One machine-code instruction","Zero instructions","One HLL statement"],
+      a:1, why:"Assembly is one-to-one with machine code — that's why an assembler is so simple compared with a compiler." }
+  ],
+  ide: [
+    { q:"What does auto-completion do?",
+      opts:["Runs the program every keystroke","Suggests variable and keyword names as you type","Translates code automatically","Fixes logic errors for you"],
+      a:1, why:"Auto-completion offers names from the current context, cutting typos and speeding writing." },
+    { q:"A breakpoint is used to:",
+      opts:["Recover the IDE after a crash","Mark the end of a function block","Delete a section of code","Pause execution at a chosen line"],
+      a:3, why:"Hitting a breakpoint pauses the program so you can inspect variables and step through line by line." },
+    { q:"Modern IDE error diagnostics flag mistakes:",
+      opts:["Only after the program has finished running","Whenever the IDE next opens the file","As code is being typed","After a full compile cycle"],
+      a:2, why:"Modern IDEs lint live — red squiggles appear instantly as you type." },
+    { q:"Which IDE tool catches a misspelt variable name as soon as you type it?",
+      opts:["Debugger","Prettyprinting","Error diagnostics","Translator"],
+      a:2, why:"Error diagnostics watch the code live and underline issues like undefined or misspelt names." },
+    { q:"Prettyprinting refers to:",
+      opts:["Printing source on a colour printer","Auto-correcting typos in identifiers","Generating PDF documentation","Colour-coding keywords and indenting blocks"],
+      a:3, why:"Prettyprinting = visual formatting: syntax colouring, consistent indentation, easier scanning." }
+  ]
+};
+const tqState = {};
+function tqInit(topic){
+  tqState[topic] = { idx:0, score:0, results:[] };
+  tqRender(topic);
+}
+function tqRender(topic){
+  const s = tqState[topic];
+  const qs = TOPIC_QUIZZES[topic];
+  const prog = document.getElementById('tq-prog-'+topic);
+  if(!prog) return;
+  prog.innerHTML = qs.map((_,i)=>{
+    let cls='';
+    if(i<s.results.length) cls='done '+(s.results[i]?'ok':'no');
+    else if(i===s.idx) cls='now';
+    return `<span class="${cls}"></span>`;
+  }).join('');
+  const body = document.getElementById('tq-body-'+topic);
+  if(s.idx >= qs.length){
+    const pct = s.score/qs.length;
+    const msg = pct===1 ? 'Perfect — full marks.' : pct>=0.6 ? 'Solid grasp. Review the misses and try again.' : 'Worth another read of the section.';
+    body.innerHTML = `<div class="tq-summary">
+      <div class="score-circle ${pct===1?'full':''}"><span class="num">${s.score}</span><span class="of">/ ${qs.length}</span></div>
+      <h4>${msg}</h4>
+      <button class="mini-btn" onclick="tqInit('${topic}')">↺ Try again</button>
+    </div>`;
+    return;
+  }
+  const q = qs[s.idx];
+  const letters = ['A','B','C','D','E'];
+  body.innerHTML = `
+    <div class="tq-q"><span class="num">Question ${s.idx+1} of ${qs.length}</span>${q.q}</div>
+    <div class="tq-opts" id="tq-opts-${topic}">
+      ${q.opts.map((o,i)=>`<button class="tq-opt" onclick="tqAnswer('${topic}',${i})"><span class="letter">${letters[i]}</span><span class="opt-text">${o}</span></button>`).join('')}
+    </div>
+    <div id="tq-feedback-${topic}"></div>
+  `;
+}
+function tqAnswer(topic, idx){
+  const s = tqState[topic];
+  const q = TOPIC_QUIZZES[topic][s.idx];
+  const ok = idx === q.a;
+  s.results.push(ok);
+  if(ok) s.score++;
+  document.querySelectorAll(`#tq-opts-${topic} .tq-opt`).forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.a) b.classList.add('right');
+    else if(i===idx && !ok) b.classList.add('wrong');
+  });
+  const last = s.idx === TOPIC_QUIZZES[topic].length-1;
+  document.getElementById('tq-feedback-'+topic).innerHTML =
+    `<div class="tq-feedback ${ok?'ok':'no'}"><strong>${ok?'Correct.':'Not quite.'}</strong> ${q.why}</div>
+     <div class="tq-next"><button class="mini-btn" onclick="tqAdvance('${topic}')">${last?'See results':'Next →'}</button></div>`;
+  const dot = document.getElementById('tq-prog-'+topic).children[s.idx];
+  dot.classList.remove('now');
+  dot.classList.add('done', ok?'ok':'no');
+}
+function tqAdvance(topic){
+  tqState[topic].idx++;
+  tqRender(topic);
+}
+function tqReset(topic){ tqInit(topic); }
+['types','os','booting','interrupts','languages','translators','ide'].forEach(t=>{
+  if(document.getElementById('tq-prog-'+t)) tqInit(t);
+});
+</script>
+</body>
+</html>
